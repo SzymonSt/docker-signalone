@@ -1,0 +1,7 @@
+<!--HEADER COMPONENT STATICLY PROVIDED-->
+<!--LOADER COMPONENT CONTAINED WITH SOME KIND OF PER REQUEST INTERCEPTOR-->
+<app-header></app-header>
+<div id="main-content">
+    <router-outlet></router-outlet>
+</div>
+<app-loader *ngIf="isLoading$ | async"></app-loader>

@@ -1,0 +1,22 @@
+#header {
+  padding-top: 12px;
+  padding-bottom: 4px;
+  background-color: var(--pale);
+  border-bottom: 2px solid var(--light-bright);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .flags-container {
+    cursor: pointer;
+
+    img {
+      border-bottom: 3px solid transparent;
+      padding-bottom: 8px;
+    }
+
+    img.active {
+      border-color: var(--primary);
+    }
+  }
+}
