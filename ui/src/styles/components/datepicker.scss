@@ -1,0 +1,11 @@
+.theme-green .bs-datepicker-head, .theme-green .bs-datepicker-body table td span.selected {
+  background-color: var(--primary) !important;
+}
+
+.theme-green .bs-datepicker-body table td.week span {
+  color: var(--primary) !important;
+}
+
+.bs-datepicker-head button[disabled] {
+  visibility: hidden !important;
+}

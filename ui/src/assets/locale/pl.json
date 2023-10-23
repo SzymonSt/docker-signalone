@@ -1,10 +1,40 @@
 {
+  "VALIDATION": {
+    "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do"
+  },
+  "ENUM": {
+    "ISSUE_TYPE": {
+      "ERROR": "Błąd",
+      "ANOMALY": "Anomalia"
+    },
+    "SEVERITY": {
+      "CRITICAL": "Krytyczne",
+      "WARNING": "Ostrzeżenie",
+      "INFO": "Informacyjne"
+    }
+  },
+  "ERRORS": {
+  },
   "UI": {
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "Amerykańska flaga",
       "PL_FLAG_ALT": "Polska flaga"
-    },
-    "FEATURES": {}
+    }
+  },
+  "FEATURES": {
+    "ISSUES": {
+      "SEARCH_CRITERIA": "Kryteria wyszukiwania",
+      "ISSUE_NAME": "Nazwa problemu",
+      "TYPE": "Typ",
+      "SEVERITY": "Ważność",
+      "CONTAINER": "Kontener",
+      "DATE_FROM": "Data wystąpienia od",
+      "DATE_TO": "Data wystąpienia do",
+      "DATE_PLACEHOLDER": "DD/MM/YYYY",
+      "UNRESOLVED_ONLY": "Pokaż tylko nierozwiązane incydenty",
+      "CLEAR": "Wyczyść",
+      "SEARCH": "Szukaj"
+    }
   }
 }

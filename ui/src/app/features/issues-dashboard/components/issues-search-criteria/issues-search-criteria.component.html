@@ -1,0 +1,101 @@
+<div id="issues-search-criteria">
+    <form [formGroup]="searchForm">
+        <h3 class="mb-3">{{'FEATURES.ISSUES.SEARCH_CRITERIA' | translate}}</h3>
+        <div class="form-group mb-3">
+            <label class="form-label" for="issueName">{{'FEATURES.ISSUES.ISSUE_NAME' | translate}}</label>
+            <input [placeholder]="'FEATURES.ISSUES.ISSUE_NAME' | translate" class="form-control"
+                   formControlName="searchText"
+                   id="issueName"
+                   type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label class="form-label" for="type">{{'FEATURES.ISSUES.TYPE' | translate}}</label>
+            <ng-select [placeholder]="'FEATURES.ISSUES.TYPE' | translate"
+                       [searchable]="false"
+                       class="form-control" formControlName="type"
+                       id="type"
+                       name="type">
+                <ng-option *ngFor="let issueType of issueTypeOptions"
+                           [value]="issueType">{{('ENUM.ISSUE_TYPE.' + issueType) | translate}}</ng-option>
+            </ng-select>
+        </div>
+        <div class="form-group mb-3">
+            <label class="form-label" for="severity">{{'FEATURES.ISSUES.SEVERITY' | translate}}</label>
+            <ng-select [placeholder]="'FEATURES.ISSUES.SEVERITY' | translate"
+                       [searchable]="false" class="form-control"
+                       formControlName="severity"
+                       id="severity"
+                       name="severity">
+                <ng-option *ngFor="let severity of severityOptions"
+                           [value]="severity">{{('ENUM.SEVERITY.' + severity) | translate}}</ng-option>
+            </ng-select>
+        </div>
+        <div class="form-group mb-3">
+            <label class="form-label" for="container">{{'FEATURES.ISSUES.CONTAINER' | translate}}</label>
+            <ng-select [placeholder]="'FEATURES.ISSUES.CONTAINER' | translate"
+                       [searchable]="true" class="form-control"
+                       formControlName="container"
+                       id="container"
+                       name="container">
+                <!--                <ng-option *ngFor="let severity of severityOptions"-->
+                <!--                           [value]="severity">{{('ENUM.SEVERITY.' + severity) | translate}}</ng-option>-->
+            </ng-select>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="form-group mb-3">
+                    <label class="form-label" for="dateFrom">{{'FEATURES.ISSUES.DATE_FROM' | translate}}</label>
+                    <input
+                            [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', maxDate: todayDate }"
+                            [ngClass]="{'invalid': searchForm.hasError('dateRangeInvalid') && isSubmitted}"
+                            bsDatepicker
+                            class="form-control"
+                            formControlName="dateFrom"
+                            formControlName="dateFrom"
+                            id="dateFrom"
+                            name="dateFrom"
+                            placeholder="{{ 'FEATURES.ISSUES.DATE_PLACEHOLDER' | translate }}" placement="bottom"
+                            type="text">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group mb-3">
+                    <label class="form-label" for="dateTo">{{'FEATURES.ISSUES.DATE_TO' | translate}}</label>
+                    <input
+                            [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY', maxDate: todayDate }"
+                            [ngClass]="{'invalid': searchForm.hasError('dateRangeInvalid') && isSubmitted}"
+                            bsDatepicker
+                            class="form-control"
+                            formControlName="dateTo"
+                            formControlName="dateTo"
+                            id="dateTo"
+                            name="dateTo"
+                            placeholder="{{ 'FEATURES.ISSUES.DATE_PLACEHOLDER' | translate }}" placement="bottom"
+                            type="text">
+                </div>
+            </div>
+            <div *ngIf="searchForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-0 mb-3">
+                <div *ngIf="searchForm.hasError('dateRangeInvalid')">{{ 'VALIDATION.DATE_RANGE_INVALID' | translate }}</div>
+
+            </div>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input input-checkbox" formControlName="showOnlyUnresolved" id="unresolvedOnly"
+                   name="unresolvedOnly"
+                   type="checkbox">
+            <label class="form-label ms-3"
+                   for="unresolvedOnly">{{ 'FEATURES.ISSUES.UNRESOLVED_ONLY' | translate }}</label>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <button (click)="clearForm()"
+                        class="btn btn-secondary w-100">{{ 'FEATURES.ISSUES.CLEAR' | translate }}</button>
+            </div>
+            <div class="col">
+                <button (click)="submitForm()"
+                        class="btn btn-primary w-100">{{ 'FEATURES.ISSUES.SEARCH' | translate }}</button>
+            </div>
+        </div>
+    </form>
+
+</div>

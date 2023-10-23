@@ -1,0 +1,12 @@
+@import "../../../../../styles/mixins";
+
+#issues-left-panel {
+  @include sides-spacing();
+  min-height: calc(100vh - 70px);
+  min-width: 500px;
+  max-width: 35vw;
+  background-color: var(--strong-white);
+  border-right: 2px solid var(--light-bright);
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
