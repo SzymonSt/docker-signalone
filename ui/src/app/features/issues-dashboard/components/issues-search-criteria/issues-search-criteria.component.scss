@@ -1,0 +1,14 @@
+.accordion-button {
+  border-bottom: 2px solid var(--light-bright);;
+}
+
+.accordion-button, .accordion-body {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: var(--strong-white);
+
+  h3 {
+    color: var(--primary) !important;
+    margin-bottom: 0 !important;
+  }
+}
