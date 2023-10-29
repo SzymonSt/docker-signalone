@@ -2,7 +2,10 @@ import requests
 from qdrant_client import QdrantClient
 import json
 import re
+import datetime
 
+version = "0.0.1"
+PROMPT_LOG_PATH = "../prompt.log"
 INFERENCE_BASE_URL = "https://api-inference.huggingface.co/models/"
 FEATURE_EXTRACTION_BASE_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/"
 FEATURE_EXTRACTION_MODEL_NAME = "sentence-transformers/paraphrase-MiniLM-L6-v2"
@@ -45,6 +48,9 @@ class HuggingFaceInferenceApiWrapper():
             processed_response = self._process_response(parsed_response[0]['generated_text'])
         except:
             processed_response = ""
+        with open(PROMPT_LOG_PATH, "a") as f:
+            date = datetime.datetime.now()
+            f.write(f"[{date}][{version}]Prompt: {prompt}\nResponse: {processed_response}\n\n")
         return processed_response
     
     def get_embeddings(self, prompt: list) -> list:
@@ -67,7 +73,6 @@ class HuggingFaceInferenceApiWrapper():
             response = response.replace("Assistant: ","")
             json_pattern = r'{.*}'
             matches = re.findall(json_pattern, response)
-            print(response)
             return json.loads(matches[0])
         except json.decoder.JSONDecodeError or IndexError as e:
             print(response)
