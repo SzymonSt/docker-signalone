@@ -1,7 +1,7 @@
 from mlworker.context_retrivers.db import vector_search
 from qdrant_client import QdrantClient
 from mlworker.huggingface_inference_api.wrapper import HuggingFaceInferenceApiWrapper
-from mlworker.prompts.templates import prompt_template_state, prompt_template_anomaly
+from vm.mlworker.prompts.templates_llama import prompt_template_state, prompt_template_anomaly
 
 class SemanticAnalysisEngine:
     def __init__(self, main_model_name, hf_api_key, qclient_url):
