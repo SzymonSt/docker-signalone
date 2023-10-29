@@ -1,4 +1,3 @@
 fastapi
 uvicorn
-dotenv-python
-sqlite3
+python-dotenv

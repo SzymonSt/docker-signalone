@@ -1,3 +1,5 @@
 export const environment = {
-  defaultLanguage: 'pl'
+  defaultLanguage: 'pl',
+  production: false,
+  apiUrl: 'localhost:8000/api',
 };

@@ -2,6 +2,9 @@
   "VALIDATION": {
     "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do"
   },
+  "ERROR": {
+    "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu"
+  },
   "ENUM": {
     "ISSUE_TYPE": {
       "ERROR": "Błąd",
@@ -16,6 +19,7 @@
   "ERRORS": {
   },
   "UI": {
+    "ERROR": "Błąd",
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "Amerykańska flaga",

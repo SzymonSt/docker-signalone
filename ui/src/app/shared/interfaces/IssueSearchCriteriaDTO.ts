@@ -1,12 +1,13 @@
 import { IssueType } from 'app/shared/enum/IssueType';
-import { Severity } from 'app/shared/enum/Severity';
+import { IssueSeverity } from 'app/shared/enum/IssueSeverity';
 
 export interface IssueSearchCriteriaDTO {
-  searchText: string;
-  type: IssueType;
-  severity: Severity
+  searchString: string;
+  containerId: string;
+  issueType: IssueType;
+  issueSeverity: IssueSeverity
   container: string;
-  dateFrom: Date;
-  dateTo: Date;
-  showOnlyUnresolved: boolean;
+  startTimestamp: string;
+  endTimestamp: string;
+  isResolved: boolean;
 }
