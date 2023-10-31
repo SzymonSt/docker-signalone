@@ -18,9 +18,16 @@ export class IssuesService {
 
   public getIssuesList(searchCriteria?: IssueSearchCriteriaDTO): Observable<IssueDTO[]> {
     if (searchCriteria) {
+      if (searchCriteria.startTimestamp) {
+        searchCriteria.startTimestamp = new Date(searchCriteria.startTimestamp).toISOString().split('T')[0];
+      }
+      if (searchCriteria.endTimestamp) {
+        searchCriteria.endTimestamp = new Date(searchCriteria.endTimestamp).toISOString().split('T')[0];
+      }
+
       const params: HttpParams = new HttpParams({
         encoder: new HttpEncoder(),
-        fromObject: { ...(NormalizeObjectValue(searchCriteria) as any) }
+        fromObject: { ...(NormalizeObjectValue(searchCriteria, [ 'startTimestamp', 'endTimestamp' ]) as any) }
       });
 
       return this.httpClient.get<IssueDTO[]>(`${environment.apiUrl}/issues`, { params });

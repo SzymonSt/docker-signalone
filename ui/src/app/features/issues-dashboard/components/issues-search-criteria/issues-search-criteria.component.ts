@@ -53,6 +53,6 @@ export class IssuesSearchCriteriaComponent implements OnInit {
       startTimestamp: new FormControl(null),
       endTimestamp: new FormControl(null),
       isResolved: new FormControl(null),
-    }, { validators: dateRangeValidator() })
+    }, { validators: dateRangeValidator('startTimestamp', 'endTimestamp') })
   }
 }
