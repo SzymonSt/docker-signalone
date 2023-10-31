@@ -1,4 +1,5 @@
 <div id="issues-dashboard d-flex">
-    <app-issues-left-panel (criteriaChanged)="searchIssues($event)" [containers]="containers"></app-issues-left-panel>
+    <app-issues-left-panel (criteriaChanged)="searchIssues($event)" [containers]="containers"
+                           [issues]="issues"></app-issues-left-panel>
     <app-issues-right-panel></app-issues-right-panel>
 </div>

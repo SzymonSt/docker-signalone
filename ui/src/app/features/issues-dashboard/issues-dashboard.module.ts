@@ -20,9 +20,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { IssueCellComponent } from 'app/features/issues-dashboard/components/issue-cell/issue-cell.component';
 
 @NgModule({
-  declarations: [ IssuesDashboardComponent, IssuesSearchCriteriaComponent, IssuesRightPanelComponent, IssuesLeftPanelComponent, IssuesListComponent ],
+  declarations: [ IssuesDashboardComponent, IssuesSearchCriteriaComponent, IssuesRightPanelComponent, IssuesLeftPanelComponent, IssuesListComponent, IssueCellComponent ],
   imports: [
     CommonModule,
     TranslateModule,

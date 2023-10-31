@@ -3,7 +3,8 @@
     "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do"
   },
   "ERROR": {
-    "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu"
+    "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
+    "UNDEFINED": "Błąd nie został rozpoznany"
   },
   "ENUM": {
     "ISSUE_TYPE": {

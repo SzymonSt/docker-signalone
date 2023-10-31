@@ -1,4 +1,6 @@
 <div id="issues-left-panel">
     <app-issues-search-criteria (criteriaChanged)="criteriaChanged.emit($event)"
                                 [containers]="containers"></app-issues-search-criteria>
+    <app-issues-list [issues]="issues"></app-issues-list>
+
 </div>
