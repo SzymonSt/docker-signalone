@@ -18,7 +18,7 @@ class HuggingFaceInferenceApiWrapper():
         self.feature_extraction_model_name = FEATURE_EXTRACTION_MODEL_NAME
         self.api_key = api_key
         self.global_params = {
-            "max_new_tokens": 1024,
+            "max_new_tokens": 512,
             "return_full_text": False,
             "repetition_penalty":1.1,
             "temperature": 0.01,
@@ -30,7 +30,7 @@ class HuggingFaceInferenceApiWrapper():
             "wait_for_model": True
         }
 
-    def predict(self, prompt: str) -> dict:
+    def predict(self, prompt: str) -> (dict, int):
         res = requests.post(
             url=f"{self.inference_base_url}{self.model_name}",
             headers={
@@ -51,9 +51,9 @@ class HuggingFaceInferenceApiWrapper():
         with open(PROMPT_LOG_PATH, "a") as f:
             date = datetime.datetime.now()
             f.write(f"[{date}][{version}]Prompt: {prompt}\nResponse: {processed_response}\n\n")
-        return processed_response
+        return processed_response, res.status_code
     
-    def get_embeddings(self, prompt: list) -> list:
+    def get_embeddings(self, prompt: list) -> (list,int):
         res = requests.post(
             url=f"{self.feature_extraction_base_url}{self.feature_extraction_model_name}",
             headers={
@@ -65,7 +65,7 @@ class HuggingFaceInferenceApiWrapper():
             }
         )
         parsed_response = res.json()
-        return parsed_response
+        return parsed_response, res.status_code
 
     def _process_response(self, response: str) -> dict:
         try:
