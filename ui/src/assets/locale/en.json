@@ -1,8 +1,49 @@
 {
-  "UI": {
-    "HEADER": {
-      "TITLE": "Signal On 11e"
+  "VALIDATION": {
+    "DATE_RANGE_INVALID": "The withdrawal date from cannot be later than the withdrawal date to"
+  },
+  "ERROR": {
+    "NOT_FOUND": "No suitable resource found",
+    "UNDEFINED": "The error was not recognized"
+  },
+  "ENUM": {
+    "ISSUE_TYPE": {
+      "ERROR": "Error",
+      "ANOMALY": "Anomaly"
     },
-    "FEATURES": {}
+    "SEVERITY": {
+      "CRITICAL": "Critical",
+      "WARNING": "Warning",
+      "INFO": "Information"
+    }
+  },
+  "ERRORS": {
+  },
+  "UI": {
+    "ERROR": "Error",
+    "HEADER": {
+      "TITLE": "Signal One",
+      "US_FLAG_ALT": "American flag",
+      "PL_FLAG_ALT": "Polish flag"
+    }
+  },
+  "FEATURES": {
+    "ISSUES": {
+      "SEARCH_CRITERIA": "Search criteria",
+      "ISSUE_NAME": "Issue name",
+      "TYPE": "Type",
+      "SEVERITY": "Severity",
+      "CONTAINER": "Container",
+      "DATE_FROM": "Date from",
+      "DATE_TO": "Date to",
+      "DATE_PLACEHOLDER": "DD/MM/YYYY",
+      "UNRESOLVED_ONLY": "Show only unresolved issues",
+      "CLEAR": "Clear",
+      "SEARCH": "Search",
+      "INSIGHTS": "Insights: ",
+      "CHAT": {
+        "ASK_MODEL": "Ask model"
+      }
+    }
   }
 }
