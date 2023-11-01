@@ -1,3 +1,10 @@
+# version: 0.0.1
+
+# version: 0.0.2
+# Changelog:
+# - Added few shots to the prompt
+# - Modified assistant role to on call engineer
+
 B_INST, E_INST = "[INST] ", "[/INST]"
 B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"  
 
