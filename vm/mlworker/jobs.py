@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from sklearn.ensemble import IsolationForest
 from mlworker.docker_retrivers.inspect_containers import inspect
+from mlworker.docker_retrivers.runtime import retrive_runtime
 from mlworker.semantic_analysis_engine import SemanticAnalysisEngine
 from common.issues_manager import IssuesManager
 
@@ -103,6 +104,8 @@ def resource_usage_anomaly():
             memory_anomaly = _check_for_anomaly(parsed_stats_mem, baseline, "memory")
             if memory_anomaly:
                 logs = container.logs(tail=15)
+                runtime = retrive_runtime(container_dict['attrs']['Config']['Cmd'], container_dict['attrs']['Config']['Env'])
+                print("Runtime: ", runtime)
                 issue = {
                     "id": uuid.uuid1().hex,
                     "container_id": container_dict['attrs']['Id'],
@@ -111,9 +114,8 @@ def resource_usage_anomaly():
                     "is_resolved": False,
                     "timestamp": datetime.datetime.now(),
                     "container_state": """
-                        Docker Memory resource excessive usage, analyze provided logs of application to find correlated events that could cause excessive usage of resources, 
-                        like long response times, errors, excpetions. Show relevant pieces of logs, tell which endpoints or functions can be location of issues, 
-                        add timestamps if possible and propose solutions.""",
+                        Docker Memory resource excessive usage for runtime {runtime}, 
+                        analyze provided logs of application to find functions or endpoints as possible root cause""".format(runtime=runtime),
                     "logs": logs
                 }
                 issues.append(issue)

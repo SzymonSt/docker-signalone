@@ -20,22 +20,26 @@ class SemanticAnalysisEngine:
                 embeddings_prompt += str(issue['container_state'])
             if issue['logs'] != "":
                 embeddings_prompt +=  "\n" + str(issue['logs'])
-            ctxvec = ""
-            while type(ctxvec) != list:
+            status = 0
+            while status != 200:
                 print("Retrieving embeddings...")
-                ctxvec = self.hf_issues_inference_model.get_embeddings(embeddings_prompt)
+                ctxvec, status = self.hf_issues_inference_model.get_embeddings(embeddings_prompt)
             print("Retrival complete")
             context = vector_search(self.qdrant_client, ctxvec)
-            mess = ""
+            status = 0
             if issue['issue_type'] == "error":
-                while type(mess) != dict:
+                while status != 200:
                     print("Predicting issue solutions...")
-                    mess = self.hf_issues_inference_model.predict(prompt=prompt_template_state.format(issue=str(issue), context=str(context[0].payload.get('possible_solutions'))))
+                    mess, status = self.hf_issues_inference_model.predict(prompt=prompt_template_state.format(
+                        issue=str(issue), 
+                        context=str(context[0].payload.get('possible_solutions'))))
                 print("Prediction complete")
             elif issue['issue_type'] == "anomaly":
-                while type(mess) != dict:
+                while status != 200:
                     print("Predicting issue solutions...")
-                    mess = self.hf_issues_inference_model.predict(prompt=prompt_template_anomaly.format(issue=str(issue['container_state']),logs=str(issue['logs']), context=str(context[0].payload.get('possible_solutions'))))
+                    mess, status = self.hf_issues_inference_model.predict(prompt=prompt_template_anomaly.format(
+                        issue=str(issue['container_state']),logs=str(issue['logs']), 
+                        context=str(context[0].payload.get('possible_solutions'))))
                 print("Prediction complete")
             del issue['logs']
             del issue['container_state']
