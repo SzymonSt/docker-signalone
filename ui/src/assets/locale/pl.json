@@ -2,6 +2,10 @@
   "VALIDATION": {
     "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do"
   },
+  "ERROR": {
+    "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
+    "UNDEFINED": "Błąd nie został rozpoznany"
+  },
   "ENUM": {
     "ISSUE_TYPE": {
       "ERROR": "Błąd",
@@ -16,6 +20,7 @@
   "ERRORS": {
   },
   "UI": {
+    "ERROR": "Błąd",
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "Amerykańska flaga",
@@ -34,7 +39,11 @@
       "DATE_PLACEHOLDER": "DD/MM/YYYY",
       "UNRESOLVED_ONLY": "Pokaż tylko nierozwiązane incydenty",
       "CLEAR": "Wyczyść",
-      "SEARCH": "Szukaj"
+      "SEARCH": "Szukaj",
+      "INSIGHTS": "Wgląd: ",
+      "CHAT": {
+        "ASK_MODEL": "Zapytaj model"
+      }
     }
   }
 }

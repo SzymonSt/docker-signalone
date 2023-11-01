@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -36,7 +37,8 @@
               "node_modules/bootstrap/scss/bootstrap.scss",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
               "src/styles.scss",
-              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.scss"
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

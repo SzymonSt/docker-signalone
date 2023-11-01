@@ -1,0 +1,26 @@
+.issue-container {
+  border: 1px solid var(--light-gray);
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  cursor: pointer;
+
+  p {
+    color: var(--black);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .warning-icon {
+    fill: var(--color-warning);
+  }
+
+  .critical-icon {
+    fill: var(--color-critical);
+  }
+
+  .info-icon {
+    fill: var(--color-info);
+  }
+}

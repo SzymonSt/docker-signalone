@@ -1,0 +1,8 @@
+<div *ngIf="activeIssue" class="solutions-list mt-3">
+    <h3>
+        {{'FEATURES.ISSUES.INSIGHTS' | translate}}
+    </h3>
+    <ol class="mt-3">
+        <li *ngFor="let solution of activeIssue?.solutions" class="mb-3">{{solution}}</li>
+    </ol>
+</div>
