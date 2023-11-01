@@ -63,8 +63,8 @@ def main():
             parsed_issue = Issue(
                 id=issue[0],
                 containerId=issue[1],
-                issueType=str.capitalize(issue[2]),
-                issueSeverity=str.capitalize(issue[3]),
+                issueType=str(issue[2]).upper(),
+                issueSeverity=str(issue[3]).upper(),
                 isResolved=bool(issue[4]),
                 timestamp=issue[5],
                 issue=issue[6],
