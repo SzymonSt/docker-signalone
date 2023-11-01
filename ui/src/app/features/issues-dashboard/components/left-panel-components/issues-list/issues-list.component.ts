@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 
 @Component({
@@ -9,6 +9,9 @@ import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 export class IssuesListComponent {
   @Input()
   public issues: IssueDTO[];
+
+  @Output()
+  public viewIssue: EventEmitter<IssueDTO> = new EventEmitter<IssueDTO>()
 
   constructor() {
   }

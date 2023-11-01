@@ -39,7 +39,11 @@
       "DATE_PLACEHOLDER": "DD/MM/YYYY",
       "UNRESOLVED_ONLY": "Pokaż tylko nierozwiązane incydenty",
       "CLEAR": "Wyczyść",
-      "SEARCH": "Szukaj"
+      "SEARCH": "Szukaj",
+      "INSIGHTS": "Wgląd: ",
+      "CHAT": {
+        "ASK_MODEL": "Zapytaj model"
+      }
     }
   }
 }

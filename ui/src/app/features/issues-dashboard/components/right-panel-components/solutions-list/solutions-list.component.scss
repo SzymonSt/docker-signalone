@@ -1,0 +1,11 @@
+.solutions-list {
+  height: calc(53vh - 50px);
+  overflow: auto;
+  border: 2px solid var(--light-bright);
+  padding: 12px;
+  border-radius: 12px;
+
+  li {
+    color: var(--black);
+  }
+}

@@ -12,8 +12,11 @@ export class IssuesLeftPanelComponent {
   public containers: string[];
   @Input()
   public issues: IssueDTO[];
+
   @Output()
   public criteriaChanged: EventEmitter<IssueSearchCriteriaDTO> = new EventEmitter<IssueSearchCriteriaDTO>();
+  @Output()
+  public viewIssue: EventEmitter<IssueDTO> = new EventEmitter<IssueDTO>()
 
   constructor() {
   }

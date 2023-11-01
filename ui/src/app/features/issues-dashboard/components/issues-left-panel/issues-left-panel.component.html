@@ -1,6 +1,12 @@
 <div id="issues-left-panel">
     <app-issues-search-criteria (criteriaChanged)="criteriaChanged.emit($event)"
                                 [containers]="containers"></app-issues-search-criteria>
-    <app-issues-list [issues]="issues"></app-issues-list>
-
+    <app-issues-list (viewIssue)="viewIssue.emit($event)" [issues]="issues"></app-issues-list>
+    <!--    TODO add pagination when data interface will be ready-->
+    <!--    <pagination (pageChanged)="onPageChanged($event)"-->
+    <!--                [boundaryLinks]="true"-->
+    <!--                [itemsPerPage]="criteria.pageSize" [maxSize]="6" [rotate]="true"-->
+    <!--                [totalItems]="itemTotal" class="justify-content-end mb-0"></pagination>-->
+    <!--    [customFirstTemplate]="firstTemplate"-->
+    <!--    [customLastTemplate]="lastTemplate" [customNextTemplate]="nextTemplate" [customPreviousTemplate]="prevTemplate"-->
 </div>

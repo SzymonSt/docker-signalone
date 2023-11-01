@@ -1,0 +1,12 @@
+.chat-workspace {
+  textarea {
+    width: 100%;
+    resize: none;
+    border-radius: 8px;
+  }
+}
+
+.chat-history {
+  height: 20vh;
+  overflow: auto;
+}

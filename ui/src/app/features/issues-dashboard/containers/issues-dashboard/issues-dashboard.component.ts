@@ -3,16 +3,6 @@ import { IssuesService } from 'app/features/issues-dashboard/services/issues.ser
 import { IssueSearchCriteriaDTO } from 'app/shared/interfaces/IssueSearchCriteriaDTO';
 import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 
-const defaultSearchCriteria = {
-  searchString: null,
-  issueType: null,
-  issueSeverity: null,
-  containerId: null,
-  startTimestamp: null,
-  endTimestamp: null,
-  isResolved: null,
-}
-
 @Component({
   selector: 'app-issues-dashboard',
   templateUrl: './issues-dashboard.component.html',
@@ -21,6 +11,7 @@ const defaultSearchCriteria = {
 export class IssuesDashboardComponent implements OnInit {
   public containers: string[];
   public issues: IssueDTO[];
+  public activeIssue: IssueDTO;
 
   constructor(private issuesService: IssuesService) {
   }
@@ -34,6 +25,11 @@ export class IssuesDashboardComponent implements OnInit {
     this.issuesService.getIssuesList(searchCriteria).subscribe((issues) => {
       this.issues = issues;
     });
+  }
+
+  public viewIssue(issue: IssueDTO): void {
+    console.log('ACTIVE ISSUE', issue)
+    this.activeIssue = issue;
   }
 
   private getIssuesContainers(): void {
