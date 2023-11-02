@@ -1,0 +1,7 @@
+services:
+  signalapi:
+    image: ''
+  signalmlworker:
+    image: ''
+  qdrant:
+    image: ''
