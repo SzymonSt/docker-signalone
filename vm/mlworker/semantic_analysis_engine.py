@@ -32,7 +32,7 @@ class SemanticAnalysisEngine:
                     print("Predicting issue solutions...")
                     mess, status = self.hf_issues_inference_model.predict(prompt=prompt_template_state.format(
                         issue=str(issue), 
-                        context=str(context[0].payload.get('possible_solutions'))))
+                        context=context[0].payload['possible_solution']))
                 print("Prediction complete")
             elif issue['issue_type'] == "anomaly":
                 while status != 200:

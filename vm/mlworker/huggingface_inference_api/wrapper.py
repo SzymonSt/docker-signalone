@@ -48,7 +48,7 @@ class HuggingFaceInferenceApiWrapper():
             processed_response = self._process_response(parsed_response[0]['generated_text'])
         except:
             processed_response = ""
-        with open(PROMPT_LOG_PATH, "a") as f:
+        with open(PROMPT_LOG_PATH, "a", encoding='utf-8') as f:
             date = datetime.datetime.now()
             f.write(f"[{date}][{version}]Prompt: {prompt}\nResponse: {processed_response}\n\n")
         return processed_response, res.status_code
