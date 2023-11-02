@@ -19,8 +19,8 @@ def main():
     db.commit()
     db.close()
 
-    schedule.every(5).seconds.do(resource_usage_anomaly)
-    # schedule.every(30).seconds.do(container_error_scan)                                    
+    # schedule.every(5).seconds.do(resource_usage_anomaly)
+    schedule.every(10).seconds.do(container_error_scan)                                    
 
     while True:
         schedule.run_pending()
