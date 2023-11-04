@@ -21,6 +21,7 @@ services:
     depends_on:
       - qdrant
   qdrant:
+    container_name: qdrant
     image: 322456/qdrant-prepopulated:dev
     ports:
       - "6333:6333"
