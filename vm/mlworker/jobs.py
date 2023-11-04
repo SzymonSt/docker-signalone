@@ -38,7 +38,6 @@ def resource_usage_anomaly():
         issues = []
         container_dict = container.__dict__
         print("Checking container: ", container_dict['attrs']['Id'])
-        logging.info("Checking container: ", container_dict['attrs']['Id'])
         cpu_anomaly = False
         memory_anomaly = False
         sample_size = 15

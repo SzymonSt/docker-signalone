@@ -5,6 +5,7 @@
 
 ## Overview
 Signal0ne docker extension is a tool for debugging and monitoring containerized apps, which enables automated insights about failed containers and containers affected by resource usage anomalies.
+![Alt text](image.png)
 
 ## How to use
 
