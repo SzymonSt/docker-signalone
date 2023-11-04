@@ -10,7 +10,6 @@ class IssuesManager():
     def insert_issues(self, issues):
         for issue in issues:
             issue['solutions'] = str(issue['solutions'])
-            print(issue)
             self.db.execute("""INSERT INTO issues (
                 id,
                 container_id,
