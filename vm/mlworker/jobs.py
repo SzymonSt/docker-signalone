@@ -3,6 +3,7 @@ from docker import DockerClient
 import numpy as np
 import uuid
 import os
+import logging
 from dotenv import load_dotenv
 from sklearn.ensemble import IsolationForest
 from mlworker.docker_retrivers.inspect_containers import inspect
@@ -23,15 +24,21 @@ sanalysis = SemanticAnalysisEngine(
     qclient_url=qclient_url
 )
 im = IssuesManager()
+logging.basicConfig(filename='mlworker.log',level=logging.DEBUG)
 
 def resource_usage_anomaly():
     print("Running resource usage anomaly detection")
-    dc = DockerClient().from_env()
+    logging.info("Running resource usage anomaly detection")
+    try:
+        dc = DockerClient('unix://var/run/docker.sock')
+    except Exception as e:
+        logging.error("Docker client connection error: {}".format(e))
     running_containers = dc.containers.list(all=False)
     for container in running_containers:
         issues = []
         container_dict = container.__dict__
         print("Checking container: ", container_dict['attrs']['Id'])
+        logging.info("Checking container: ", container_dict['attrs']['Id'])
         cpu_anomaly = False
         memory_anomaly = False
         sample_size = 15
@@ -134,6 +141,7 @@ def resource_usage_anomaly():
 
 def container_error_scan():
     print("Running container error scan")
+    logging.info("Running container error scan")
     dc = DockerClient().from_env()
     issues = inspect(dc, im)
     sanalysis.analyze(issues)

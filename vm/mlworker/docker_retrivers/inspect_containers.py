@@ -2,6 +2,7 @@ import uuid
 from docker import DockerClient
 from mlworker.docker_retrivers.logs import retrive_logs
 from common.issues_manager import IssuesManager
+import logging
 
 def inspect(dc: DockerClient, im: IssuesManager) -> list:
     parsed_containers = []
@@ -32,9 +33,10 @@ def inspect(dc: DockerClient, im: IssuesManager) -> list:
                     "logs": retrive_logs(container_dict['attrs']['Id'], dc)
                 }
                 current_issue = im.get_issues_by_container_id(issue['container_id'])
-                print(current_issue)
                 if len(current_issue) == 0:
                     issues.append(issue)
+                    logging.info("New issue found: ", issue)
+                    
                 else:
                     if current_issue[0][5] != issue['timestamp']:
                         im.drop_issues(current_issue)

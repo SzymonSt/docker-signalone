@@ -1,3 +1,9 @@
 fastapi
 uvicorn
 python-dotenv
+qdrant-client
+requests
+schedule
+numpy
+docker
+scikit-learn

@@ -5,12 +5,11 @@ class IssuesManager():
         if db_path:
             self.db = sqlite3.connect(db_path)
         else:
-            self.db = sqlite3.connect("./api/issuesdb/issues.db")
+            self.db = sqlite3.connect("/data/issues.db")
 
     def insert_issues(self, issues):
         for issue in issues:
             issue['solutions'] = str(issue['solutions'])
-            print(issue)
             self.db.execute("""INSERT INTO issues (
                 id,
                 container_id,
