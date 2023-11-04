@@ -1,7 +1,27 @@
 services:
-  signalapi:
-    image: ''
-  signalmlworker:
-    image: ''
+  signaloneui:
+    image: '322456/signaloneui:dev'
+    ports:
+      - "80:80"
+    depends_on:
+      - signaloneapi
+  signaloneapi:
+    image: '322456/signaloneapi:dev'
+    volumes:
+      - ./data/issues:/data
+    depends_on:
+      - signalonemlworker
+    ports:
+      - "8000:8000"
+  signalonemlworker:
+    image: '322456/signalonemlworker:dev'
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/issues:/data
+    depends_on:
+      - qdrant
   qdrant:
-    image: ''
+    image: 322456/qdrant-prepopulated:dev
+    ports:
+      - "6333:6333"
+      - "6334:6334"

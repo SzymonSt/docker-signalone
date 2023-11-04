@@ -6,7 +6,7 @@ from mlworker.jobs import resource_usage_anomaly, container_error_scan
 
 def main():
     # init
-    db = sqlite3.connect("./api/issuesdb/issues.db")
+    db = sqlite3.connect("/data/issues.db")
     db.execute("""CREATE TABLE IF NOT EXISTS issues (
                 id TEXT,
                 container_id TEXT,
@@ -20,7 +20,7 @@ def main():
     db.close()
 
     # schedule.every(5).seconds.do(resource_usage_anomaly)
-    schedule.every(10).seconds.do(container_error_scan)                                    
+    schedule.every(5).seconds.do(container_error_scan)                                    
 
     while True:
         schedule.run_pending()

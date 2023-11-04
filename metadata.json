@@ -9,7 +9,7 @@
   "ui": {
     "dashboard-tab": {
       "title": "Signal0ne",
-      "src": "./src/index.html",
+      "src": "index.html",
       "root": "ui"
     }
   }

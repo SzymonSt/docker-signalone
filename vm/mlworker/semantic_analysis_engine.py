@@ -24,6 +24,8 @@ class SemanticAnalysisEngine:
             while status != 200:
                 print("Retrieving embeddings...")
                 ctxvec, status = self.hf_issues_inference_model.get_embeddings(embeddings_prompt)
+                if status != 200:
+                    print("Retrival failed. Reason: {}".format(ctxvec))
             print("Retrival complete")
             context = vector_search(self.qdrant_client, ctxvec)
             status = 0
@@ -33,6 +35,8 @@ class SemanticAnalysisEngine:
                     mess, status = self.hf_issues_inference_model.predict(prompt=prompt_template_state.format(
                         issue=str(issue), 
                         context=context[0].payload['possible_solution']))
+                    if status != 200:
+                        print("Retrival failed. Reason: {}".format(mess))
                 print("Prediction complete")
             elif issue['issue_type'] == "anomaly":
                 while status != 200:

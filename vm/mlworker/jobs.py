@@ -26,7 +26,7 @@ im = IssuesManager()
 
 def resource_usage_anomaly():
     print("Running resource usage anomaly detection")
-    dc = DockerClient().from_env()
+    dc = DockerClient('unix://var/run/docker.sock')
     running_containers = dc.containers.list(all=False)
     for container in running_containers:
         issues = []
