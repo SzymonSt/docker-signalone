@@ -32,7 +32,7 @@ prompt_template_state = B_SYS+"""Assistant is a expert JSON builder and on-call 
        2023-10-14 15:48:53     raise ConnectionError(e, request=request)
        2023-10-14 15:48:53 requests.exceptions.ConnectionError: HTTPConnectionPool(host='status', port=8101): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f16ee873820>: Failed to resolve 'status' ([Errno -2] Name or service not known)"))
  CONTEXT: containers are connected using dns name
- Assistant: {{"issue": "Caused by NameResolutionError(Failed to resolve 'status' [Errno -2] Name or service not known", "solutions":["If you are trying to connect to service running in another container, make sure you are using the correct container name or link the containers using `--link` option]"}}
+ Assistant: {{"issue": "Caused by NameResolutionError(Failed to resolve 'status' [Errno -2] Name or service not known", "solutions":["If you are trying to connect to service running in another container, make sure you are using the correct container name or link the containers using `--link` option]", "Issue is located in main.py file on line 7, where requests.get(url='http://status:8101') is trying to connect to service running in another container, but it can't resolve the dns name status. Make sure you are using the correct container name"]}}
 
  Here is the latest conversation between Assistant and User."""+E_SYS+B_INST+"""
  Respond to the following in JSON "issue" and "solutions" values with min 2 and max 4 solutions.

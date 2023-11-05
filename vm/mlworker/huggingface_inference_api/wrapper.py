@@ -18,7 +18,7 @@ class HuggingFaceInferenceApiWrapper():
         self.feature_extraction_model_name = FEATURE_EXTRACTION_MODEL_NAME
         self.api_key = api_key
         self.global_params = {
-            "max_new_tokens": 512,
+            "max_new_tokens": 1024,
             "return_full_text": False,
             "repetition_penalty":1.1,
             "temperature": 0.01,
