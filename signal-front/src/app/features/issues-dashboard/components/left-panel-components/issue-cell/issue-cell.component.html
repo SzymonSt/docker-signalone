@@ -1,4 +1,4 @@
-<div class="issue-container">
+<div class="issue-container" [ngClass]="isSelected ? 'selected' : ''">
     <div class="row align-items-center">
         <div class="col-1">
             <ng-container [ngSwitch]="issue.issueSeverity">

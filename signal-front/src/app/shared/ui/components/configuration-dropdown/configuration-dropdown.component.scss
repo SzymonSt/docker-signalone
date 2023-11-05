@@ -1,0 +1,33 @@
+.dropdown {
+  button.dropdown-toggle {
+    border: none;
+    color: var(--black) !important;
+
+    &::after {
+      display: none;
+    }
+
+    &:hover {
+      background-color: transparent !important;
+      color: var(--black) !important;
+    }
+  }
+
+  .btn.show {
+    color: var(--black)
+  }
+
+  .dropdown-menu {
+    width: 350px;
+    padding: 16px;
+    border-radius: 12px;
+    border-color: var(--light-bright);
+    border-width: 2px;
+
+    .submit-button {
+      display: block;
+      margin-left: auto;
+      padding: 12px;
+    }
+  }
+}

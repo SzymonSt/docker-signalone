@@ -13,7 +13,14 @@ export class IssuesListComponent {
   @Output()
   public viewIssue: EventEmitter<IssueDTO> = new EventEmitter<IssueDTO>()
 
+  public selectedIssueId: string;
+
   constructor() {
+  }
+
+  public selectIssue(issue: IssueDTO): void {
+    this.selectedIssueId = issue.id;
+    this.viewIssue.emit(issue);
   }
 }
   

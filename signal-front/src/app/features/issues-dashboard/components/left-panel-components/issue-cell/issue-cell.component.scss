@@ -4,6 +4,12 @@
   border-radius: 8px;
   margin-top: 16px;
   cursor: pointer;
+  transition: .5s;
+
+  &.selected, &:hover {
+    background-color: var(--pale);
+    border-color: var(--primary);
+  }
 
   p {
     color: var(--black);

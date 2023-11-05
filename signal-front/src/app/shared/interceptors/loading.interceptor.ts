@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { ApplicationStateService } from 'app/shared/services/ApplicationStateService';
+import { ApplicationStateService } from 'app/shared/services/application-state.service';
 import { catchError, finalize, Observable, throwError } from 'rxjs';
 
 @Injectable()
