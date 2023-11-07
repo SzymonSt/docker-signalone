@@ -1,12 +1,16 @@
 <div id="header">
     <h1>{{'UI.HEADER.TITLE' | translate}}</h1>
-    <div *ngIf="(activeLanguage$ | async) as activeLanguage" class="flags-container">
-        <img (click)="changeLanguage(LanguageVersion.EN)" [alt]="'UI.HEADER.US_FLAG_ALT' | translate"
-             [ngClass]="activeLanguage === LanguageVersion.EN ? 'active' :''"
-             class="me-4"
-             src="assets/flag/US.png">
-        <img (click)="changeLanguage(LanguageVersion.PL)" [alt]="'UI.HEADER.PL_FLAG_ALT' | translate"
-             [ngClass]="activeLanguage === LanguageVersion.PL ? 'active' :''"
-             src="assets/flag/PL.png">
+    <div class="d-flex">
+        <app-configuration-dropdown></app-configuration-dropdown>
+        <div *ngIf="(activeLanguage$ | async) as activeLanguage" class="flags-container ms-4">
+            <img (click)="changeLanguage(LanguageVersion.EN)" [alt]="'UI.HEADER.US_FLAG_ALT' | translate"
+                 [ngClass]="activeLanguage === LanguageVersion.EN ? 'active' :''"
+                 class="me-4"
+                 src="assets/flag/US.png">
+            <img (click)="changeLanguage(LanguageVersion.PL)" [alt]="'UI.HEADER.PL_FLAG_ALT' | translate"
+                 [ngClass]="activeLanguage === LanguageVersion.PL ? 'active' :''"
+                 src="assets/flag/PL.png">
+        </div>
     </div>
+
 </div>

@@ -1,6 +1,7 @@
 {
   "VALIDATION": {
-    "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do"
+    "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do",
+    "REQUIRED": "To pole jest wymagane"
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
@@ -21,10 +22,15 @@
   },
   "UI": {
     "ERROR": "Błąd",
+    "SUBMIT": "Wyślij",
+    "SUCCESS": "Klucz API został zmieniony",
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "Amerykańska flaga",
       "PL_FLAG_ALT": "Polska flaga"
+    },
+    "CONFIGURATION_DROPDOWN": {
+      "API_KEY": "Klucz API"
     }
   },
   "FEATURES": {

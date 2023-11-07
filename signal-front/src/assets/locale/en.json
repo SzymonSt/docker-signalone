@@ -1,6 +1,7 @@
 {
   "VALIDATION": {
-    "DATE_RANGE_INVALID": "The withdrawal date from cannot be later than the withdrawal date to"
+    "DATE_RANGE_INVALID": "The withdrawal date from cannot be later than the withdrawal date to",
+    "REQUIRED": "This field is required"
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",
@@ -17,14 +18,17 @@
       "INFO": "Information"
     }
   },
-  "ERRORS": {
-  },
   "UI": {
     "ERROR": "Error",
+    "SUBMIT": "Submit",
+    "SUCCESS": "API Key has changed",
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "American flag",
       "PL_FLAG_ALT": "Polish flag"
+    },
+    "CONFIGURATION_DROPDOWN": {
+      "API_KEY": "API Key"
     }
   },
   "FEATURES": {

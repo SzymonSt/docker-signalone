@@ -13,6 +13,9 @@ export class IssueCellComponent {
   @Input()
   public issue: IssueDTO
 
+  @Input()
+  public isSelected: boolean;
+
   constructor() {
   }
 }

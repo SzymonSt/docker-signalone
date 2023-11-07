@@ -7,20 +7,27 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoadingInterceptor } from 'app/shared/interceptors/loading.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandlerInterceptor } from 'app/shared/interceptors/error-handler.interceptor';
+import {
+  ConfigurationDropdownComponent
+} from 'app/shared/ui/components/configuration-dropdown/configuration-dropdown.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     LoaderComponent,
-    HeaderComponent
+    HeaderComponent,
+    ConfigurationDropdownComponent
   ],
   imports: [
     CommonModule,
     TranslateModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FormsModule
   ],
   exports: [
     LoaderComponent,
-    HeaderComponent
+    HeaderComponent,
+    ConfigurationDropdownComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },

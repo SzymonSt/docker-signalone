@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { LanguageVersion } from 'app/shared/enum/LanguageVersion';
-import { LangugageService } from 'app/shared/services/LanguageService';
+import { LangugageService } from 'app/shared/services/language.service';
 import { Observable } from 'rxjs';
-import { ApplicationStateService } from 'app/shared/services/ApplicationStateService';
+import { ApplicationStateService } from 'app/shared/services/application-state.service';
 
 @Component({
   selector: 'app-header',

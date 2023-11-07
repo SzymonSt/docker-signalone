@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { LangugageService } from './LanguageService';
+import { LangugageService } from './language.service';
 import { LanguageVersion } from 'app/shared/enum/LanguageVersion';
 import { ApplicationConfig } from 'app/config/ApplicationConfig';
 

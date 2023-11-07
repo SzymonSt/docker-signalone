@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from common.issues_manager import IssuesManager
+from typing import List
+
 class Issue(BaseModel):
     id: str
     containerId: str
@@ -14,7 +16,7 @@ class Issue(BaseModel):
     isResolved: bool
     timestamp: str
     issue: str
-    solutions: list[str]
+    solutions: List[str]
 
 def main():
     load_dotenv()
@@ -26,7 +28,7 @@ def main():
         allow_credentials=True,
         allow_methods=['*'],)
 
-    @app.get('/issues', response_model=list[Issue])
+    @app.get('/issues', response_model=List[Issue])
     async def analyze(
         containerId: str = None, 
         issueType: str = None,
@@ -73,7 +75,7 @@ def main():
         
         return parsed_issues
 
-    @app.get('/containers', response_model=list[str])
+    @app.get('/containers', response_model=List[str])
     async def get_containers():
         parsed_containers = []
         containers = issues_manager.get_containers()
