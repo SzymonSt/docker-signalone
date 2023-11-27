@@ -16,7 +16,7 @@ class DataGenerator:
         self.client = OpenAI()
 
     def generate_logs(self):
-        prompt = """Your job is to create a synthetic dataset for training of bart model for log summarization of logs and their summaries. Create 5 log summary pair of synthetic logs for any technical anomaly and create their summaries in pairs. Create long logs of about 10-15 lines and then summarize them
+        prompt = """Your job is to create a synthetic dataset for training of bart model for log summarization of logs and their summaries. Create 5 log summary pair of long synthetic logs for docker containers and create their summaries in pairs. Create long logs of about 10-15 lines and then summarize them
 
                     sample
                     {"logs":"Logs of any software which are failing with error code, function name and error code"
@@ -68,8 +68,8 @@ if __name__ == "__main__":
         
         writer.writeheader()
 
-        # Generate and write data 200 times. So, we will have 200 * 5 logs and summaries
-        for _ in tqdm(range(200), desc="Generating data", unit=" logs"):
+        # Generate and write data multiple times. So, we will have X * 5 logs and summaries
+        for _ in tqdm(range(110), desc="Generating data", unit=" logs"):
             logs, summary = data_generator.generate_logs()
             if logs is not None and summary is not None:
                 for log, sum in zip(logs, summary):
