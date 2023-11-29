@@ -15,17 +15,16 @@ from common.issues_manager import IssuesManager
 baselines = {}
 parsed_stats = {}
 load_dotenv()
-hf_api_key = os.getenv("HF_API_KEY")
-qclient_url = os.getenv("QCLIENT_URL")
 main_model_name = os.getenv("HF_MAIN_MODEL_NAME")
+hf_api_key = os.getenv("HF_API_KEY")
 sanalysis = SemanticAnalysisEngine(
     main_model_name=main_model_name,
-    hf_api_key= hf_api_key,
-    qclient_url=qclient_url
+    hf_api_key=hf_api_key
 )
 im = IssuesManager()
 logging.basicConfig(filename='mlworker.log',level=logging.DEBUG)
 
+#Anomaly detection under reconstruction
 def resource_usage_anomaly():
     print("Running resource usage anomaly detection")
     logging.info("Running resource usage anomaly detection")
