@@ -2,6 +2,7 @@ import os
 import json
 import csv
 import shutil
+import requests
 
 from helpers import helpers
 
@@ -37,8 +38,39 @@ class SourceSubtool(Subtool):
 
     def __scrapeStackOverflow(self):
         print("Scraping StackOverflow")
-        raise NotImplementedError()
-    
+        body_log_keywords = ["logs are showing", "logs I get"]
+        body_logs_validators = ["stderr", "ERROR", "WARN", "WARNING",
+                                 "Exception", "exception", "error", "Error", "warn",
+                                   "Warn", "Warning", "signal" , "INFO", "info", "Info",
+                                   "exit", "code", "Code", "CODE", "traceback", "Traceback"]
+        log_markdown_begin = ["\r\n```\r\n", "`"]
+        log_markdown_end = ["\r\n```\r\n", "`"]
+        query = "https://api.stackexchange.com/2.3/search/advanced?pagesize=25&page={}&order=desc&sort=creation&answers=1&site=stackoverflow&filter=!*236eb_eL9rai)MOSNZ-6D3Q6ZKb0buI*IVotWaTb&body={}"
+        discovered_logs = []
+        pages = 25
+        page = 1
+        for keyword in body_log_keywords:
+            page = 1
+            while page <= pages:
+                response = requests.get(query.format(page, keyword))
+                if response.status_code == 200:
+                    response = json.loads(response.text)
+                    for item in response["items"]:
+                        body = item["body_markdown"]
+                        for lidx, log_begin in enumerate(log_markdown_begin):
+                            while log_begin in body:
+                                body_idx_start_seq = body.find(log_begin) + len(log_begin)
+                                body_idx_end_seq = body[body_idx_start_seq:].find(log_markdown_end[lidx])
+                                log = body[body_idx_start_seq:body_idx_start_seq + body_idx_end_seq]
+                                if any(validator in log for validator in body_logs_validators):
+                                    discovered_logs.append(log)
+                                else:
+                                    body = body.replace(log_begin, "", 1)
+                                    body = body.replace(log_markdown_end[lidx], "", 1)
+                page += 1
+        self.__pushLogs(discovered_logs)
+                    
+                        
     def __scrapeGithub(self):
         print("Scraping Github")
         raise NotImplementedError()
