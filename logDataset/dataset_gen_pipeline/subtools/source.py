@@ -5,6 +5,7 @@ import shutil
 import requests
 
 from helpers import helpers
+from subtools.subtool import Subtool
 
 class SourceSubtool(Subtool):
     def execute(self, args):
@@ -27,11 +28,11 @@ class SourceSubtool(Subtool):
 
     def __push(self, args):
         if args.format == 'json':
-            self.__pushJsonLogs(args.log_files)
+            self.__pushJsonLogs(args.log_file)
         elif args.format == 'csv':
-            self.__pushCsvLogs(args.log_files)
+            self.__pushCsvLogs(args.log_file)
         elif args.format == 'plain':
-            self.__pushPlainLogs(args.log_files)
+            self.__pushPlainLogs(args.log_file)
     
     def __generate(self, args):
         self.__generateSyntheticSourceLogs(args.base_logs_file)
@@ -81,11 +82,17 @@ class SourceSubtool(Subtool):
     
     def __pushJsonLogs(self, logFile):
         print("Pushing JSON logs to sources")
-        key="body"
+        key="Body"
+        logs = []
         with open(logFile, 'r') as f:
-            logs = json.load(f.read())
+            rawlogs = json.load(f)
             f.close()
-        logs = [log[key] for log in logs]
+        for log in rawlogs:
+            try:
+                logs.append(log[key])
+            except KeyError:
+                print("Key {} not found in log".format(key))
+                continue
         self.__pushLogs(logs)
            
     def __pushCsvLogs(self, logFile):
@@ -122,15 +129,17 @@ class SourceSubtool(Subtool):
         current_file = file_template.replace('v', str(current_version))
         new_file  = file_template.replace('v', str(new_version))
         sources_path = '../sources/'
-        shutil.copyfile(sources_path + current_file, sources_path + new_file)
-        with open(sources_path + new_file, 'a', newline='') as f:
-            csv_writer = csv.writer(f)
+        shutil.copyfile(sources_path + current_file + '.csv', sources_path + new_file + '.csv')
+        with open(sources_path + new_file + '.csv', 'a') as f:
+            csv_writer = csv.writer(f, delimiter='\n')
             for log in log_batch:
-                csv_writer.writerow(log)
+                log = log.replace(',', ' ')
+                csv_writer.writerow([log])
     
     def __getNewSourceVersion(self, source_file_template):
         files = os.listdir('../sources')
-        files_matching_template = [file for file in files if file.startswith(source_file_template)].sort()
+        files_matching_template = [file for file in files if source_file_template in file]
+        files_matching_template.sort()
         if len(files_matching_template) == 0:
             return "v0.0.1"
         else:

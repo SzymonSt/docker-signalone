@@ -1,8 +1,12 @@
 import os
 import argparse
+from subtools.source import SourceSubtool
 
 def main():
     parsedArgs = parseArguments()
+    if parsedArgs.subtool == 'source':
+        source = SourceSubtool()
+        source.execute(parsedArgs)
 
 def parseArguments():
     parser = argparse.ArgumentParser()
