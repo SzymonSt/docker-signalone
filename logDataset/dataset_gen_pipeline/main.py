@@ -7,6 +7,8 @@ def main():
     if parsedArgs.subtool == 'source':
         source = SourceSubtool()
         source.execute(parsedArgs)
+    elif parsedArgs.subtool == 'dataset':
+        pass
 
 def parseArguments():
     parser = argparse.ArgumentParser()
