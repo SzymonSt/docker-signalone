@@ -36,8 +36,6 @@ def parseArguments():
                         choices=['json', 'csv', 'plain'])
     
     ## source generate
-    parser.add_argument("--base-logs-file", 
-                        help="path to log file to base generation on")
     
     ## dataset create
     parser.add_argument("--sources-cat",
@@ -61,13 +59,6 @@ def parseArguments():
                 f.close()
             except FileNotFoundError:
                 print("Log file not found")
-                exit(1)
-        elif args.action == 'generate':
-            try:
-                f = open(args.base_logs_file, 'r')
-                f.close()
-            except FileNotFoundError:
-                print("Base logs file not found")
                 exit(1)
         elif args.action == 'scrape' and args.source == 'docker':
             try:

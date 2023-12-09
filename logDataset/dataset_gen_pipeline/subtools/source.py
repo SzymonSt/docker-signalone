@@ -4,6 +4,9 @@ import csv
 import shutil
 import requests
 import html
+import openai
+import random
+import copy
 
 from helpers import helpers
 from subtools.subtool import Subtool
@@ -47,7 +50,7 @@ class SourceSubtool(Subtool):
             self.__pullElasticsearchLogs()
     
     def __generate(self, args):
-        self.__generateSyntheticSourceLogs(args.base_logs_file)
+        self.__generateSyntheticSourceLogs()
 
     def __scrapeStackOverflow(self):
         print("Scraping StackOverflow")
@@ -61,7 +64,7 @@ class SourceSubtool(Subtool):
         log_markdown_end = ["\r\n```\r\n", "`"]
         query = "https://api.stackexchange.com/2.3/search/advanced?pagesize=25&page={}&order=desc&sort=creation&answers=1&site=stackoverflow&filter=!*236eb_eL9rai)MOSNZ-6D3Q6ZKb0buI*IVotWaTb&body={}"
         discovered_logs = []
-        pages = 2
+        pages = 15
         page = 1
         for keyword in body_log_keywords:
             page = 1
@@ -96,10 +99,59 @@ class SourceSubtool(Subtool):
         print("Scraping Github")
         raise NotImplementedError()
     
-    def __generateSyntheticSourceLogs(self, baseLogsFile):
+    def __generateSyntheticSourceLogs(self):
         print("Generating synthetic source logs")
-        raise NotImplementedError()
-    
+        oai_client = openai.OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+        # get collected logs
+        collected_logs = []
+        sources_path = '../sources/'
+        files = os.listdir(sources_path)
+        files_matching_template = [file for file in files if 'collected_logs' in file]
+        files_matching_template.sort()
+        if len(files_matching_template) == 0:
+            print("No collected logs found")
+            exit(1)
+        else:
+            with open(sources_path + files_matching_template[-1], 'r') as f:
+                csv_reader = csv.reader(f)
+                collected_logs = [row for row in csv_reader]
+                f.close()
+
+        # generate synthetic logs
+        synthetic_logs = []
+        synthetic_logs_num = 10
+        prompt_template = [
+            {
+                "role": "user",
+                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
+            },
+            {
+                "role": "assistant",
+                "content": "{}"
+            },
+            {
+                "role": "user",
+                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
+            },
+            {
+                "role": "assistant",
+                "content": "{}"
+            },
+            {
+                "role": "user",
+                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
+            }
+        ]
+        for i in range(synthetic_logs_num): 
+            prompt = copy.deepcopy(prompt_template)
+            prompt[1]["content"] = prompt[1]["content"].format(random.choice(collected_logs))
+            prompt[3]["content"] = prompt[3]["content"].format(random.choice(collected_logs))
+            response = oai_client.chat.completions.create(
+             messages = prompt,
+             model="gpt-3.5-turbo"
+            ).choices[0].message.content
+            synthetic_logs.append(response)
+        self.__pushLogs(synthetic_logs, batch_size_def=1, file_template='synthetic_logs_v')
     def __pushJsonLogs(self, logFile):
         print("Pushing JSON logs to sources")
         key="Body"
@@ -130,7 +182,7 @@ class SourceSubtool(Subtool):
             f.close()
         self.__pushLogs(logs)
     
-    def __pushLogs(self, logs, batch_size_def=5):
+    def __pushLogs(self, logs, batch_size_def=5, file_template='collected_logs_v'):
         log_batch_string = ""
         batch_size = batch_size_def
         log_batch = []
@@ -143,7 +195,6 @@ class SourceSubtool(Subtool):
             log_batch_string += log + "\n"
         if log_batch_string != "":
             log_batch.append(log_batch_string)
-        file_template = 'collected_logs_v'
         current_version = self.__getNewSourceVersion(file_template)
         new_version = helpers.updateMinorVersion(current_version)
         current_file = file_template.replace('v', str(current_version))
