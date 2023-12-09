@@ -7,6 +7,7 @@ import html
 
 from helpers import helpers
 from subtools.subtool import Subtool
+from docker import DockerClient
 
 class SourceSubtool(Subtool):
     def execute(self, args):
@@ -26,6 +27,10 @@ class SourceSubtool(Subtool):
             self.__scrapeStackOverflow()
         elif args.source == 'github':
             self.__scrapeGithub()
+        elif args.source == 'docker':
+            self.__pullDockerLogs()
+        elif args.source == 'elasticsearch':
+            self.__pullElasticsearchLogs()
 
     def __push(self, args):
         if args.format == 'json':
@@ -34,6 +39,12 @@ class SourceSubtool(Subtool):
             self.__pushCsvLogs(args.log_file)
         elif args.format == 'plain':
             self.__pushPlainLogs(args.log_file)
+    
+    def __pull(self, args):
+        if args.source == 'docker':
+            self.__pullDockerLogs()
+        elif args.source == 'elasticsearch':
+            self.__pullElasticsearchLogs()
     
     def __generate(self, args):
         self.__generateSyntheticSourceLogs(args.base_logs_file)
@@ -144,6 +155,19 @@ class SourceSubtool(Subtool):
             for log in log_batch:
                 log = self.__logCleanup(log)
                 csv_writer.writerow([log])
+
+    def __pullDockerLogs(self):
+        print("Pulling Docker logs")
+        dc = DockerClient()
+        containers = dc.containers.list(all=True)
+        for container in containers:
+            raw_logs = container.logs()
+            logs = raw_logs.decode('utf-8').split('\n')
+            self.__pushLogs(logs)
+    
+    def __pullElasticsearchLogs(self):
+        print("Pulling Elasticsearch logs")
+        raise NotImplementedError()
     
     def __getNewSourceVersion(self, source_file_template):
         files = os.listdir('../sources')

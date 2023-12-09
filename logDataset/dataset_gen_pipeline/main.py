@@ -1,6 +1,7 @@
 import os
 import argparse
 from subtools.source import SourceSubtool
+from docker import DockerClient
 
 def main():
     parsedArgs = parseArguments()
@@ -16,7 +17,7 @@ def parseArguments():
                         help="tool to interact with datasets or sources", 
                         choices=['dataset', 'source'])
     parser.add_argument("--action", help="action to perform on the tool", choices=[
-        'scrape', 'push', 
+        'scrape', 'push',
         'generate', 'create',
         'merge'
         ])
@@ -24,7 +25,7 @@ def parseArguments():
     ## source scrape
     parser.add_argument("--source", 
                         help="source to scrape", 
-                        choices=['stackoverflow', 'github'], 
+                        choices=['stackoverflow', 'github', 'docker', 'elasticsearch'], 
                         default='stackoverflow')
 
     ## source push
@@ -67,6 +68,13 @@ def parseArguments():
                 f.close()
             except FileNotFoundError:
                 print("Base logs file not found")
+                exit(1)
+        elif args.action == 'scrape' and args.source == 'docker':
+            try:
+                dc = DockerClient()
+                dc.close()
+            except:
+                print("Docker client connection error")
                 exit(1)
         
     return args
