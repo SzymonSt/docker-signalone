@@ -119,7 +119,9 @@ class SourceSubtool(Subtool):
 
         # generate synthetic logs
         synthetic_logs = []
-        synthetic_logs_num = 10
+        synthetic_logs_num = 500
+        save_batch_size = 10
+        counter = 0
         prompt_template = [
             {
                 "role": "user",
@@ -137,6 +139,13 @@ class SourceSubtool(Subtool):
              top_p=0.9,
             ).choices[0].message.content
             synthetic_logs.append(response)
+            print("Generated {} out of {} logs".format(i+1, synthetic_logs_num))
+            if counter >= save_batch_size:
+                self.__pushLogs(synthetic_logs, batch_size_def=1, file_template='synthetic_logs_v')
+                synthetic_logs = []
+                counter = 0
+                print("Saved {} logs".format(save_batch_size))
+            counter += 1
         self.__pushLogs(synthetic_logs, batch_size_def=1, file_template='synthetic_logs_v')
     def __pushJsonLogs(self, logFile):
         print("Pushing JSON logs to sources")
