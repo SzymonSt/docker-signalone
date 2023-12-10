@@ -1,75 +1,64 @@
 log
-
 "2023-11-15T19:39:24.435923864Z stdout F 2023-11-15 19:39:24 435 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1617' ;  time taken: 0:00:00.000479
 2023-11-15T19:39:24.440429555Z stderr F 2023-11-15 19:39:24 440 INFO [__main__] [server.py:32] [trace_id=c32812b3b69e18650f2b6e7267c1535e span_id=7e34b52f90fcd0e3 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1618' ;  time taken: 0:00:00.000384
 2023-11-15T19:39:24.440456055Z stdout F 2023-11-15 19:39:24 440 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1618' ;  time taken: 0:00:00.000384
 2023-11-15T19:39:25.043791596Z stdout F 2023-11-15 19:39:25 043 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1619' ;  time taken: 0:00:00.000503
 2023-11-15T19:39:25.047858988Z stdout F 2023-11-15 19:39:25 047 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1620' ;  time taken: 0:00:00.000385
 "
-
 "2023-11-15T19:39:25.448656118Z stderr F 2023-11-15 19:39:25 448 INFO [__main__] [server.py:32] [trace_id=7bfad0de69d419975edbe68ea5ef100a span_id=972a6b0e1b1925e7 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1622' ;  time taken: 0:00:00.000573
 2023-11-15T19:39:26.058109547Z stderr F 2023-11-15 19:39:26 057 INFO [__main__] [server.py:32] [trace_id=f1319aa708d9523d573c0e50ff346805 span_id=3bf30d056d653b83 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1623' ;  time taken: 0:00:00.000482
 2023-11-15T19:39:26.458854877Z stdout F 2023-11-15 19:39:26 458 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1625' ;  time taken: 0:00:00.000455
 2023-11-15T19:39:27.088616067Z stdout F 2023-11-15 19:39:27 088 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1628' ;  time taken: 0:00:00.000505
 2023-11-15T19:39:27.093945357Z stdout F 2023-11-15 19:39:27 093 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1627' ;  time taken: 0:00:00.000439
 "
-
 "2023-11-15T19:39:27.093988257Z stderr F 2023-11-15 19:39:27 093 INFO [__main__] [server.py:32] [trace_id=c603b96bcc896e1a0e62d64052749b2e span_id=7382ab4fbb085713 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1627' ;  time taken: 0:00:00.000439
 2023-11-15T19:39:27.470718933Z stdout F 2023-11-15 19:39:27 470 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1629' ;  time taken: 0:00:00.000541
 2023-11-15T19:39:27.470799533Z stderr F 2023-11-15 19:39:27 470 INFO [__main__] [server.py:32] [trace_id=b771aa195b202e35d7f43bec123dd3b5 span_id=5b641050f1ee8f8d resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1629' ;  time taken: 0:00:00.000541
 2023-11-15T19:39:27.471739131Z stdout F 2023-11-15 19:39:27 471 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1630' ;  time taken: 0:00:00.000352
 2023-11-15T19:39:27.471852131Z stderr F 2023-11-15 19:39:27 471 INFO [__main__] [server.py:32] [trace_id=506b3b44fec17fe5c3bf6edf247e091c span_id=5588e2a335b00b29 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1630' ;  time taken: 0:00:00.000352
 "
-
 "2023-11-15T19:39:28.093110237Z stdout F 2023-11-15 19:39:28 092 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1631' ;  time taken: 0:00:00.001803
 2023-11-15T19:39:28.093634536Z stderr F 2023-11-15 19:39:28 093 INFO [__main__] [server.py:32] [trace_id=74837f49e723c113e41fe5ab238c4d6f span_id=571797e4392e0ea7 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1632' ;  time taken: 0:00:00.000357
 2023-11-15T19:39:28.478849696Z stderr F 2023-11-15 19:39:28 478 INFO [__main__] [server.py:32] [trace_id=86adae97ca30b0e9260b90ef1be2c54b span_id=1085c3cfa9a90bf1 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1634' ;  time taken: 0:00:00.000500
 2023-11-15T19:39:28.478886696Z stdout F 2023-11-15 19:39:28 478 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1634' ;  time taken: 0:00:00.000500
 2023-11-15T19:39:28.485297884Z stderr F 2023-11-15 19:39:28 484 INFO [__main__] [server.py:32] [trace_id=7506fb2ae802370bc3c7681fb9bd0b36 span_id=067155420108dbf0 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1633' ;  time taken: 0:00:00.000408
 "
-
 "2023-11-15T19:39:28.485343784Z stdout F 2023-11-15 19:39:28 484 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1633' ;  time taken: 0:00:00.000408
 2023-11-15T19:39:29.117927169Z stdout F 2023-11-15 19:39:29 117 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1636' ;  time taken: 0:00:00.000540
 2023-11-15T19:39:29.122659459Z stdout F 2023-11-15 19:39:29 122 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1635' ;  time taken: 0:00:00.000435
 2023-11-15T19:39:29.122712959Z stderr F 2023-11-15 19:39:29 122 INFO [__main__] [server.py:32] [trace_id=7171bb9ed90a6544e5b4fcf4ca1c779d span_id=3e2a4e41590a03b4 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1635' ;  time taken: 0:00:00.000435
 2023-11-15T19:39:29.478765975Z stdout F 2023-11-15 19:39:29 478 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1637' ;  time taken: 0:00:00.000596
 "
-
 "2023-11-15T19:39:07.277970915Z stdout F 2023-11-15 19:39:07 277 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1549' ;  time taken: 0:00:00.000370
 2023-11-15T19:39:07.853832448Z stderr F 2023-11-15 19:39:07 851 INFO [__main__] [server.py:32] [trace_id=4a0b4cee0d886f3aff603b43781b3cf3 span_id=efe9eaa0281ec00f resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1551' ;  time taken: 0:00:00.000468
 2023-11-15T19:39:08.288313692Z stdout F 2023-11-15 19:39:08 287 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1553' ;  time taken: 0:00:00.000467
 2023-11-15T19:39:08.833554658Z stderr F 2023-11-15 19:39:08 833 INFO [__main__] [server.py:32] [trace_id=b323c184e34eaa36aec742e6f0008132 span_id=177301009f5ab926 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1555' ;  time taken: 0:00:00.000420
 2023-11-15T19:39:08.837840649Z stdout F 2023-11-15 19:39:08 837 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1556' ;  time taken: 0:00:00.000368
 "
-
 "2023-11-15T19:39:08.837965149Z stderr F 2023-11-15 19:39:08 837 INFO [__main__] [server.py:32] [trace_id=774428130f76d609e4f898f2acac5f92 span_id=106282712f9c5611 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1556' ;  time taken: 0:00:00.000368
 2023-11-15T19:39:09.279974629Z stdout F 2023-11-15 19:39:09 279 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1557' ;  time taken: 0:00:00.000528
 2023-11-15T19:39:09.282985723Z stdout F 2023-11-15 19:39:09 282 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1558' ;  time taken: 0:00:00.000484
 2023-11-15T19:39:09.283245222Z stderr F 2023-11-15 19:39:09 282 INFO [__main__] [server.py:32] [trace_id=5cbd543671d61a56b8f797d7490e4a8f span_id=707241bf88d7efa2 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1558' ;  time taken: 0:00:00.000484
 2023-11-15T19:39:09.842939258Z stderr F 2023-11-15 19:39:09 842 INFO [__main__] [server.py:32] [trace_id=c9f0afb03913c525af8f75f065851e9d span_id=33fcb196e7defd3d resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1560' ;  time taken: 0:00:00.000385
 "
-
 "2023-11-15T19:39:09.847275149Z stdout F 2023-11-15 19:39:09 847 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1559' ;  time taken: 0:00:00.000313
 2023-11-15T19:39:09.847351548Z stderr F 2023-11-15 19:39:09 847 INFO [__main__] [server.py:32] [trace_id=bcf0c6d50f38b9ad68b7b30458db63d0 span_id=49bcaf0f884b8a8b resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1559' ;  time taken: 0:00:00.000313
 2023-11-15T19:39:10.288172031Z stdout F 2023-11-15 19:39:10 287 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1561' ;  time taken: 0:00:00.000435
 2023-11-15T19:39:10.29373162Z stdout F 2023-11-15 19:39:10 293 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1562' ;  time taken: 0:00:00.000435
 2023-11-15T19:39:10.29375412Z stderr F 2023-11-15 19:39:10 293 INFO [__main__] [server.py:32] [trace_id=146b315b821c2cdc4c9e99b1271e1ce5 span_id=a179414004ccb0ca resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1562' ;  time taken: 0:00:00.000435
 "
-
 "2023-11-15T19:39:10.859156843Z stdout F 2023-11-15 19:39:10 858 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1564' ;  time taken: 0:00:00.000556
 2023-11-15T19:39:11.309117007Z stdout F 2023-11-15 19:39:11 308 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1566' ;  time taken: 0:00:00.000504
 2023-11-15T19:39:11.314515696Z stdout F 2023-11-15 19:39:11 314 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1565' ;  time taken: 0:00:00.000337
 2023-11-15T19:39:11.953005067Z stderr F 2023-11-15 19:39:11 952 INFO [__main__] [server.py:32] [trace_id=7b3f0e63acd3b734017e3cb1a97db8aa span_id=42c631f9025b13f7 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=True] - executed query: SELECT * FROM profiles WHERE id = '1568' ;  time taken: 0:00:00.000541
 2023-11-15T19:39:11.961062051Z stdout F 2023-11-15 19:39:11 960 - __main__ - INFO - executed query: SELECT * FROM profiles WHERE id = '1567' ;  time taken: 0:00:00.000414
 "
-
 "2023-11-15T20:14:32.653713483Z stderr F 2023-11-15 20:14:32 653 ERROR [grpc._cython.cygrpc] [events.py:80] [trace_id=0 span_id=0 resource.service.name=00688f8f-1904-429a-80b9-06b2c92df17d trace_sampled=False] - Unexpected [TypeError] raised by servicer method [/profile.ProfileService/SetProfile]
 2023-11-15T20:14:32.653722583Z stderr F Traceback (most recent call last):
 2023-11-15T20:14:32.653726383Z stderr F   File ""src/python/grpcio/grpc/_cython/_cygrpc/aio/server.pyx.pxi""  line 682  in grpc._cython.cygrpc._handle_exceptions
 2023-11-15T20:14:32.653730683Z stderr F   File ""src/python/grpcio/grpc/_cython/_cygrpc/aio/server.pyx.pxi""  line 802  in _handle_rpc
 2023-11-15T20:14:32.653735483Z stderr F   File ""src/python/grpcio/grpc/_cython/_cygrpc/aio/server.pyx.pxi""  line 547  in _handle_unary_unary_rpc
 "
-
 "2023-11-15T20:14:32.653739583Z stderr F   File ""src/python/grpcio/grpc/_cython/_cygrpc/aio/server.pyx.pxi""  line 427  in _finish_handler_with_unary_response
 2023-11-15T20:14:32.653743283Z stderr F   File ""src/python/grpcio/grpc/_cython/_cygrpc/aio/common.pyx.pxi""  line 52  in grpc._cython.cygrpc.serialize
 2023-11-15T20:14:32.653747383Z stderr F TypeError: descriptor 'SerializeToString' for 'google._upb._message.Message' objects doesn't apply to a 'NoneType' object

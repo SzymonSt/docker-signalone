@@ -147,6 +147,7 @@ class SourceSubtool(Subtool):
                 print("Saved {} logs".format(save_batch_size))
             counter += 1
         self.__pushLogs(synthetic_logs, batch_size_def=1, file_template='synthetic_logs_v')
+        oai_client.close()
     def __pushJsonLogs(self, logFile):
         print("Pushing JSON logs to sources")
         key="Body"
@@ -190,7 +191,7 @@ class SourceSubtool(Subtool):
             log_batch_string += log + "\n"
         if log_batch_string != "":
             log_batch.append(log_batch_string)
-        current_version = self.__getNewSourceVersion(file_template)
+        current_version = helpers.getNewVersion(file_template)
         new_version = helpers.updateMinorVersion(current_version)
         current_file = file_template.replace('v', str(current_version))
         new_file  = file_template.replace('v', str(new_version))
@@ -214,15 +215,6 @@ class SourceSubtool(Subtool):
     def __pullElasticsearchLogs(self):
         print("Pulling Elasticsearch logs")
         raise NotImplementedError()
-    
-    def __getNewSourceVersion(self, source_file_template):
-        files = os.listdir('../sources')
-        files_matching_template = [file for file in files if source_file_template in file]
-        files_matching_template.sort()
-        if len(files_matching_template) == 0:
-            return "v0.0.1"
-        else:
-            return files_matching_template[-1].split('_')[-1].replace('.csv', '')
         
     def __logCleanup(self, log):
         log = log.replace(',', ' ')

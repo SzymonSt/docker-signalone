@@ -1,6 +1,7 @@
 import os
 import argparse
 from subtools.source import SourceSubtool
+from subtools.dataset import DatasetSubtool
 from docker import DockerClient
 
 def main():
@@ -9,7 +10,8 @@ def main():
         source = SourceSubtool()
         source.execute(parsedArgs)
     elif parsedArgs.subtool == 'dataset':
-        pass
+        dataset = DatasetSubtool()
+        dataset.execute(parsedArgs)
 
 def parseArguments():
     parser = argparse.ArgumentParser()
