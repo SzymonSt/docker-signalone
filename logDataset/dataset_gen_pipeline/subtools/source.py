@@ -123,32 +123,18 @@ class SourceSubtool(Subtool):
         prompt_template = [
             {
                 "role": "user",
-                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
-            },
-            {
-                "role": "assistant",
-                "content": "{}"
-            },
-            {
-                "role": "user",
-                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
-            },
-            {
-                "role": "assistant",
-                "content": "{}"
-            },
-            {
-                "role": "user",
-                "content": "Generate a stream of log messages from production application. With attention to details like log level, log message, timestamp, function namesm, endpoints, etc."
+                "content": "Generate log message from application written in any language. \n Examples: \n {} \n {} \n {}"
             }
         ]
         for i in range(synthetic_logs_num): 
             prompt = copy.deepcopy(prompt_template)
-            prompt[1]["content"] = prompt[1]["content"].format(random.choice(collected_logs))
-            prompt[3]["content"] = prompt[3]["content"].format(random.choice(collected_logs))
+            prompt[0]["content"] = prompt[0]["content"].format(random.choice(collected_logs), random.choice(collected_logs), random.choice(collected_logs))
             response = oai_client.chat.completions.create(
              messages = prompt,
-             model="gpt-3.5-turbo"
+             model="gpt-3.5-turbo",
+             max_tokens=350,
+             temperature=1.8,
+             top_p=0.9,
             ).choices[0].message.content
             synthetic_logs.append(response)
         self.__pushLogs(synthetic_logs, batch_size_def=1, file_template='synthetic_logs_v')
