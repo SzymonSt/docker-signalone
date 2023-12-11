@@ -1,6 +1,8 @@
 import os
 import argparse
 from subtools.source import SourceSubtool
+from subtools.dataset import DatasetSubtool
+from docker import DockerClient
 
 def main():
     parsedArgs = parseArguments()
@@ -8,7 +10,8 @@ def main():
         source = SourceSubtool()
         source.execute(parsedArgs)
     elif parsedArgs.subtool == 'dataset':
-        pass
+        dataset = DatasetSubtool()
+        dataset.execute(parsedArgs)
 
 def parseArguments():
     parser = argparse.ArgumentParser()
@@ -16,7 +19,7 @@ def parseArguments():
                         help="tool to interact with datasets or sources", 
                         choices=['dataset', 'source'])
     parser.add_argument("--action", help="action to perform on the tool", choices=[
-        'scrape', 'push', 
+        'scrape', 'push',
         'generate', 'create',
         'merge'
         ])
@@ -24,7 +27,7 @@ def parseArguments():
     ## source scrape
     parser.add_argument("--source", 
                         help="source to scrape", 
-                        choices=['stackoverflow', 'github'], 
+                        choices=['stackoverflow', 'github', 'docker', 'elasticsearch'], 
                         default='stackoverflow')
 
     ## source push
@@ -35,8 +38,6 @@ def parseArguments():
                         choices=['json', 'csv', 'plain'])
     
     ## source generate
-    parser.add_argument("--base-logs-file", 
-                        help="path to log file to base generation on")
     
     ## dataset create
     parser.add_argument("--sources-cat",
@@ -61,12 +62,12 @@ def parseArguments():
             except FileNotFoundError:
                 print("Log file not found")
                 exit(1)
-        elif args.action == 'generate':
+        elif args.action == 'scrape' and args.source == 'docker':
             try:
-                f = open(args.base_logs_file, 'r')
-                f.close()
-            except FileNotFoundError:
-                print("Base logs file not found")
+                dc = DockerClient()
+                dc.close()
+            except:
+                print("Docker client connection error")
                 exit(1)
         
     return args
