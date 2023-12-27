@@ -58,7 +58,7 @@ class DatasetSubtool(Subtool):
         synthetic_logs_num = len(synthetic_logs)
         counter = 0
         check_point = 0
-        save_batch_size = 5
+        save_batch_size = 25
         for lidx, rwlog in enumerate(synthetic_logs):
             try:
                 log = rwlog[0]
@@ -69,7 +69,6 @@ class DatasetSubtool(Subtool):
                 continue
             prompt = copy.deepcopy(prompt_template)
             prompt[0]["content"] = prompt[0]["content"].format(log)
-            print(prompt)
             response = oai_client.chat.completions.create(
              messages = prompt,
              model="gpt-3.5-turbo",
