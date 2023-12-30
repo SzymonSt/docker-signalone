@@ -1,8 +1,10 @@
 package main
 
 import (
-	"context"
 	"os"
+	"signal/helpers"
+	"signal/jobs"
+	"time"
 
 	"github.com/docker/docker/client"
 	"github.com/go-co-op/gocron/v2"
@@ -15,11 +17,22 @@ func main() {
 	logger.SetOutput(os.Stdout)
 
 	logger.Infof("Starting collector")
+	cfs := helpers.GetEnvVariables()
 	jscheduler, err := gocron.NewScheduler()
-	ctx := context.Background()
+	if err != nil {
+		logger.Fatalf("Failed to create scheduler: %v", err)
+	}
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		logger.Fatalf("Failed to create docker client: %v", err)
 	}
+	_, err = jscheduler.NewJob(
+		gocron.DurationJob(time.Second*15),
+		gocron.NewTask(jobs.ScanForErrors, cli, logger),
+	)
+	if err != nil {
+		logger.Fatalf("Failed to create job: %v", err)
+	}
+	jscheduler.Start()
 
 }

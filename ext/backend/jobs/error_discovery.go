@@ -46,6 +46,8 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger) {
 			}
 		}(cli, c, logger, &wg)
 	}
+
+	wg.Wait()
 }
 
 func isContainerInErrorState(state *types.ContainerState) bool {
