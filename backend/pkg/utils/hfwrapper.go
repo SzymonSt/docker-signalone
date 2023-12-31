@@ -1,24 +1,20 @@
-package hfwrapper
+package utils
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
 
-var DEFAULT_ZEPHYR_PROMPT_TEMPLATE = "<|user|>Summarize these logs and generate a single paragraph summary of what is happening in these logs in high technical detail: \n%s\n</s>\n<|assistant|>"
-
 type HfWrapper struct {
-	Url            string
-	ApiKey         string
-	Temperature    float64
-	TopK           int
-	TopP           float64
-	DoSample       bool
-	MaxNewTokens   int
-	PromptTemplate string
+	Url          string
+	ApiKey       string
+	Temperature  float64
+	TopK         int
+	TopP         float64
+	DoSample     bool
+	MaxNewTokens int
 }
 
 func NewHfWrapper(
@@ -28,21 +24,19 @@ func NewHfWrapper(
 	topK int, topP float64,
 	doSample bool, maxNewTokens int) *HfWrapper {
 	return &HfWrapper{
-		Url:            url,
-		ApiKey:         apiKey,
-		Temperature:    temperature,
-		TopK:           topK,
-		TopP:           topP,
-		DoSample:       doSample,
-		MaxNewTokens:   maxNewTokens,
-		PromptTemplate: DEFAULT_ZEPHYR_PROMPT_TEMPLATE,
+		Url:          url,
+		ApiKey:       apiKey,
+		Temperature:  temperature,
+		TopK:         topK,
+		TopP:         topP,
+		DoSample:     doSample,
+		MaxNewTokens: maxNewTokens,
 	}
 }
 
-func (hfw *HfWrapper) Predict(logs string) string {
-	prompt := fmt.Sprintf(hfw.PromptTemplate, logs)
+func (hfw *HfWrapper) Predict(input string) string {
 	payload := map[string]interface{}{
-		"prompt": prompt,
+		"prompt": input,
 		"parameters": map[string]interface{}{
 			"temperature":    hfw.Temperature,
 			"top_k":          hfw.TopK,
