@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"signalone/pkg/utils"
 
 	"github.com/gin-gonic/gin"
@@ -31,10 +32,10 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	// use inference engine to generate summary
+	generatedSummary := c.iEngine.LogSummarization(fmt.Sprintf(summarizationTaskPromptTemplate, logPayload.logs))
 	// IF PRO: use inference engine to generate solutions with sources
-	// IF NOT PRO: put new issue into database (user_id, issue_id, container_id, logs, summary)
-	// IF PRO: put new issue into database (user_id, issue_id, container_id, logs, summary, solution)
+	proposed_solutions := make([]string, 0)
+	//put new issue into database (user_id, issue_id, container_id, logs, summary, proposed_solutions)
 	ctx.JSON(200, gin.H{
 		"message": "Success",
 		"issueId": issueId,
