@@ -9,6 +9,8 @@ import (
 
 type HfWrapper struct {
 	Url          string
+	Api          string
+	Model        string
 	ApiKey       string
 	Temperature  float64
 	TopK         int
@@ -19,12 +21,16 @@ type HfWrapper struct {
 
 func NewHfWrapper(
 	url string,
+	api string,
+	model string,
 	apiKey string,
 	temperature float64,
 	topK int, topP float64,
 	doSample bool, maxNewTokens int) *HfWrapper {
 	return &HfWrapper{
 		Url:          url,
+		Api:          api,
+		Model:        model,
 		ApiKey:       apiKey,
 		Temperature:  temperature,
 		TopK:         topK,
@@ -49,8 +55,8 @@ func (hfw *HfWrapper) Predict(input string) string {
 	if err != nil {
 		panic(err)
 	}
-
-	req, err := http.NewRequest(hfw.Url, "application/json", bytes.NewBuffer(jsonData))
+	url := hfw.Url + "/" + hfw.Api + "/" + hfw.Model
+	req, err := http.NewRequest(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
@@ -68,33 +74,4 @@ func (hfw *HfWrapper) Predict(input string) string {
 		panic(err)
 	}
 	return string(body)
-}
-
-func (hfw *HfWrapper) Tokenize(input string) []float32 {
-	payload := map[string]interface{}{
-		"prompt": input,
-	}
-	jsonData, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
-
-	req, err := http.NewRequest(hfw.Url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		panic(err)
-	}
-	req.Header.Add("Authorization", "Bearer "+hfw.ApiKey)
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	var tokenized []float64
-	if err := json.NewDecoder(resp.Body).Decode(&tokenized); err != nil {
-		panic(err)
-	}
-	return tokenized
 }

@@ -10,10 +10,10 @@ type InferenceEngine struct {
 	DetectLogAnomalyTaskComponent components.DetectLogAnomalyTaskComponent
 }
 
-func NewInferenceEngine(hfWrapper *HfWrapper) *InferenceEngine {
+func NewInferenceEngine(hfWrapper *HfWrapper, ragwrapper *RagWrapper) *InferenceEngine {
 	return &InferenceEngine{
 		LogSummarizationTaksComponent: hfWrapper,
-		PredictSolutionTaskComponent:  nil,
+		PredictSolutionTaskComponent:  ragwrapper,
 		DetectLogAnomalyTaskComponent: nil,
 	}
 }
@@ -23,7 +23,7 @@ func (ie *InferenceEngine) LogSummarization(input string) string {
 }
 
 func (ie *InferenceEngine) PredictSolutions(input string) string {
-	logSummaryTokenized := ie.LogSummarizationTaksComponent.Tokenize(input)
+	logSummaryTokenized := ie.PredictSolutionTaskComponent.Tokenize(input)
 	solutionItems := ie.PredictSolutionTaskComponent.Predict(logSummaryTokenized)
 	prompt := "<|user|>...TBD" // add solutionItems to prompt
 	solutionsSummary := ie.LogSummarizationTaksComponent.Predict(prompt)
