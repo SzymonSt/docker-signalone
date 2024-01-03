@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"signalone/pkg/models"
 
 	pb "github.com/qdrant/go-client/qdrant"
 	"google.golang.org/grpc"
@@ -13,35 +14,41 @@ import (
 
 type RagWrapper struct {
 	vectorDbClient pb.PointsClient
+	collectionName string
+	retrivalLimit  uint64
 	hfw            *HfWrapper
 }
 
-func NewRagWrapper(vectorDbAddr string, hfw *HfWrapper) *RagWrapper {
+func NewRagWrapper(vectorDbAddr string, hfw *HfWrapper, collectionName string, retrivalLimit uint64) *RagWrapper {
 	conn, err := grpc.Dial(vectorDbAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
 	}
 	return &RagWrapper{
 		vectorDbClient: pb.NewPointsClient(conn),
+		collectionName: collectionName,
+		retrivalLimit:  retrivalLimit,
 		hfw:            hfw,
 	}
 }
 
-func (rw *RagWrapper) Predict(input []float32) []string {
+func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource {
 	ctx := context.Background()
-	collectionName := "resources"
 	searchResults, err := rw.vectorDbClient.Search(ctx, &pb.SearchPoints{
-		CollectionName: collectionName,
+		CollectionName: rw.collectionName,
 		Vector:         input,
-		Limit:          5,
+		Limit:          uint64(rw.retrivalLimit),
 	})
 	if err != nil {
 		panic(err)
 	}
 	results := searchResults.GetResult()
-	parsedResults := make([]string, 0)
+	parsedResults := make([]models.PredictedSolutionSource, 0)
 	for _, result := range results {
-		parsedResults = append(parsedResults, result.Payload["solution"].GetStringValue())
+		var parsedResult models.PredictedSolutionSource
+		payloadBytes, _ := json.Marshal(result.Payload)
+		json.Unmarshal(payloadBytes, &parsedResult)
+		parsedResults = append(parsedResults, parsedResult)
 	}
 	return parsedResults
 }
