@@ -7,25 +7,29 @@
 Signal0ne docker extension is a tool for debugging and monitoring containerized apps, which enables automated insights about failed containers and containers affected by resource usage anomalies.
 ![Alt text](image.png)
 
-## How to use
 
-To build extension run following command:
-```bash
-docker buildx build -t 322456/signalone-ext:dev  .
+## How to install release
+
+```
+docker extension install 322456/signalone-extension:latest
 ```
 
-To run extension:
-```bash
-docker extension install 322456/signalone-ext:dev
+## How to use locally
+
+### Prerequisites
+- Docker with compose
+- Make
+
+### Backend
+
+```
+make --directory=./backend build-extension
 ```
 
-Optionally you can build every underlying component separetly using:
-```bash
-cd vm
-docker buildx build -t 322456/signalonemlworker:dev -f ./mlworker/Dockerfile .
-docker buildx build -t 322456/signaloneapi:dev -f ./api/Dockerfile .
-cd ../signal-front
-docker buildx build -t 322456/signaloneui:dev  .
+### Extension
+```
+make --directory=./ext build-extension
+docker extension install 322456/signalone-extension:dev
 ```
 
 ## Reporting issues

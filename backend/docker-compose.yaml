@@ -1,0 +1,12 @@
+version: '3'
+services:
+  backend:
+    image: '322456/signalonebackend:dev'
+    ports:
+      - 8080:8080
+    depends_on:
+      - qdrant-db
+  qdrant-db:
+    image: qdrant/qdrant
+    ports:
+      - 6334:6334
