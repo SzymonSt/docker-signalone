@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-python-dotenv
-requests
-schedule
-numpy
-docker
-scikit-learn
-openai
