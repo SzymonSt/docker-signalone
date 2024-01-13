@@ -3,3 +3,5 @@ services:
     image: '322456/signalonefrontend:dev'
     ports:
       - "80:80"
+  signaloneagent:
+    image: '322456/signalone-extension:dev'

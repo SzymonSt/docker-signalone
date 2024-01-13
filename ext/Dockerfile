@@ -1,11 +1,11 @@
-FROM golang:1.19-alpine AS builder
+FROM golang:1.20-alpine AS builder
 ENV CGO_ENABLED=0
-WORKDIR /backend
-COPY backend/go.* .
+WORKDIR /agent
+COPY agent/go.* .
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go mod download
-COPY backend/. .
+COPY agent/. .
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go build -trimpath -ldflags="-s -w" -o bin/service
@@ -23,9 +23,9 @@ COPY ui /ui
 RUN npm run build
 
 FROM alpine
-LABEL org.opencontainers.image.title="My extension" \
+LABEL org.opencontainers.image.title="Signal0ne extension" \
     org.opencontainers.image.description="My awesome Docker extension" \
-    org.opencontainers.image.vendor="Awesome Inc." \
+    org.opencontainers.image.vendor="signalone" \
     com.docker.desktop.extension.api.version="0.3.4" \
     com.docker.extension.screenshots="" \
     com.docker.desktop.extension.icon="" \
@@ -35,7 +35,7 @@ LABEL org.opencontainers.image.title="My extension" \
     com.docker.extension.categories="" \
     com.docker.extension.changelog=""
 
-COPY --from=builder /backend/bin/service /
+COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
 COPY docker.svg .

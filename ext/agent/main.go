@@ -17,7 +17,7 @@ func main() {
 	logger.SetOutput(os.Stdout)
 
 	logger.Infof("Starting collector")
-	cfs := helpers.GetEnvVariables()
+	_ = helpers.GetEnvVariables()
 	jscheduler, err := gocron.NewScheduler()
 	if err != nil {
 		logger.Fatalf("Failed to create scheduler: %v", err)
