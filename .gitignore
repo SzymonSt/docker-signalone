@@ -4,3 +4,4 @@ __pycache__/
 *.db
 venv/
 qdrant-data/
+mongo-data/
