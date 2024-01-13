@@ -23,7 +23,8 @@ docker extension install 322456/signalone-extension:latest
 ### Backend
 
 ```
-make --directory=./backend build-extension
+make --directory=./backend build-backend
+docker-compose -f ./backend/docker-compose.yml up
 ```
 
 ### Extension
