@@ -1,5 +1,5 @@
 services:
-  signaloneui:
-    image: '322456/signaloneui:dev'
+  signalonefrontend:
+    image: '322456/signalonefrontend:dev'
     ports:
       - "80:80"
