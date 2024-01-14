@@ -42,7 +42,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	appCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationCollectionName)
+	issuesCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationIssuesCollectionName)
+	usersCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationUsersCollectionName)
 
 	savedAnalysisDbClient, err := mongo.Connect(
 		context.Background(),
@@ -79,7 +80,8 @@ func main() {
 
 	mainController := controllers.NewMainController(
 		inferenceEngine,
-		appCollectionClient,
+		issuesCollectionClient,
+		usersCollectionClient,
 		savedAnalysisCollectionClient,
 	)
 

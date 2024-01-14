@@ -21,16 +21,18 @@ type LogAnalysisPayload struct {
 
 type MainController struct {
 	iEngine                 *utils.InferenceEngine
-	applicationCollection   *mongo.Collection
+	issuesCollection        *mongo.Collection
+	usersCollection         *mongo.Collection
 	analysisStoreCollection *mongo.Collection
 }
 
 func NewMainController(iEngine *utils.InferenceEngine,
-	applicationCollection *mongo.Collection,
+	issuesCollection *mongo.Collection, usersCollection *mongo.Collection,
 	analysisStoreCollection *mongo.Collection) *MainController {
 	return &MainController{
 		iEngine:                 iEngine,
-		applicationCollection:   applicationCollection,
+		issuesCollection:        issuesCollection,
+		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
 	}
 }
@@ -56,7 +58,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	userResult := c.applicationCollection.FindOne(ctx, bson.M{"id": logAnalysisPayload.userId})
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"id": logAnalysisPayload.userId})
 	err := userResult.Decode(&user)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -78,7 +80,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		})
 	}
 
-	c.applicationCollection.InsertOne(ctx, models.Issue{
+	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
 		UserId:                    logAnalysisPayload.userId,
 		Logs:                      logAnalysisPayload.logs,

@@ -17,9 +17,10 @@ type Config struct {
 	SolutionCollectionName string `mapstructure:"SOLUTION_COLLECTION_NAME"`
 
 	//Application Database Details
-	ApplicationDbUrl          string `mapstructure:"APPLICATION_DB_URL"`
-	ApplicationDbName         string `mapstructure:"APPLICATION_DB_NAME"`
-	ApplicationCollectionName string `mapstructure:"APPLICATION_COLLECTION_NAME"`
+	ApplicationDbUrl                string `mapstructure:"APPLICATION_DB_URL"`
+	ApplicationDbName               string `mapstructure:"APPLICATION_DB_NAME"`
+	ApplicationIssuesCollectionName string `mapstructure:"APPLICATION_ISSUES_COLLECTION_NAME"`
+	ApplicationUsersCollectionName  string `mapstructure:"APPLICATION_USERS_COLLECTION_NAME"`
 
 	//Saved Analysis Database Details
 	SavedAnalysisDbUrl          string `mapstructure:"SAVED_ANALYSIS_DB_URL"`
