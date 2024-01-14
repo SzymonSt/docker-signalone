@@ -56,8 +56,8 @@ func main() {
 	hfwrapper := utils.NewHfWrapper(
 		cfg.InferenceApiUrl,
 		"models",
-		cfg.HuggingFaceBaseModel,
-		cfg.HuggingFaceApiKey,
+		cfg.InferenceBaseModel,
+		cfg.InferenceApiKey,
 		InferenceHyperParameters["temperature"].(float64),
 		InferenceHyperParameters["top_k"].(int),
 		InferenceHyperParameters["top_p"].(float64),

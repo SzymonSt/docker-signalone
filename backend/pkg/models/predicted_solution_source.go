@@ -5,6 +5,6 @@ type PredictedSolutionSource struct {
 	Url            string    `json:"url"`
 	Title          string    `json:"title"`
 	Description    string    `json:"description"`
-	FeaturedAnswer string    `json:"featured_answer"`
+	FeaturedAnswer string    `json:"featuredAnswer"`
 	Vector         []float32 `json:"vector"`
 }

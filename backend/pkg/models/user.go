@@ -1,6 +1,8 @@
 package models
 
 type User struct {
-	UserId string `json:"user_id"`
-	IsPro  bool   `json:"is_pro"`
+	UserId           string `json:"userId"`
+	UserName         string `json:"userName"`
+	IsPro            bool   `json:"isPro"`
+	AgentBearerToken string `json:"agentBearerToken"`
 }
