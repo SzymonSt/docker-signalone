@@ -1,0 +1,14 @@
+[
+    {
+        "userId": "4c78e05c-2f83-4e6e-b4c1-8721618a1c89",
+        "userName": "John",
+        "isPro": true,
+        "agentBearerToken": ""
+    },
+    {
+        "userId": "d8f591e8-39a4-4c12-9e74-67bdcf3d83c6",
+        "userName": "Jane",
+        "isPro": false,
+        "agentBearerToken": ""
+    }
+]

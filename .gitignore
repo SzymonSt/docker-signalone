@@ -5,3 +5,4 @@ __pycache__/
 venv/
 qdrant-data/
 mongo-data/
+tmp_*
