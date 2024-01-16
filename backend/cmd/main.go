@@ -70,7 +70,7 @@ func main() {
 		cfg.SolutionDbHost,
 		hfwrapper,
 		cfg.SolutionCollectionName,
-		RAGHyperParameters["limit"].(uint64),
+		uint64(RAGHyperParameters["limit"].(int)),
 	)
 
 	inferenceEngine := utils.NewInferenceEngine(
