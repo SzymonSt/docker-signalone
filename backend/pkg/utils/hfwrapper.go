@@ -56,7 +56,7 @@ func (hfw *HfWrapper) Predict(input string) string {
 		panic(err)
 	}
 	url := hfw.Url + "/" + hfw.Api + "/" + hfw.Model
-	req, err := http.NewRequest(url, "application/json", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}

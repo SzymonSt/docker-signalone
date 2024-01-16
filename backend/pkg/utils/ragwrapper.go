@@ -62,7 +62,7 @@ func (rw *RagWrapper) Tokenize(input string) []float32 {
 		panic(err)
 	}
 
-	req, err := http.NewRequest(rw.hfw.Url+"/sentence-transformers/all-MiniLM-L12-v2", "application/json", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", rw.hfw.Url+"/sentence-transformers/all-MiniLM-L12-v2", bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
