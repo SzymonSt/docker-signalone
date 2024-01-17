@@ -21,3 +21,6 @@ push-extension: prepare-buildx ## Build & Upload extension image to hub. Do not 
 
 build-extension-dependencies: ## Build dependencies for the extension
 	docker build --tag=$(FRONTEND_IMAGE):$(TAG) ./frontend
+
+start-devenv: ## Start development environment
+	docker compose -f ./devenv/docker-compose.yaml up -d
