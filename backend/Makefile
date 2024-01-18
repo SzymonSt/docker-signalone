@@ -15,4 +15,4 @@ start-backend-with-init: ## Start service locally with mock data initialization
 	python ./devenv/init.py
 
 deploy-backend: ## Deploy service to production
-	echo 
+	echo "NotImplemented"

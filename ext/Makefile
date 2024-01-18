@@ -24,3 +24,4 @@ build-extension-dependencies: ## Build dependencies for the extension
 
 start-devenv: ## Start development environment
 	docker compose -f ./devenv/docker-compose.yaml up -d
+	curl http://localhost:8081

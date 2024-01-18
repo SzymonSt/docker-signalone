@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"signalone/pkg/models"
 
@@ -46,23 +48,37 @@ func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource 
 	parsedResults := make([]models.PredictedSolutionSource, 0)
 	for _, result := range results {
 		var parsedResult models.PredictedSolutionSource
-		payloadBytes, _ := json.Marshal(result.Payload)
-		json.Unmarshal(payloadBytes, &parsedResult)
+		fmt.Println(result.Payload)
+		payloadBytes, err := json.Marshal(result.Payload)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error parsing payload: %v", err))
+		}
+		err = json.Unmarshal(payloadBytes, &parsedResult)
+		if err != nil {
+			fmt.Println(fmt.Errorf("error parsing payload: %v", err))
+		}
 		parsedResults = append(parsedResults, parsedResult)
 	}
+	fmt.Println(len(parsedResults))
+	fmt.Println(parsedResults)
 	return parsedResults
 }
 
 func (rw *RagWrapper) Tokenize(input string) []float32 {
 	payload := map[string]interface{}{
-		"prompt": input,
+		"inputs": append(make([]string, 0), input),
+		"options": map[string]interface{}{
+			"wait_for_model": true,
+		},
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		panic(err)
 	}
 
-	req, err := http.NewRequest("POST", rw.hfw.Url+"/sentence-transformers/all-MiniLM-L12-v2", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST",
+		rw.hfw.Url+"/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L12-v2",
+		bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
@@ -75,9 +91,14 @@ func (rw *RagWrapper) Tokenize(input string) []float32 {
 	}
 	defer resp.Body.Close()
 
-	var tokenized []float32
-	if err := json.NewDecoder(resp.Body).Decode(&tokenized); err != nil {
+	var tokenized [][]float32
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		panic(err)
 	}
-	return tokenized
+	err = json.Unmarshal(body, &tokenized)
+	if err != nil {
+		panic(err)
+	}
+	return tokenized[0]
 }

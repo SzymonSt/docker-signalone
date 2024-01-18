@@ -14,9 +14,9 @@ import (
 )
 
 type LogAnalysisPayload struct {
-	userId      string
-	containerId string
-	logs        string
+	UserId      string `json:"userId"`
+	ContainerId string `json:"containerId"`
+	Logs        string `json:"logs"`
 }
 
 type MainController struct {
@@ -58,7 +58,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": logAnalysisPayload.userId})
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": logAnalysisPayload.UserId})
 	err := userResult.Decode(&user)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -72,19 +72,22 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	// 	return
 	// }
 	issueId := uuid.New().String()
-	generatedSummary = c.iEngine.LogSummarization(fmt.Sprintf(summarizationTaskPromptTemplate, logAnalysisPayload.logs))
+	generatedSummary = c.iEngine.LogSummarization(
+		fmt.Sprintf(summarizationTaskPromptTemplate, logAnalysisPayload.Logs),
+	)
+	generatedSummary = strings.Split(generatedSummary, "<|assistant|>")[1]
 	proposedSolutions = c.iEngine.PredictSolutions(generatedSummary)
 	if !user.IsPro {
 		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
-			Logs:       logAnalysisPayload.logs,
+			Logs:       logAnalysisPayload.Logs,
 			LogSummary: generatedSummary,
 		})
 	}
 
 	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
-		UserId:                    logAnalysisPayload.userId,
-		Logs:                      logAnalysisPayload.logs,
+		UserId:                    logAnalysisPayload.UserId,
+		Logs:                      logAnalysisPayload.Logs,
 		LogSummary:                generatedSummary,
 		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
 		PredictedSolutionsSources: proposedSolutions.SolutionSources,
