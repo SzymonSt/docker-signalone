@@ -40,6 +40,11 @@ func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource 
 		CollectionName: rw.collectionName,
 		Vector:         input,
 		Limit:          uint64(rw.retrivalLimit),
+		WithPayload: &pb.WithPayloadSelector{
+			SelectorOptions: &pb.WithPayloadSelector_Enable{
+				Enable: true,
+			},
+		},
 	})
 	if err != nil {
 		panic(err)
@@ -48,14 +53,14 @@ func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource 
 	parsedResults := make([]models.PredictedSolutionSource, 0)
 	for _, result := range results {
 		var parsedResult models.PredictedSolutionSource
-		fmt.Println(result.Payload)
-		payloadBytes, err := json.Marshal(result.Payload)
+		fmt.Println(result.GetPayload())
+		payloadBytes, err := json.Marshal(result.GetPayload())
 		if err != nil {
-			fmt.Println(fmt.Errorf("error parsing payload: %v", err))
+			fmt.Println(fmt.Errorf("error parsing payload marshal: %v", err))
 		}
 		err = json.Unmarshal(payloadBytes, &parsedResult)
 		if err != nil {
-			fmt.Println(fmt.Errorf("error parsing payload: %v", err))
+			fmt.Println(fmt.Errorf("error parsing payload unmarshal: %v", err))
 		}
 		parsedResults = append(parsedResults, parsedResult)
 	}
