@@ -6,20 +6,21 @@ import (
 
 type Config struct {
 	ServerPort string `mapstructure:"SERVER_PORT"`
+	Mode       string `mapstructure:"MODE"`
 	//Inference Engine API
-	InferenceApiUrl      string `mapstructure:"INFERENCE_API_URL"`
-	HuggingFaceApiKey    string `mapstructure:"HUGGINGFACE_API_KEY"`
-	HuggingFaceBaseModel string `mapstructure:"BASE_MODEL_NAME"`
+	InferenceApiUrl    string `mapstructure:"INFERENCE_API_URL"`
+	InferenceApiKey    string `mapstructure:"INFERENCE_API_KEY"`
+	InferenceBaseModel string `mapstructure:"BASE_MODEL_NAME"`
 
 	//Tokenized Solution for Prediction Database Details
 	SolutionDbHost         string `mapstructure:"SOLUTION_DB_HOST"`
-	SolutionDbName         string `mapstructure:"SOLUTION_DB_NAME"`
 	SolutionCollectionName string `mapstructure:"SOLUTION_COLLECTION_NAME"`
 
 	//Application Database Details
-	ApplicationDbUrl          string `mapstructure:"APPLICATION_DB_URL"`
-	ApplicationDbName         string `mapstructure:"APPLICATION_DB_NAME"`
-	ApplicationCollectionName string `mapstructure:"APPLICATION_COLLECTION_NAME"`
+	ApplicationDbUrl                string `mapstructure:"APPLICATION_DB_URL"`
+	ApplicationDbName               string `mapstructure:"APPLICATION_DB_NAME"`
+	ApplicationIssuesCollectionName string `mapstructure:"APPLICATION_ISSUES_COLLECTION_NAME"`
+	ApplicationUsersCollectionName  string `mapstructure:"APPLICATION_USERS_COLLECTION_NAME"`
 
 	//Saved Analysis Database Details
 	SavedAnalysisDbUrl          string `mapstructure:"SAVED_ANALYSIS_DB_URL"`

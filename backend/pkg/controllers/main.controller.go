@@ -5,31 +5,34 @@ import (
 	"signalone/pkg/components"
 	"signalone/pkg/models"
 	"signalone/pkg/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type LogAnalysisPayload struct {
-	userId      string
-	isPro       bool // JUST FOR TESTING PURPOSES
-	containerId string
-	logs        string
+	UserId      string `json:"userId"`
+	ContainerId string `json:"containerId"`
+	Logs        string `json:"logs"`
 }
 
 type MainController struct {
 	iEngine                 *utils.InferenceEngine
-	applicationCollection   *mongo.Collection
+	issuesCollection        *mongo.Collection
+	usersCollection         *mongo.Collection
 	analysisStoreCollection *mongo.Collection
 }
 
 func NewMainController(iEngine *utils.InferenceEngine,
-	applicationCollection *mongo.Collection,
+	issuesCollection *mongo.Collection, usersCollection *mongo.Collection,
 	analysisStoreCollection *mongo.Collection) *MainController {
 	return &MainController{
 		iEngine:                 iEngine,
-		applicationCollection:   applicationCollection,
+		issuesCollection:        issuesCollection,
+		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
 	}
 }
@@ -37,33 +40,54 @@ func NewMainController(iEngine *utils.InferenceEngine,
 func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	var generatedSummary string
 	var proposedSolutions components.SolutionPredictionResult
+	var user models.User
 	summarizationTaskPromptTemplate := `<|user|>
 	Summarize these logs and generate a single paragraph summary of what is happening in these logs in high technical detail: %s</s>
 	<|assistant|>`
-	issueId := uuid.New().String()
+
+	bearerToken := ctx.GetHeader("Authorization")
+	if bearerToken == "" {
+		ctx.JSON(401, gin.H{
+			"message": "Unauthorized",
+		})
+		return
+	}
+	bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
 	var logAnalysisPayload LogAnalysisPayload
 	if err := ctx.ShouldBindJSON(&logAnalysisPayload); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	generatedSummary = c.iEngine.LogSummarization(fmt.Sprintf(summarizationTaskPromptTemplate, logAnalysisPayload.logs))
-	if logAnalysisPayload.isPro {
-		proposedSolutions = c.iEngine.PredictSolutions(generatedSummary)
-	} else {
-		proposedSolutions = components.SolutionPredictionResult{
-			SolutionSummary: "",
-			SolutionSources: []models.IssueSolutionPredictionSolutionSource{},
-		}
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": logAnalysisPayload.UserId})
+	err := userResult.Decode(&user)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	//Commented our for testing purposes
+	// if user.AgentBearerToken != bearerToken {
+	// 	ctx.JSON(401, gin.H{
+	// 		"message": "Unauthorized",
+	// 	})
+	// 	return
+	// }
+	issueId := uuid.New().String()
+	generatedSummary = c.iEngine.LogSummarization(
+		fmt.Sprintf(summarizationTaskPromptTemplate, logAnalysisPayload.Logs),
+	)
+	generatedSummary = strings.Split(generatedSummary, "<|assistant|>")[1]
+	proposedSolutions = c.iEngine.PredictSolutions(generatedSummary)
+	if !user.IsPro {
 		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
-			Logs:       logAnalysisPayload.logs,
+			Logs:       logAnalysisPayload.Logs,
 			LogSummary: generatedSummary,
 		})
 	}
 
-	c.applicationCollection.InsertOne(ctx, models.Issue{
+	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
-		UserId:                    logAnalysisPayload.userId,
-		Logs:                      logAnalysisPayload.logs,
+		UserId:                    logAnalysisPayload.UserId,
+		Logs:                      logAnalysisPayload.Logs,
 		LogSummary:                generatedSummary,
 		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
 		PredictedSolutionsSources: proposedSolutions.SolutionSources,

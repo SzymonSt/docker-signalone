@@ -42,7 +42,7 @@ func NewHfWrapper(
 
 func (hfw *HfWrapper) Predict(input string) string {
 	payload := map[string]interface{}{
-		"prompt": input,
+		"inputs": input,
 		"parameters": map[string]interface{}{
 			"temperature":    hfw.Temperature,
 			"top_k":          hfw.TopK,
@@ -56,12 +56,12 @@ func (hfw *HfWrapper) Predict(input string) string {
 		panic(err)
 	}
 	url := hfw.Url + "/" + hfw.Api + "/" + hfw.Model
-	req, err := http.NewRequest(url, "application/json", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		panic(err)
 	}
 	req.Header.Add("Authorization", "Bearer "+hfw.ApiKey)
-
+	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

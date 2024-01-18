@@ -42,7 +42,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	appCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationCollectionName)
+	issuesCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationIssuesCollectionName)
+	usersCollectionClient := appDbClient.Database(cfg.ApplicationDbName).Collection(cfg.ApplicationUsersCollectionName)
 
 	savedAnalysisDbClient, err := mongo.Connect(
 		context.Background(),
@@ -56,8 +57,8 @@ func main() {
 	hfwrapper := utils.NewHfWrapper(
 		cfg.InferenceApiUrl,
 		"models",
-		cfg.HuggingFaceBaseModel,
-		cfg.HuggingFaceApiKey,
+		cfg.InferenceBaseModel,
+		cfg.InferenceApiKey,
 		InferenceHyperParameters["temperature"].(float64),
 		InferenceHyperParameters["top_k"].(int),
 		InferenceHyperParameters["top_p"].(float64),
@@ -69,7 +70,7 @@ func main() {
 		cfg.SolutionDbHost,
 		hfwrapper,
 		cfg.SolutionCollectionName,
-		RAGHyperParameters["limit"].(uint64),
+		uint64(RAGHyperParameters["limit"].(int)),
 	)
 
 	inferenceEngine := utils.NewInferenceEngine(
@@ -79,7 +80,8 @@ func main() {
 
 	mainController := controllers.NewMainController(
 		inferenceEngine,
-		appCollectionClient,
+		issuesCollectionClient,
+		usersCollectionClient,
 		savedAnalysisCollectionClient,
 	)
 

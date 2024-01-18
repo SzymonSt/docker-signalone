@@ -12,9 +12,9 @@ services:
   qdrant-db:
       image: qdrant/qdrant
       ports:
-        - 6334:6334
+        - 6333:6333
       volumes:
-        - ./qdrant-data:/qdrant_data
+        - ./qdrant-data:/qdrant/storage
       
   mongo-db:
       image: mongo

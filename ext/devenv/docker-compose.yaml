@@ -1,0 +1,9 @@
+services:
+  faulty_roger: # c# application that cannot start properly
+    image: '322456/broken_bulb:dev'
+  broken_bulb: # golang exception recovered
+    image: '322456/faulty_roger:dev'
+  smoked_server: # nginx server hosting the website with the miss-configuration
+    image: '322456/smoked_server:dev'
+    ports:
+      - '8081:8081'

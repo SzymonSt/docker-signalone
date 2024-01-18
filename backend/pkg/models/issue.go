@@ -7,9 +7,9 @@ type IssueSolutionPredictionSolutionSource struct {
 
 type Issue struct {
 	Id                        string                                  `json:"id"`
-	UserId                    string                                  `json:"user_id"`
+	UserId                    string                                  `json:"userId"`
 	Logs                      string                                  `json:"logs"`
-	LogSummary                string                                  `json:"log_summary"`
-	PredictedSolutionsSummary string                                  `json:"predicted_solutions_summary"`
-	PredictedSolutionsSources []IssueSolutionPredictionSolutionSource `json:"issue_predicted_solutions_sources"`
+	LogSummary                string                                  `json:"logSummary"`
+	PredictedSolutionsSummary string                                  `json:"predictedSolutionsSummary"`
+	PredictedSolutionsSources []IssueSolutionPredictionSolutionSource `json:"issuePredictedSolutionsSources"`
 }
