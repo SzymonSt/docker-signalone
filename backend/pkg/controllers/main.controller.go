@@ -83,6 +83,9 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 			LogSummary: generatedSummary,
 		})
 	}
+	fmt.Println("Generated Summary: ", generatedSummary)
+	fmt.Println("Proposed Solutions: ", proposedSolutions)
+	fmt.Printf("Soultion Sources: %+v\n", proposedSolutions.SolutionSources)
 
 	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
