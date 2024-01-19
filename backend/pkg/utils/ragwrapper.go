@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"signalone/pkg/models"
@@ -61,8 +60,6 @@ func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource 
 		}
 		parsedResults = append(parsedResults, parsedResult)
 	}
-	fmt.Println(len(parsedResults))
-	fmt.Println(parsedResults)
 	return parsedResults
 }
 
