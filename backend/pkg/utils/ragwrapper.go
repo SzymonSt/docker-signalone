@@ -52,15 +52,12 @@ func (rw *RagWrapper) Predict(input []float32) []models.PredictedSolutionSource 
 	results := searchResults.GetResult()
 	parsedResults := make([]models.PredictedSolutionSource, 0)
 	for _, result := range results {
-		var parsedResult models.PredictedSolutionSource
-		fmt.Println(result.GetPayload())
-		payloadBytes, err := json.Marshal(result.GetPayload())
-		if err != nil {
-			fmt.Println(fmt.Errorf("error parsing payload marshal: %v", err))
-		}
-		err = json.Unmarshal(payloadBytes, &parsedResult)
-		if err != nil {
-			fmt.Println(fmt.Errorf("error parsing payload unmarshal: %v", err))
+		payload := result.GetPayload()
+		parsedResult := models.PredictedSolutionSource{
+			Url:            payload["url"].GetStringValue(),
+			Title:          payload["title"].GetStringValue(),
+			Description:    payload["description"].GetStringValue(),
+			FeaturedAnswer: payload["featuredAnswer"].GetStringValue(),
 		}
 		parsedResults = append(parsedResults, parsedResult)
 	}
