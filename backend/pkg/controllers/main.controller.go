@@ -101,6 +101,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		Severtiy:                  "Critical",                                              // TODO: Implement severity detection
 		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
 		TimeStamp:                 time.Now(),
+		IsResolved:                false,
 		Logs:                      logAnalysisPayload.Logs,
 		LogSummary:                generatedSummary,
 		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
@@ -138,11 +139,13 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	}
 	startTimestamp, err := time.Parse(time.RFC3339, startTimestampQuery)
 	if err != nil {
-		startTimestamp = time.Time{}
+		fmt.Print("Error: ", err)
+		startTimestamp = time.Time{}.UTC()
 	}
 	endTimestamp, err := time.Parse(time.RFC3339, endTimestampQuery)
 	if err != nil || endTimestampQuery == "" {
-		endTimestamp = time.Now()
+		fmt.Print("Error: ", err)
+		endTimestamp = time.Now().UTC()
 	}
 
 	qOpts := options.Find()
@@ -150,21 +153,20 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	qOpts.SetSkip(int64(offset))
 	qOpts.SetSort(bson.M{"timestamp": -1})
 	qOpts.SetProjection(bson.M{
-		"_id":                       1,
-		"userId":                    0,
-		"containerName":             1,
-		"severity":                  1,
-		"title":                     1,
-		"logs":                      0,
-		"logSummary":                0,
-		"predictedSolutionsSummary": 0,
-		"predictedSolutionsSources": 0,
+		"_id":           1,
+		"containerName": 1,
+		"severity":      1,
+		"title":         1,
+		"isResolved":    1,
+		"timestamp":     1,
 	})
+	fmt.Print("startTimestamp: ", startTimestamp.UTC())
+	fmt.Print("endTimestamp: ", endTimestamp.UTC())
 	filter := bson.M{
 		"isResolved": isResolved,
 		"timestamp": bson.M{
-			"$gte": startTimestamp,
-			"$lte": endTimestamp,
+			"$gte": startTimestamp.UTC(),
+			"$lte": endTimestamp.UTC(),
 		},
 	}
 	if container != "" {
@@ -202,7 +204,7 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var issue models.Issue
 	if err := c.issuesCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&issue); err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(404, gin.H{"error": "Not found"})
 		return
 	}
 	ctx.JSON(200, gin.H{
@@ -234,6 +236,7 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
 	container := ctx.Query("container")
+	fmt.Print("Container: ", container)
 	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerName": container})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
