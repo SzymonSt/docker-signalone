@@ -5,18 +5,25 @@ import (
 	"signalone/pkg/components"
 	"signalone/pkg/models"
 	"signalone/pkg/utils"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type LogAnalysisPayload struct {
-	UserId      string `json:"userId"`
-	ContainerId string `json:"containerId"`
-	Logs        string `json:"logs"`
+	UserId        string `json:"userId"`
+	ContainerName string `json:"containerName"`
+	Logs          string `json:"logs"`
+}
+
+type GetIssuesPayload struct {
+	UserId string `json:"userId"`
 }
 
 type MainController struct {
@@ -90,6 +97,11 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
 		UserId:                    logAnalysisPayload.UserId,
+		ContainerName:             logAnalysisPayload.ContainerName,
+		Severtiy:                  "Critical",                                              // TODO: Implement severity detection
+		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
+		TimeStamp:                 time.Now(),
+		IsResolved:                false,
 		Logs:                      logAnalysisPayload.Logs,
 		LogSummary:                generatedSummary,
 		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
@@ -98,5 +110,140 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{
 		"message": "Success",
 		"issueId": issueId,
+	})
+}
+
+func (c *MainController) IssuesSearch(ctx *gin.Context) {
+	var issues []models.IssueSearchResult
+	var max int64
+	offsetQuery := ctx.Query("offset")
+	limitQuery := ctx.Query("limit")
+	_ = ctx.Query("searchString")
+	container := ctx.Query("container")
+	issueSeverity := ctx.Query("issueSeverity")
+	issueType := ctx.Query("issueType")
+	startTimestampQuery := ctx.Query("startTimestamp")
+	endTimestampQuery := ctx.Query("endTimestamp")
+	isResolved, err := strconv.ParseBool(ctx.Query("isResolved"))
+	if err != nil {
+		isResolved = false
+	}
+
+	offset, err := strconv.Atoi(offsetQuery)
+	if err != nil || offsetQuery == "" {
+		offset = 0
+	}
+	limit, err := strconv.Atoi(limitQuery)
+	if err != nil || limit > 100 || limitQuery == "" {
+		limit = 30
+	}
+	startTimestamp, err := time.Parse(time.RFC3339, startTimestampQuery)
+	if err != nil {
+		fmt.Print("Error: ", err)
+		startTimestamp = time.Time{}.UTC()
+	}
+	endTimestamp, err := time.Parse(time.RFC3339, endTimestampQuery)
+	if err != nil || endTimestampQuery == "" {
+		fmt.Print("Error: ", err)
+		endTimestamp = time.Now().UTC()
+	}
+
+	qOpts := options.Find()
+	qOpts.SetLimit(int64(limit))
+	qOpts.SetSkip(int64(offset))
+	qOpts.SetSort(bson.M{"timestamp": -1})
+	qOpts.SetProjection(bson.M{
+		"_id":           1,
+		"containerName": 1,
+		"severity":      1,
+		"title":         1,
+		"isResolved":    1,
+		"timestamp":     1,
+	})
+	fmt.Print("startTimestamp: ", startTimestamp.UTC())
+	fmt.Print("endTimestamp: ", endTimestamp.UTC())
+	filter := bson.M{
+		"isResolved": isResolved,
+		"timestamp": bson.M{
+			"$gte": startTimestamp.UTC(),
+			"$lte": endTimestamp.UTC(),
+		},
+	}
+	if container != "" {
+		filter["containerName"] = container
+	}
+	if issueSeverity != "" {
+		filter["severity"] = issueSeverity
+	}
+	if issueType != "" {
+		filter["type"] = issueType
+	}
+
+	cursor, err := c.issuesCollection.Find(ctx, filter, qOpts)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	defer cursor.Close(ctx)
+	for cursor.Next(ctx) {
+		var issue models.IssueSearchResult
+		if err := cursor.Decode(&issue); err != nil {
+			continue
+		}
+		issues = append(issues, issue)
+	}
+	max, _ = c.issuesCollection.CountDocuments(ctx, filter)
+
+	ctx.JSON(200, gin.H{
+		"issues": issues,
+		"max":    max,
+	})
+}
+
+func (c *MainController) GetIssue(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var issue models.Issue
+	if err := c.issuesCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&issue); err != nil {
+		ctx.JSON(404, gin.H{"error": "Not found"})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"issue": issue,
+	})
+}
+
+func (c *MainController) ResolveIssue(ctx *gin.Context) {
+	id := ctx.Param("id")
+	res, err := c.issuesCollection.UpdateOne(ctx,
+		bson.M{"_id": id},
+		bson.M{
+			"$set": bson.M{
+				"isResolved": true,
+			},
+		})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	if res.MatchedCount == 0 {
+		ctx.JSON(404, gin.H{"error": "Not found"})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"message": "Success",
+	})
+}
+
+func (c *MainController) DeleteIssues(ctx *gin.Context) {
+	container := ctx.Query("container")
+	fmt.Print("Container: ", container)
+	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerName": container})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"message": "Success",
+		"count":   res.DeletedCount,
 	})
 }
