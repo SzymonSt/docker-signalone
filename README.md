@@ -20,17 +20,30 @@ docker extension install 322456/signalone-extension:latest
 - Docker with compose
 - Make
 
+### Extension
+```
+make --directory=./ext build-extension
+make --directory=./ext install-extension
+```
+
 ### Backend
 
 ```
 make --directory=./backend build-backend
-docker-compose -f ./backend/docker-compose.yaml up
+
+```
+```
+make --directory=./backend start-backend
+```
+OR
+```
+make --directory=./backend start-backend-with-init // to start backend with init sample development data
 ```
 
-### Extension
+### Simulated development environment
+
 ```
-make --directory=./ext build-extension
-docker extension install 322456/signalone-extension:dev
+make --directory=./ext start-devenv
 ```
 
 ## Reporting issues
