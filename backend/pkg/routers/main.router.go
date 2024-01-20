@@ -24,11 +24,13 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	userRouterGroup := rg.Group("/user")
 	userRouterGroup.GET("/settings", func(c *gin.Context) {})
 	userRouterGroup.POST("/settings", func(c *gin.Context) {})
-	userRouterGroup.GET("/issues", func(c *gin.Context) {})
-	userRouterGroup.GET("/issues/:id", func(c *gin.Context) {})
+	userRouterGroup.GET("/issues", mr.mainController.IssuesSearch)
+	userRouterGroup.GET("/issues/:id", mr.mainController.GetIssue)
+	userRouterGroup.POST("/issues/:id", mr.mainController.ResolveIssue)
 	userRouterGroup.POST("/agent/authenticate", func(c *gin.Context) {})
 
 	agentRouterGroup := rg.Group("/agent")
+	agentRouterGroup.DELETE("/issues", mr.mainController.DeleteIssues)
 	agentRouterGroup.PUT("/issues/analysis", mr.mainController.LogAnalysisTask)
 
 }

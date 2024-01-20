@@ -19,7 +19,7 @@ var InferenceHyperParameters = map[string]interface{}{
 	"top_k":          20,
 	"top_p":          0.9,
 	"do_sample":      true,
-	"max_new_tokens": 250,
+	"max_new_tokens": 160,
 }
 
 var RAGHyperParameters = map[string]interface{}{
