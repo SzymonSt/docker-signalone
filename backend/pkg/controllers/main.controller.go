@@ -211,9 +211,36 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 }
 
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
-	// id := ctx.Param("id")
+	id := ctx.Param("id")
+	res, err := c.issuesCollection.UpdateOne(ctx,
+		bson.M{"_id": id},
+		bson.M{
+			"$set": bson.M{
+				"isResolved": true,
+			},
+		})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	if res.MatchedCount == 0 {
+		ctx.JSON(404, gin.H{"error": "Not found"})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"message": "Success",
+	})
 }
 
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
-	// container := ctx.Query("container")
+	container := ctx.Query("container")
+	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerName": container})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{
+		"message": "Success",
+		"count":   res.DeletedCount,
+	})
 }
