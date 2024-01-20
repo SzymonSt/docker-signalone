@@ -39,5 +39,6 @@ COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
 COPY docker.svg .
+COPY agent/.default.env .
 COPY --from=client-builder /ui/build ui
 CMD /service
