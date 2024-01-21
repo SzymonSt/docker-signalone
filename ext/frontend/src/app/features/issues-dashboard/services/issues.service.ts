@@ -30,9 +30,9 @@ export class IssuesService {
         fromObject: { ...(NormalizeObjectValue(searchCriteria, [ 'startTimestamp', 'endTimestamp' ]) as any) }
       });
 
-      return this.httpClient.get<IssueDTO[]>(`${environment.apiUrl}/issues`, { params });
+      return this.httpClient.get<IssueDTO[]>(`${environment.apiUrl}/user/issues`, { params });
     } else {
-      return this.httpClient.get<IssueDTO[]>(`${environment.apiUrl}/issues`);
+      return this.httpClient.get<IssueDTO[]>(`${environment.apiUrl}/user/issues`);
     }
 
   }

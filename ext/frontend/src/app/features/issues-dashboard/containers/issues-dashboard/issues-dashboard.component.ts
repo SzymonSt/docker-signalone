@@ -19,6 +19,7 @@ export class IssuesDashboardComponent implements OnInit {
   public ngOnInit(): void {
     this.getIssuesContainers();
     this.searchIssues();
+    this.subscribeIssuesContainers();
   }
 
   public searchIssues(searchCriteria?: IssueSearchCriteriaDTO): void {
@@ -28,7 +29,6 @@ export class IssuesDashboardComponent implements OnInit {
   }
 
   public viewIssue(issue: IssueDTO): void {
-    console.log('ACTIVE ISSUE', issue)
     this.activeIssue = issue;
   }
 
@@ -36,5 +36,11 @@ export class IssuesDashboardComponent implements OnInit {
     this.issuesService.getIssuesContainers().subscribe((containers: string[]) => {
       this.containers = containers;
     });
+  }
+
+  private subscribeIssuesContainers(): void {
+    setInterval(() => {
+      this.searchIssues();
+    }, 1500)
   }
 }
