@@ -1,6 +1,7 @@
 <div id="issues-dashboard">
     <app-issues-left-panel (criteriaChanged)="searchIssues($event)" (viewIssue)="viewIssue($event)"
                            [containers]="containers"
+                           [max]="max"
                            [issues]="issues"></app-issues-left-panel>
     <app-issues-right-panel [activeIssue]="activeIssue" class="w-100"></app-issues-right-panel>
 </div>

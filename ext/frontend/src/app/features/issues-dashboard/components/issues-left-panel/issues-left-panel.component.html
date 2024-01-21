@@ -1,12 +1,27 @@
 <div id="issues-left-panel">
-    <app-issues-search-criteria (criteriaChanged)="criteriaChanged.emit($event)"
+    <app-issues-search-criteria (criteriaChanged)="onCriteriaChange($event)"
                                 [containers]="containers"></app-issues-search-criteria>
+    <pagination (pageChanged)="onPageChanged($event)"
+                [boundaryLinks]="true"
+                [itemsPerPage]="pageSize" [maxSize]="6" [rotate]="true"
+                [customFirstTemplate]="firstTemplate"
+                [customLastTemplate]="lastTemplate" [customNextTemplate]="nextTemplate" [customPreviousTemplate]="prevTemplate"
+                [totalItems]="max" class="justify-content-center my-4"></pagination>
     <app-issues-list (viewIssue)="viewIssue.emit($event)" [issues]="issues"></app-issues-list>
-    <!--    TODO add pagination when data interface will be ready-->
-    <!--    <pagination (pageChanged)="onPageChanged($event)"-->
-    <!--                [boundaryLinks]="true"-->
-    <!--                [itemsPerPage]="criteria.pageSize" [maxSize]="6" [rotate]="true"-->
-    <!--                [totalItems]="itemTotal" class="justify-content-end mb-0"></pagination>-->
-    <!--    [customFirstTemplate]="firstTemplate"-->
-    <!--    [customLastTemplate]="lastTemplate" [customNextTemplate]="nextTemplate" [customPreviousTemplate]="prevTemplate"-->
 </div>
+
+<ng-template #firstTemplate let-currentPage="currentPage" let-disabled="disabled">
+    <i class="bi bi-chevron-double-left"></i>
+</ng-template>
+
+<ng-template #lastTemplate let-currentPage="currentPage" let-disabled="disabled">
+    <i class="bi bi-chevron-double-right"></i>
+</ng-template>
+
+<ng-template #prevTemplate let-currentPage="currentPage" let-disabled="disabled">
+    <i class="bi bi-chevron-left"></i>
+</ng-template>
+
+<ng-template #nextTemplate let-currentPage="currentPage" let-disabled="disabled">
+    <i class="bi bi-chevron-right"></i>
+</ng-template>

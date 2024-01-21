@@ -1,7 +1,7 @@
 <div class="issue-container" [ngClass]="isSelected ? 'selected' : ''">
     <div class="row align-items-center">
         <div class="col-1">
-            <ng-container [ngSwitch]="issue.issueSeverity">
+            <ng-container [ngSwitch]="issue.severity">
                 <svg *ngSwitchCase="IssueSeverity.WARNING" class="bi bi-exclamation-triangle-fill warning-icon"
                      height="24" viewBox="0 0 16 16"
                      width="24" xmlns="http://www.w3.org/2000/svg">
@@ -19,8 +19,8 @@
             </ng-container>
         </div>
         <div class="col-11">
-            <h6>{{issue.issue}}</h6>
-            <p>{{issue.containerId}}</p>
+            <h6>{{issue.title}}</h6>
+            <p>{{issue.containerName}}</p>
         </div>
     </div>
 </div>

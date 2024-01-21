@@ -1,5 +1,5 @@
 .solutions-list {
-  height: calc(53vh - 50px);
+  height: calc(95vh - 50px);
   overflow: auto;
   border: 2px solid var(--light-bright);
   padding: 12px;
@@ -7,5 +7,23 @@
 
   li {
     color: var(--black);
+  }
+
+  p {
+    color: var(--dark);
+  }
+
+  .solution-sources-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-gap: 16px;
+
+    .solution-source {
+      border: 1px solid var(--light-bright);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+    }
   }
 }
