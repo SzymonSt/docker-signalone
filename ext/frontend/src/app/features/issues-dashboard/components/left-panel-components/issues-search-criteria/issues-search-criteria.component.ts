@@ -49,7 +49,7 @@ export class IssuesSearchCriteriaComponent implements OnInit {
       searchString: new FormControl(null),
       issueType: new FormControl(null),
       issueSeverity: new FormControl(null),
-      containerId: new FormControl(null),
+      container: new FormControl(null),
       startTimestamp: new FormControl(null),
       endTimestamp: new FormControl(null),
       isResolved: new FormControl(null),

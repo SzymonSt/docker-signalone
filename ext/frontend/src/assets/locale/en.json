@@ -45,6 +45,7 @@
       "CLEAR": "Clear",
       "SEARCH": "Search",
       "INSIGHTS": "Insights: ",
+      "SOURCES": "Sources: ",
       "CHAT": {
         "ASK_MODEL": "Ask model"
       }

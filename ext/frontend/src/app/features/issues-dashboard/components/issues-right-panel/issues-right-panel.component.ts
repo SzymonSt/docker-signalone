@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
+import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 
 @Component({
   selector: 'app-issues-right-panel',
@@ -8,7 +9,7 @@ import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 })
 export class IssuesRightPanelComponent {
   @Input()
-  public activeIssue: IssueDTO;
+  public activeIssue: DetailedIssueDTO;
 
   constructor() {
   }
