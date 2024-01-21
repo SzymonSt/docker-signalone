@@ -14,6 +14,7 @@ export class IssuesDashboardComponent implements OnInit {
   public issues: IssueDTO[];
   public activeIssue: DetailedIssueDTO;
   public max: number;
+  public activePage: number = 1;
   private lastSearchCriteria: IssueSearchCriteriaDTO = new IssueSearchCriteriaDTO();
   constructor(private issuesService: IssuesService) {
   }
@@ -26,6 +27,7 @@ export class IssuesDashboardComponent implements OnInit {
 
   public searchIssues(searchCriteria?: IssueSearchCriteriaDTO): void {
     if (searchCriteria) {
+      this.activePage = searchCriteria.offset ? searchCriteria.offset * searchCriteria.limit : 1;
       this.lastSearchCriteria = {
         ...this.lastSearchCriteria,
         ...searchCriteria
