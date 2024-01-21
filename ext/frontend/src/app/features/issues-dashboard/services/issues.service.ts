@@ -21,10 +21,10 @@ export class IssuesService {
   public getIssuesList(searchCriteria?: IssueSearchCriteriaDTO): Observable<SearchIssuesResponseDTO> {
     if (searchCriteria) {
       if (searchCriteria.startTimestamp) {
-        searchCriteria.startTimestamp = new Date(searchCriteria.startTimestamp).toISOString().split('T')[0];
+        searchCriteria.startTimestamp = new Date(searchCriteria.startTimestamp).toISOString();
       }
       if (searchCriteria.endTimestamp) {
-        searchCriteria.endTimestamp = new Date(searchCriteria.endTimestamp).toISOString().split('T')[0];
+        searchCriteria.endTimestamp = new Date(searchCriteria.endTimestamp).toISOString();
       }
 
       const params: HttpParams = new HttpParams({

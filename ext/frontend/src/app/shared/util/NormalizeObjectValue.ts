@@ -4,7 +4,7 @@ export function NormalizeObjectValue(valueToNormalize: Object, dateKeys?: string
       // @ts-ignore
       if (valueToNormalize[dateKey]) {
         // @ts-ignore
-        valueToNormalize[dateKey] = new Date(valueToNormalize[dateKey]).toISOString().split('T')[0];
+        valueToNormalize[dateKey] = new Date(valueToNormalize[dateKey]).toISOString();
       }
     }))
   }
