@@ -9,7 +9,7 @@ export class LoadingInterceptor implements HttpInterceptor {
   constructor(private applicationStateService: ApplicationStateService) {
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
+  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
     this.applicationStateService.isLoading = true;
     return next.handle(req).pipe(
       finalize(() => this.applicationStateService.isLoading = false),

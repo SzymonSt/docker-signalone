@@ -4,6 +4,7 @@ import { IssueSeverity } from 'app/shared/enum/IssueSeverity';
 import { FormControl, FormGroup } from '@angular/forms';
 import { IssueSearchCriteriaDTO } from 'app/shared/interfaces/IssueSearchCriteriaDTO';
 import { dateRangeValidator } from 'app/shared/validators/date-range.validator';
+import { Constants } from 'app/config/Constant';
 
 @Component({
   selector: 'app-issues-search-criteria',
@@ -53,6 +54,8 @@ export class IssuesSearchCriteriaComponent implements OnInit {
       startTimestamp: new FormControl(null),
       endTimestamp: new FormControl(null),
       isResolved: new FormControl(null),
+      limit: new FormControl(Constants.paginationLimit),
+      offset: new FormControl(0),
     }, { validators: dateRangeValidator('startTimestamp', 'endTimestamp') })
   }
 }

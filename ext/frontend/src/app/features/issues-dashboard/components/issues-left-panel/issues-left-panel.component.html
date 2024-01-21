@@ -5,6 +5,7 @@
                 [boundaryLinks]="true"
                 [itemsPerPage]="pageSize" [maxSize]="6" [rotate]="true"
                 [customFirstTemplate]="firstTemplate"
+                [(ngModel)]="internalPage"
                 [customLastTemplate]="lastTemplate" [customNextTemplate]="nextTemplate" [customPreviousTemplate]="prevTemplate"
                 [totalItems]="max" class="justify-content-center my-4"></pagination>
     <app-issues-list (viewIssue)="viewIssue.emit($event)" [issues]="issues"></app-issues-list>

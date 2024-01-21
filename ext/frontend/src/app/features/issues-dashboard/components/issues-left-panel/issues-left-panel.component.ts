@@ -16,7 +16,8 @@ export class IssuesLeftPanelComponent {
   public issues: IssueDTO[];
   @Input()
   public max: number;
-
+  @Input()
+  public internalPage: number = 1;
   public pageSize: number = Constants.paginationLimit;
 
   @Output()
