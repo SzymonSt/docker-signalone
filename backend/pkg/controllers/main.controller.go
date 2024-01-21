@@ -114,7 +114,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 }
 
 func (c *MainController) IssuesSearch(ctx *gin.Context) {
-	var issues []models.IssueSearchResult
+	issues := make([]models.IssueSearchResult, 0)
 	var max int64
 	offsetQuery := ctx.Query("offset")
 	limitQuery := ctx.Query("limit")
