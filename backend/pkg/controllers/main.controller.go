@@ -98,7 +98,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		Id:                        issueId,
 		UserId:                    logAnalysisPayload.UserId,
 		ContainerName:             logAnalysisPayload.ContainerName,
-		Severtiy:                  "Critical",                                              // TODO: Implement severity detection
+		Severtiy:                  strings.ToUpper("Critical"),                             // TODO: Implement severity detection
 		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
 		TimeStamp:                 time.Now(),
 		IsResolved:                false,
@@ -207,9 +207,7 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 		ctx.JSON(404, gin.H{"error": "Not found"})
 		return
 	}
-	ctx.JSON(200, gin.H{
-		"issue": issue,
-	})
+	ctx.JSON(200, issue)
 }
 
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
