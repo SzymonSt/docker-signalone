@@ -61,3 +61,16 @@
 .invalid-feedback {
   display: block;
 }
+
+.pagination {
+  .page-link.active, .active > .page-link {
+    color: var(--primary);
+    border-color: var(--deep-bright);
+    background-color: var(--pale);
+  }
+
+  .page-link {
+    color: var(--primary);
+    border-color: var(--deep-bright);
+  }
+}

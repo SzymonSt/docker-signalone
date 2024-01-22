@@ -25,5 +25,5 @@ export const TranslateConfig: TranslateModuleConfig = {
     useFactory: WebpackTranslateLoaderFactory,
     deps: [ HttpClient ]
   },
-  defaultLanguage: 'pl'
+  defaultLanguage: 'en'
 };

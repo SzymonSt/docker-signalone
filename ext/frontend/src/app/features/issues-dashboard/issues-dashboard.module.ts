@@ -32,6 +32,7 @@ import {
 import {
   SolutionsListComponent
 } from 'app/features/issues-dashboard/components/right-panel-components/solutions-list/solutions-list.component';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @NgModule({
   declarations: [ IssuesDashboardComponent, IssuesSearchCriteriaComponent, IssuesRightPanelComponent, IssuesLeftPanelComponent, IssuesListComponent, IssueCellComponent, SolutionsChatComponent, SolutionsListComponent ],
@@ -45,7 +46,8 @@ import {
     ReactiveFormsModule,
     NgbModule,
     BsDatepickerModule,
-    PaginationModule
+    PaginationModule,
+    AngularSvgIconModule.forRoot()
   ],
   exports: []
 })

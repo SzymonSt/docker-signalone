@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
+import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 
 @Component({
   selector: 'app-solutions-list',
@@ -8,8 +9,12 @@ import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 })
 export class SolutionsListComponent {
   @Input()
-  public activeIssue: IssueDTO;
+  public activeIssue: DetailedIssueDTO;
 
   constructor() {
+  }
+
+  public goToSolutionSource(url : string): void {
+    window.open(url, "_blank")
   }
 }
