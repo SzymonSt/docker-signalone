@@ -245,3 +245,19 @@ func (c *MainController) DeleteIssues(ctx *gin.Context) {
 		"count":   res.DeletedCount,
 	})
 }
+
+func (c *MainController) GetContainers(ctx *gin.Context) {
+	containers := make([]string, 0)
+	userId := ctx.Query("userId")
+	results, err := c.issuesCollection.Distinct(ctx, "containerName", bson.M{"userId": userId})
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	for _, r := range results {
+		if container, ok := r.(string); ok {
+			containers = append(containers, container)
+		}
+	}
+	ctx.JSON(200, containers)
+}

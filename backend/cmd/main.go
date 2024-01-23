@@ -10,6 +10,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -33,6 +35,10 @@ func main() {
 	cfg := config.New()
 	if cfg == nil {
 		panic("critical: unable to load config")
+	}
+
+	if cfg.Mode == "local" {
+		server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	appDbClient, err := mongo.Connect(
@@ -92,6 +98,7 @@ func main() {
 
 	server.Use(cors.New(corsConfig))
 
+	// @BasePath /api
 	router := server.Group("/api")
 	router.GET("/healthz", func(ctx *gin.Context) {
 		message := "signal api is up and running, operational subsystems: {}"

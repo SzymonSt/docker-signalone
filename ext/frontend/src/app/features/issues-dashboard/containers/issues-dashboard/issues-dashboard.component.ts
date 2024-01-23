@@ -20,7 +20,7 @@ export class IssuesDashboardComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    // this.getIssuesContainers();
+    this.getIssuesContainers();
     this.searchIssues(this.lastSearchCriteria);
     this.subscribeIssuesContainers();
   }

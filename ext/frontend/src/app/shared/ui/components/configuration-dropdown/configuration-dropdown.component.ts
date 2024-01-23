@@ -1,5 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
-import { ApplicationStateService } from 'app/shared/services/application-state.service';
+import { Component } from '@angular/core';
 import { ConfigurationService } from 'app/shared/services/configuration.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
