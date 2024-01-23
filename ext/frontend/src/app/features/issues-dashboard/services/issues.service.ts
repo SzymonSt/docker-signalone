@@ -15,7 +15,7 @@ export class IssuesService {
   }
 
   public getIssuesContainers(): Observable<string[]> {
-    return this.httpClient.get<string[]>(`${environment.apiUrl}/containers`);
+    return this.httpClient.get<string[]>(`${environment.apiUrl}/user/containers`);
   }
 
   public getIssuesList(searchCriteria?: IssueSearchCriteriaDTO): Observable<SearchIssuesResponseDTO> {
