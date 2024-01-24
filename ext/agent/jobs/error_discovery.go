@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(cli *client.Client, logger *logrus.Logger) {
+func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken *string) {
 	containers, err := helpers.ListContainers(cli)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
