@@ -15,15 +15,15 @@ export class ConfigurationDropdownComponent {
   }
 
   public submitApiKey(dropdownButton: HTMLButtonElement, dropdownMenu: HTMLElement): void {
-    this.isSubmitted = true;
-    if (this.huggingfaceApiKey) {
-      this.isSubmitted = false;
-      this.configurationService.changeApiKeyVersion(this.huggingfaceApiKey).subscribe(() => {
-        this.closeDropdownMenu(dropdownButton, dropdownMenu);
-        this.toastrService.success(this.translateService.instant('UI.CONFIGURATION_DROPDOWN.SUCCESS'));
+  //   this.isSubmitted = true;
+  //   if (this.huggingfaceApiKey) {
+  //     this.isSubmitted = false;
+  //     this.configurationService.changeApiKeyVersion(this.huggingfaceApiKey).subscribe(() => {
+  //       this.closeDropdownMenu(dropdownButton, dropdownMenu);
+  //       this.toastrService.success(this.translateService.instant('UI.CONFIGURATION_DROPDOWN.SUCCESS'));
 
-      });
-    }
+  //     });
+  //   }
   }
 
   private closeDropdownMenu(dropdownButton: HTMLButtonElement, dropdownMenu: HTMLElement): void {

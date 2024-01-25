@@ -13,13 +13,13 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM --platform=$BUILDPLATFORM node:18.12-alpine3.16 AS client-builder
 WORKDIR /ui
 # cache packages in layer
-COPY ui/package.json /ui/package.json
-COPY ui/package-lock.json /ui/package-lock.json
+COPY frontend/package.json /ui/package.json
+COPY frontend/package-lock.json /ui/package-lock.json
 RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm && \
     npm ci
 # install
-COPY ui /ui
+COPY frontend /ui
 RUN npm run build
 
 FROM alpine
@@ -40,5 +40,5 @@ COPY docker-compose.yaml .
 COPY metadata.json .
 COPY docker.svg .
 COPY agent/.default.env .
-COPY --from=client-builder /ui/build ui
+COPY --from=client-builder /ui/dist ui
 CMD /service

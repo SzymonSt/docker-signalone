@@ -12,11 +12,11 @@ export class ConfigurationService {
     this.dockerDesktopClient = createDockerDesktopClient();
   }
 
-  public getConfiguration(): Observable<AgentStateDTO> {
-    return from(
-      this.dockerDesktopClient.extension.vm?.service?.get('/api/control/state')
-       ?? 
-       Promise.resolve<AgentStateDTO>({ state: false })
-      );
-  }
+  // public getConfiguration(): Observable<AgentStateDTO> {
+  //   return from(
+  //     this.dockerDesktopClient.extension.vm?.service?.get('/api/control/state')
+  //      ?? 
+  //      Promise.resolve<AgentStateDTO>({ state: false })
+  //     );
+  // }
 }
