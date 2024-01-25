@@ -19,6 +19,8 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
+    "@docker/extension-api-client": "^0.3.4",
+    "@docker/extension-api-client-types": "^0.3.4",
     "@ng-bootstrap/ng-bootstrap": "^15.1.1",
     "@ng-select/ng-select": "^11.2.0",
     "@ngx-translate/core": "^15.0.0",
