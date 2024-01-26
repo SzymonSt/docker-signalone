@@ -63,7 +63,7 @@ class ChatAgent:
     def run(self, logs, unique_id="test_id", userid="test_user1", container_name="testcontainer"):
         summary = self.understand_logs(logs)
         solution = self.master_agent(summary)
-        return self.generate_json(logs, summary, solution)
+        return json.loads(self.generate_json(logs, summary, solution))
     
 if __name__ == "__main__":
     agent = ChatAgent()
@@ -83,5 +83,9 @@ if __name__ == "__main__":
         2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/adapters.py", line 519, in send
         2023-11-28 23:45:53     raise ConnectionError(e, request=request)
         2023-11-28 23:45:53 requests.exceptions.ConnectionError: HTTPConnectionPool(host='status', port=8101): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f4f0e703af0>: Failed to resolve 'status' ([Errno -2] Name or service not known)"))"""
-    
-    print(agent.run(logs))
+    log="""Traceback (most recent call last):
+  File "D:\Projects\docker-signalone\solutionAgent\app.py", line 10, in <module>
+    inputs=gr.inputs.Textbox(lines=3, label="Error Logs"),
+           ^^^^^^^^^
+AttributeError: module 'gradio' has no attribute 'inputs'"""
+    print(agent.run(log))
