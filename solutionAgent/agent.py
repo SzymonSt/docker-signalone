@@ -80,7 +80,13 @@ class ChatAgent:
         return(response.choices[0].message.content)
     
     def run(self, logs, unique_id="test_id", userid="test_user1", container_name="testcontainer"):
-
+        """Function to run the agent
+        Args:
+            logs (str): logs from the user
+            unique_id (str): unique id of the user
+            userid (str): user id of the user
+            container_name (str): container name of the user
+        Returns: json object"""
         summary = self.understand_logs(logs)
         solution = self.master_agent(summary)
         return json.loads(self.generate_json(logs, summary, solution, unique_id, userid, container_name))
