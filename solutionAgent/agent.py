@@ -1,7 +1,6 @@
+"""Module for the chat agent."""
 import json
-import langchain
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
 from webcrawler import WebCrawler
@@ -10,11 +9,11 @@ from openai import OpenAI
 from datetime import datetime
 
 class ChatAgent:
+    """Class for the chat agent."""
     def __init__(self):
         load_dotenv()
         self.llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", temperature=0.5)
         self.client = OpenAI()
-
         self.webcrawler = WebCrawler()
         self.tools = [
                     Tool(
@@ -26,17 +25,37 @@ class ChatAgent:
         self.agent = initialize_agent(self.tools, self.llm, agent=AgentType.OPENAI_MULTI_FUNCTIONS, verbose=True)
 
     def understand_logs(self,logs):
+        """Function to understand logs and return a summary
+        Args:
+            logs (str): logs from the user
+        Returns: summary of the logs"""
+
         answer =  self.agent.run(f"""Imagine you are an expert software developer who helps in summarizing logs in high technical detail in points.
                                  DO NOT USE ANY TOOLS. Only give summary and no solutions. Here are the logs: \n {logs} """)
         return answer
-    
+
     def master_agent(self,summary):
+        """Function to find solutions to the logs using summary and web search
+        Args:
+            summary (str): summary of the logs
+        Returns: solution to the logs"""
+
         answer =  self.agent.run(f"""Imagine you are a software developer who has to provide solutions to errors in logs of a software.
                                      Use all tools available to make your answer. You can use the summary provided. Also provide the sources of your solutions.
                                      Here are the logs for which you need to find solutions: \n {summary}""")
         return answer
     
-    def generate_json(self, logs, summary, solution, unique_id="8uueerwer8248289", userid="iwuiji3h3928r7hyuwr", container_name="testcontainer"):
+    def generate_json(self, logs, summary, solution, unique_id, userid, container_name):
+        """Function to generate json object 
+        Args:
+            logs (str): logs from the user
+            summary (str): summary of the logs
+            solution (str): solution to the logs
+            unique_id (str): unique id of the user
+            userid (str): user id of the user
+            container_name (str): container name of the user
+        Returns: json object"""
+
         response = self.client.chat.completions.create(
         model="gpt-3.5-turbo-1106",
         response_format={ "type": "json_object" },
@@ -45,9 +64,9 @@ class ChatAgent:
             {"role": "user", "content": f""" Use {solution} to fill in the following JSON object values for "sources"
              array should include all links and sources. Give an appropriate title to the logs and summary in "title"
                             For your answer create a JSON object with the following schema:
-                            {{ "id": "unique_id", 
-                             "userid": "userid",
-                              "containerName": "container_name",
+                            {{ "id": {unique_id}, 
+                             "userid": {userid},
+                              "containerName": {container_name},
                              "logs":{logs},
                               "title": "Give a title",
                                "timestamp": { str(datetime.now())},
@@ -61,31 +80,8 @@ class ChatAgent:
         return(response.choices[0].message.content)
     
     def run(self, logs, unique_id="test_id", userid="test_user1", container_name="testcontainer"):
+
         summary = self.understand_logs(logs)
         solution = self.master_agent(summary)
-        return json.loads(self.generate_json(logs, summary, solution))
-    
-if __name__ == "__main__":
-    agent = ChatAgent()
-    logs = """ 2023-11-28 23:45:53 Traceback (most recent call last):
-        2023-11-28 23:45:53   File "/app/main.py", line 12, in <module>
-        2023-11-28 23:45:53     main()
-        2023-11-28 23:45:53   File "/app/main.py", line 7, in main
-        2023-11-28 23:45:53     requests.get(url='http://status:8101')
-        2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/api.py", line 73, in get
-        2023-11-28 23:45:53     return request("get", url, params=params, **kwargs)
-        2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/api.py", line 59, in request
-        2023-11-28 23:45:53     return session.request(method=method, url=url, **kwargs)
-        2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/sessions.py", line 589, in request
-        2023-11-28 23:45:53     resp = self.send(prep, **send_kwargs)
-        2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/sessions.py", line 703, in send
-        2023-11-28 23:45:53     r = adapter.send(request, **kwargs)
-        2023-11-28 23:45:53   File "/usr/local/lib/python3.9/site-packages/requests/adapters.py", line 519, in send
-        2023-11-28 23:45:53     raise ConnectionError(e, request=request)
-        2023-11-28 23:45:53 requests.exceptions.ConnectionError: HTTPConnectionPool(host='status', port=8101): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x7f4f0e703af0>: Failed to resolve 'status' ([Errno -2] Name or service not known)"))"""
-    log="""Traceback (most recent call last):
-  File "D:\Projects\docker-signalone\solutionAgent\app.py", line 10, in <module>
-    inputs=gr.inputs.Textbox(lines=3, label="Error Logs"),
-           ^^^^^^^^^
-AttributeError: module 'gradio' has no attribute 'inputs'"""
-    print(agent.run(log))
+        return json.loads(self.generate_json(logs, summary, solution, unique_id, userid, container_name))
+
