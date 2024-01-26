@@ -7,7 +7,7 @@ from langchain.agents import AgentType
 from webcrawler import WebCrawler
 from dotenv import load_dotenv
 from openai import OpenAI
-import time
+from datetime import datetime
 
 class ChatAgent:
     def __init__(self):
@@ -50,7 +50,7 @@ class ChatAgent:
                               "containerName": "container_name",
                              "logs":{logs},
                               "title": "Give a title",
-                               "timestamp": {time.time()},
+                               "timestamp": { str(datetime.now())},
                                "logsummary": {summary},
                                "predicted_solution":{solution},
                                 "sources": ["source1","source2","etc"]
