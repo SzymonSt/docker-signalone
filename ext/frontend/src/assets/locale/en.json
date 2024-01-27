@@ -28,7 +28,7 @@
       "PL_FLAG_ALT": "Polish flag"
     },
     "CONFIGURATION_DROPDOWN": {
-      "API_KEY": "API Key"
+      "AGENT_STATE": "Agent state"
     }
   },
   "FEATURES": {

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
 import { LoaderComponent } from './ui/components/loader/loader.component';
 import { HeaderComponent } from './ui/components/header/header.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,7 +23,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     TranslateModule,
     MatProgressSpinnerModule,
-    FormsModule
+    FormsModule,
+    MatSlideToggleModule
   ],
   exports: [
     LoaderComponent,

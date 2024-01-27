@@ -33,7 +33,9 @@ func CollectLogsForAnalysis(containerID string, cli *client.Client, logTimeTail 
 	logs, err := cli.ContainerLogs(context.Background(),
 		containerID,
 		types.ContainerLogsOptions{
-			Since: logTimeTail,
+			Since:      logTimeTail,
+			ShowStdout: true,
+			ShowStderr: true,
 		})
 	if err != nil {
 		return "", err

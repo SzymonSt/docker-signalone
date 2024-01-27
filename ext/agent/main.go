@@ -10,6 +10,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,15 +31,10 @@ type AgentTokenPayload struct {
 
 func main() {
 	var bearerToken = "Bearer " + token
-	// var socketPath = "/run/guest-services/backend.sock"
 	logger.SetOutput(os.Stdout)
 
-	logger.Infof("Starting collector")
 	_ = helpers.GetEnvVariables()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		logger.Fatalf("Failed to create docker client: %v", err)
-	}
+	cli, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	j, err := jscheduler.NewJob(
 		gocron.DurationJob(time.Second*15),
 		gocron.NewTask(jobs.ScanForErrors, cli, logger, bearerToken),
@@ -49,16 +45,15 @@ func main() {
 	jId = j.ID()
 	router := echo.New()
 	router.HideBanner = true
+	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 
-	// l, err := net.Listen("unix", socketPath)
-	if err != nil {
-		logger.Fatalf("Failed to create socket: %v", err)
-	}
-	// router.Listener = l
-	router.POST("/api/control/power", ControlPower)
+	router.POST("/api/control/state", ControlPower)
 	router.GET("/api/control/state", GetState)
 	router.POST("/api/control/token", ControlToken)
-	// logger.Fatal(router.Start(startUrl))
+	logger.Fatal(router.Start(":37002"))
 
 }
 
@@ -75,13 +70,18 @@ func ControlPower(c echo.Context) error {
 		c.JSON(400, "Invalid value for on")
 		return nil
 	}
+	logger.Infof("State: %v", statePayload.State)
 	if state == statePayload.State {
 		c.JSON(200, "Success")
 		return nil
 	}
-	if state {
+	if statePayload.State {
+		state = statePayload.State
+		logger.Infof("Starting collector")
 		jscheduler.Start()
+		logger.Infof("Collector started")
 	} else {
+		state = statePayload.State
 		jscheduler.StopJobs()
 	}
 	c.JSON(200, "Success")

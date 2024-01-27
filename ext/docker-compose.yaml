@@ -1,10 +1,14 @@
 services:
+  signaloneagent:
+    restart: unless-stopped
+    image: '322456/signalone-extension:dev'
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "37002:37002"
   signalonefrontend:
     image: '322456/signalonefrontend:dev'
     ports:
       - "37001:37001"
     depends_on:
       - signaloneagent
-  signaloneagent:
-    restart: unless-stopped
-    image: '322456/signalone-extension:dev'

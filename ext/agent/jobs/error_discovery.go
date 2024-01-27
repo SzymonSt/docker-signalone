@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 	"signal/helpers"
 	"strings"
@@ -27,7 +26,7 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string
 			isErrorState := false
 			timeTail := time.Now().Add(time.Second * -15).Format(time.RFC3339)
 			defer wg.Done()
-			fmt.Printf("Authorization: Bearer %s \n", bearerToken)
+			l.Infof("Authorization: Bearer %s \n", bearerToken)
 			container, err := cli.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
 				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
