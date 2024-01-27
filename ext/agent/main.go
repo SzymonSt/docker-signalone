@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net"
 	"os"
 	"signal/helpers"
 	"signal/jobs"
@@ -31,7 +30,7 @@ type AgentTokenPayload struct {
 
 func main() {
 	var bearerToken = "Bearer " + token
-	var socketPath = "/run/guest-services/backend.sock"
+	// var socketPath = "/run/guest-services/backend.sock"
 	logger.SetOutput(os.Stdout)
 
 	logger.Infof("Starting collector")
@@ -50,17 +49,16 @@ func main() {
 	jId = j.ID()
 	router := echo.New()
 	router.HideBanner = true
-	startUrl := ""
 
-	l, err := net.Listen("unix", socketPath)
+	// l, err := net.Listen("unix", socketPath)
 	if err != nil {
 		logger.Fatalf("Failed to create socket: %v", err)
 	}
-	router.Listener = l
+	// router.Listener = l
 	router.POST("/api/control/power", ControlPower)
 	router.GET("/api/control/state", GetState)
 	router.POST("/api/control/token", ControlToken)
-	logger.Fatal(router.Start(startUrl))
+	// logger.Fatal(router.Start(startUrl))
 
 }
 

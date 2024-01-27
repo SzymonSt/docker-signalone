@@ -13,14 +13,14 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM --platform=$BUILDPLATFORM node:18.12-alpine3.16 AS client-builder
 WORKDIR /ui
 # cache packages in layer
-COPY frontend/package.json /ui/package.json
-COPY frontend/package-lock.json /ui/package-lock.json
+COPY ui/package.json /ui/package.json
+COPY ui/package-lock.json /ui/package-lock.json
 RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm && \
     npm ci
 # install
-COPY frontend /ui
-RUN npm run build --baseHref=./
+COPY ui /ui
+RUN npm run build
 
 FROM alpine
 LABEL org.opencontainers.image.title="Signal0ne extension" \
@@ -39,5 +39,5 @@ COPY docker-compose.yaml .
 COPY metadata.json .
 COPY docker.svg .
 COPY agent/.default.env .
-COPY --from=client-builder /ui/dist ui
+COPY --from=client-builder /ui/build ui
 CMD /service
