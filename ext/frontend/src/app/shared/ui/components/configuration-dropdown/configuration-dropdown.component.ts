@@ -8,7 +8,7 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 @Component({
   selector: 'app-configuration-dropdown',
   templateUrl: './configuration-dropdown.component.html',
-  styleUrls: [ './configuration-dropdown.component.scss' ],
+  styleUrls: [ './configuration-dropdown.component.scss' ]
 })
 export class ConfigurationDropdownComponent {
   public agentState: AgentStateDTO = { 
@@ -25,7 +25,6 @@ export class ConfigurationDropdownComponent {
 
   public setAgentState(event: MatSlideToggleChange): void {
     this.agentState.state = event.checked
-    console.log(this.agentState);
     this.configurationService.setAgentState(this.agentState).subscribe(() => {
       this.toastrService.success(this.translateService.instant('configuration.agentStateUpdated'));
     });
