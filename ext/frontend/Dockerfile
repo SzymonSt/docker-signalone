@@ -8,4 +8,4 @@ EXPOSE 80
 
 # Serve the app using nginx
 FROM nginx:1.21.0-alpine
-COPY --from=0 /app/dist/signal-one /usr/share/nginx/html
+COPY --from=0 /app/dist /usr/share/nginx/html

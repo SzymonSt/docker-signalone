@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm ci
 # install
 COPY frontend /ui
-RUN npm run build
+RUN npm run build --baseHref=./
 
 FROM alpine
 LABEL org.opencontainers.image.title="Signal0ne extension" \
@@ -34,7 +34,6 @@ LABEL org.opencontainers.image.title="Signal0ne extension" \
     com.docker.extension.additional-urls="" \
     com.docker.extension.categories="" \
     com.docker.extension.changelog=""
-
 COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .

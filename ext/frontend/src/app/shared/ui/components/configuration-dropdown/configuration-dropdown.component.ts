@@ -14,18 +14,6 @@ export class ConfigurationDropdownComponent {
   constructor(private configurationService: ConfigurationService, private toastrService: ToastrService, private translateService: TranslateService) {
   }
 
-  public submitApiKey(dropdownButton: HTMLButtonElement, dropdownMenu: HTMLElement): void {
-  //   this.isSubmitted = true;
-  //   if (this.huggingfaceApiKey) {
-  //     this.isSubmitted = false;
-  //     this.configurationService.changeApiKeyVersion(this.huggingfaceApiKey).subscribe(() => {
-  //       this.closeDropdownMenu(dropdownButton, dropdownMenu);
-  //       this.toastrService.success(this.translateService.instant('UI.CONFIGURATION_DROPDOWN.SUCCESS'));
-
-  //     });
-  //   }
-  }
-
   private closeDropdownMenu(dropdownButton: HTMLButtonElement, dropdownMenu: HTMLElement): void {
     dropdownButton.classList.remove('show')
     dropdownButton.ariaExpanded = 'false';
