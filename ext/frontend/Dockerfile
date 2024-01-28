@@ -1,8 +1,9 @@
 FROM node:18.18.2-bullseye-slim
 WORKDIR /app
 COPY . /app
-RUN npm install
-RUN npm run build && \
+RUN apt-get update && apt-get install -y bzip2 &&\
+    npm install &&\ 
+    npm run build && \
     ls -la /app/dist
 EXPOSE 80
 
