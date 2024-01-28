@@ -1,7 +1,10 @@
 <div id="header">
-    <h1>{{'UI.HEADER.TITLE' | translate}}</h1>
+    <a href="#" class="logos-container">
+        <svg-icon class="img-logo" src="assets/image/signal_img_logo.svg" alt="Signal0ne"></svg-icon>
+        <svg-icon class="text-logo" src="assets/image/signal_text_logo.svg" alt="Signal0ne"></svg-icon>
+    </a>
     <div class="d-flex">
-        <app-configuration-dropdown></app-configuration-dropdown>
+        <app-configuration-dropdown *ngIf="configurationService.isCurrentAgentStateInitialized"></app-configuration-dropdown>
         <div *ngIf="(activeLanguage$ | async) as activeLanguage" class="flags-container ms-4">
             <img (click)="changeLanguage(LanguageVersion.EN)" [alt]="'UI.HEADER.US_FLAG_ALT' | translate"
                  [ngClass]="activeLanguage === LanguageVersion.EN ? 'active' :''"

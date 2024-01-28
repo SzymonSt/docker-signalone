@@ -34,7 +34,6 @@ LABEL org.opencontainers.image.title="Signal0ne extension" \
     com.docker.extension.additional-urls="" \
     com.docker.extension.categories="" \
     com.docker.extension.changelog=""
-
 COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .

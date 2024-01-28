@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(cli *client.Client, logger *logrus.Logger) {
+func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string) {
 	containers, err := helpers.ListContainers(cli)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
@@ -22,10 +22,11 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger) {
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		wg.Add(1)
-		go func(cli *client.Client, c types.Container, l *logrus.Logger, wg *sync.WaitGroup) {
+		go func(cli *client.Client, c types.Container, l *logrus.Logger, wg *sync.WaitGroup, bearerToken string) {
 			isErrorState := false
 			timeTail := time.Now().Add(time.Second * -15).Format(time.RFC3339)
 			defer wg.Done()
+			l.Infof("Authorization: Bearer %s \n", bearerToken)
 			container, err := cli.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
 				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
@@ -44,7 +45,7 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger) {
 			if isErrorState {
 				// TODO: send logs to analysis
 			}
-		}(cli, c, logger, &wg)
+		}(cli, c, logger, &wg, bearerToken)
 	}
 
 	wg.Wait()

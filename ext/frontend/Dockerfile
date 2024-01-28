@@ -1,11 +1,13 @@
 FROM node:18.18.2-bullseye-slim
 WORKDIR /app
 COPY . /app
-RUN npm install
-RUN npm run build && \
+RUN apt-get update && apt-get install -y bzip2 &&\
+    npm install &&\ 
+    npm run build && \
     ls -la /app/dist
 EXPOSE 80
 
 # Serve the app using nginx
 FROM nginx:1.21.0-alpine
-COPY --from=0 /app/dist/signal-one /usr/share/nginx/html
+COPY ./webserver/main.conf /etc/nginx/conf.d/default.conf
+COPY --from=0 /app/dist /usr/share/nginx/html

@@ -3,25 +3,25 @@
 }
 
 body {
-  font-size: 16px;
+  font-size: 16px !important;
 
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
+    font-weight: 500 !important;
   }
 
   h1 {
-    font-size: 36px;
+    font-size: 36px !important;
   }
 
   h2 {
-    font-size: 31px;
+    font-size: 31px !important;
   }
 
   h3 {
-    font-size: 24px;
+    font-size: 24px !important;
   }
 
   h4 {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 }

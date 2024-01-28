@@ -6,17 +6,14 @@
     <div class="dropdown-menu" #dropdownMenu>
         <div class="form-group mb-3">
             <label class="form-label"
-                   for="searchString">{{'UI.CONFIGURATION_DROPDOWN.API_KEY' | translate}}</label>
-            <input [(ngModel)]="huggingfaceApiKey" [placeholder]="'UI.CONFIGURATION_DROPDOWN.API_KEY' | translate"
-                   class="form-control"
-                   id="searchString"
-                   [ngClass]="{'invalid': isSubmitted && !huggingfaceApiKey}"
-                   required
-                   type="text">
-            <div *ngIf="!huggingfaceApiKey && isSubmitted" class="invalid-feedback mt-0 mb-3">
-                <div>{{ 'VALIDATION.REQUIRED' | translate }}</div>
+                   for="agentState">{{'UI.CONFIGURATION_DROPDOWN.AGENT_STATE' | translate}}</label>
+            <div class="agent-state-toggle">
+            <mat-slide-toggle
+                    name="agentState"
+                    id="agentState"
+                    [(ngModel)]="agentState.state"
+                    (ngModelChange)="setAgentState()"></mat-slide-toggle>
             </div>
         </div>
-        <button class="btn btn-primary submit-button" (click)="submitApiKey(dropdownButton, dropdownMenu)">{{'UI.SUBMIT' | translate}}</button>
     </div>
 </div>

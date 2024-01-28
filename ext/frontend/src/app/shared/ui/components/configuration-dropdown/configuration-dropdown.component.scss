@@ -23,11 +23,11 @@
     border-radius: 12px;
     border-color: var(--light-bright);
     border-width: 2px;
+  }
 
-    .submit-button {
-      display: block;
-      margin-left: auto;
-      padding: 12px;
-    }
+  .agent-state-toggle{
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
   }
 }

@@ -30,7 +30,7 @@
       "PL_FLAG_ALT": "Polska flaga"
     },
     "CONFIGURATION_DROPDOWN": {
-      "API_KEY": "Klucz API"
+      "AGENT_STATE": "Stan agenta"
     }
   },
   "FEATURES": {

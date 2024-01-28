@@ -1,0 +1,4 @@
+.mdc-switch:enabled .mdc-switch__track::after,
+.mdc-switch.mdc-switch--selected:enabled .mdc-switch__handle::after{
+  background-color: var(--primary) !important;
+}
