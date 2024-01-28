@@ -6,13 +6,13 @@
     <div class="dropdown-menu" #dropdownMenu>
         <div class="form-group mb-3">
             <label class="form-label"
-                   for="searchString">{{'UI.CONFIGURATION_DROPDOWN.AGENT_STATE' | translate}}</label>
+                   for="agentState">{{'UI.CONFIGURATION_DROPDOWN.AGENT_STATE' | translate}}</label>
             <div class="agent-state-toggle">
-            <label>Off</label>
             <mat-slide-toggle
-                   [checked]="agentState.state"
-                   (change)="setAgentState($event)"></mat-slide-toggle>
-            <label>On</label>
+                    name="agentState"
+                    id="agentState"
+                    [(ngModel)]="agentState.state"
+                    (ngModelChange)="setAgentState()"></mat-slide-toggle>
             </div>
         </div>
     </div>

@@ -19,4 +19,21 @@
       border-color: var(--primary);
     }
   }
+
+  .logos-container {
+    display: flex;
+    align-items: center;
+
+    svg-icon {
+      display: block;
+
+      &.img-logo {
+        width: 100px;
+      }
+
+      &.text-logo {
+        width: 200px;
+      }
+    }
+  }
 }

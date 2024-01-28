@@ -1,3 +1,4 @@
 export class AgentStateDTO {
-    public state: boolean
+    public constructor(public state: boolean) {
+    }
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environment/environment';
-import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
 import { IssueSearchCriteriaDTO } from 'app/shared/interfaces/IssueSearchCriteriaDTO';
 import { HttpEncoder } from 'app/shared/util/HttpEncoder';
 import { NormalizeObjectValue } from 'app/shared/util/NormalizeObjectValue';

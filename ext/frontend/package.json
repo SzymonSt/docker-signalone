@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^16.2.0",
+    "@angular/cdk": "^16.2.9",
     "@angular/common": "^16.2.0",
     "@angular/compiler": "^16.2.0",
     "@angular/core": "^16.2.0",
@@ -32,6 +33,7 @@
     "ngx-toastr": "^17.0.2",
     "rxjs": "~7.8.0",
     "sass-loader": "^13.3.2",
+    "svg-icon": "^0.8.2",
     "toastr": "^2.1.4",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
