@@ -1,8 +1,37 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API for SignalOne application",
+        "title": "SignalOne API",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
     "basePath": "/api",
-    "paths": {}
+    "paths": {
+        "/": {
+            "get": {
+                "description": "get the status of server.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "root"
+                ],
+                "summary": "Show the status of server.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

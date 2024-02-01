@@ -1,5 +1,25 @@
 basePath: /api
+host: localhost:8080
 info:
   contact: {}
-paths: {}
+  description: API for SignalOne application
+  title: SignalOne API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
 swagger: "2.0"

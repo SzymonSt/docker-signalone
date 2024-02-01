@@ -8,6 +8,8 @@ import (
 	"signalone/pkg/routers"
 	"signalone/pkg/utils"
 
+	_ "signalone/cmd/docs" // Import the generated docs package
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -28,6 +30,11 @@ var RAGHyperParameters = map[string]interface{}{
 	"limit": 3,
 }
 
+// @title SignalOne API
+// @version 1.0
+// @description API for SignalOne application
+// @host localhost:8080
+// @BasePath /api
 func main() {
 	var (
 		server = gin.Default()
@@ -105,8 +112,27 @@ func main() {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
 
+	// Add the following route for Swagger info
+	//router.GET("/swagger-info", getSwaggerInfo)
+
 	routeController := routers.NewMainRouter(mainController)
 	routeController.RegisterRoutes(router)
 
 	server.Run(":" + cfg.ServerPort)
+}
+
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router / [get]
+func HealthCheck(c *gin.Context) {
+	res := map[string]interface{}{
+		"data": "Server is up and running",
+	}
+
+	c.JSON(http.StatusOK, res)
 }
