@@ -21,6 +21,11 @@ class ChatAgent:
                         func=self.webcrawler.search,
                         description="useful for when you need to search for a specific topic on the web, use the query parameter to specify the what to search",
                     ),
+                    Tool(
+                        name="masteragent",
+                        func=self.master_agent,
+                        description="useful for when you find solutions to the logs using summary and web",
+                    ),
                     ]
         self.agent = initialize_agent(self.tools, self.llm, agent=AgentType.OPENAI_MULTI_FUNCTIONS, verbose=True)
 
@@ -41,7 +46,7 @@ class ChatAgent:
         Returns: solution to the logs"""
 
         answer =  self.agent.run(f"""Imagine you are a software developer who has to provide solutions to errors in logs of a software.
-                                     Use all tools available to make your answer. You can use the summary provided. Also provide the sources of your solutions.
+                                     Use all tools available to make your answer. You can ask multiple questions from the webagent. You can use the summary provided. Also provide the sources of your solutions.
                                      Here are the logs for which you need to find solutions: \n {summary}""")
         return answer
     
@@ -68,6 +73,7 @@ class ChatAgent:
                              "userid": {userid},
                               "containerName": {container_name},
                              "logs":{logs},
+                             "severity": "Act as a software tester amd give severity of the error",
                               "title": "Give a title",
                                "timestamp": { str(datetime.now())},
                                "logsummary": {summary},
