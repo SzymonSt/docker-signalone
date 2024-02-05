@@ -1,6 +1,6 @@
 """Module for the chat agent."""
 import json
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
 from webcrawler import WebCrawler
