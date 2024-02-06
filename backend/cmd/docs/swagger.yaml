@@ -1,12 +1,7 @@
-basePath: /api
-host: localhost:8080
 info:
   contact: {}
-  description: API for SignalOne application
-  title: SignalOne API
-  version: "1.0"
 paths:
-  /:
+  /hi:
     get:
       consumes:
       - '*/*'

@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
+	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -30,11 +30,11 @@ var RAGHyperParameters = map[string]interface{}{
 	"limit": 3,
 }
 
-// @title SignalOne API
-// @version 1.0
-// @description API for SignalOne application
-// @host localhost:8080
-// @BasePath /api
+//	@title			SignalOne API
+//	@version		1.0
+//	@description	API for SignalOne application
+//	@host			localhost:8080
+//	@BasePath		/api
 func main() {
 	var (
 		server = gin.Default()
@@ -44,9 +44,13 @@ func main() {
 		panic("critical: unable to load config")
 	}
 
-	if cfg.Mode == "local" {
-		server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	}
+	// if cfg.Mode == "local" {
+	// 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// }
+
+	ginSwagger.WrapHandler(swaggerfiles.Handler,
+		ginSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		ginSwagger.DefaultModelsExpandDepth(-1))
 
 	appDbClient, err := mongo.Connect(
 		context.Background(),
@@ -105,7 +109,7 @@ func main() {
 
 	server.Use(cors.New(corsConfig))
 
-	// @BasePath /api
+	//	@BasePath	/api
 	router := server.Group("/api")
 	router.GET("/healthz", func(ctx *gin.Context) {
 		message := "signal api is up and running, operational subsystems: {}"
@@ -128,7 +132,7 @@ func main() {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Router / [get]
+// @Router /hi [get]
 func HealthCheck(c *gin.Context) {
 	res := map[string]interface{}{
 		"data": "Server is up and running",
