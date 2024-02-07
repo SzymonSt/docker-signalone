@@ -18,12 +18,16 @@ docker extension install 322456/signalone-extension:latest
 
 ### Prerequisites
 - Docker with compose
+- Docker Desktop client
 - Make
 
-### Extension
+### Env variables
 ```
-make --directory=./ext build-extension
-make --directory=./ext install-extension
+cp backend/.env.template backend/.default.env
+# In backend/.default.env replace _APIKEY_ with your Huggingface API key 
+# Adjust other variables if needed(optional)
+
+cp ext/agent/.env.template ext/agent/.default.env
 ```
 
 ### Backend
@@ -37,7 +41,16 @@ make --directory=./backend start-backend
 ```
 OR
 ```
-make --directory=./backend start-backend-with-init // to start backend with init sample development data
+make --directory=./backend start-backend-with-init # to start backend with init sample development data
+```
+
+### Extension
+```
+#Build extension(both agent and frontend)
+make --directory=./ext build-extension
+
+#Run extension on your local docker desktop environment
+make --directory=./ext install-extension-local
 ```
 
 ### Simulated development environment
