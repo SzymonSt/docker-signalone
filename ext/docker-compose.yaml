@@ -1,5 +1,6 @@
 services:
   signaloneagent:
+    container_name: signaloneagent
     restart: unless-stopped
     image: '322456/signalone-extension:dev'
     volumes: 
@@ -7,6 +8,7 @@ services:
     ports:
       - "37002:37002"
   signalonefrontend:
+    container_name: signalonefrontend
     image: '322456/signalonefrontend:dev'
     ports:
       - "37001:37001"
