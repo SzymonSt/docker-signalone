@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	_ "signalone/docs"
 	"signalone/pkg/components"
 	"signalone/pkg/models"
 	"signalone/pkg/utils"
@@ -44,6 +45,18 @@ func NewMainController(iEngine *utils.InferenceEngine,
 	}
 }
 
+// LogAnalysisTask godoc
+// @Summary Perform log analysis and generate solutions.
+// @Description Perform log analysis based on the provided logs and generate solutions.
+// @Tags analysis
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer <token>"
+// @Param logAnalysisPayload body LogAnalysisPayload true "Log analysis payload"
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} map[string]any
+// @Failure 401 {object} map[string]any
+// @Router /issues/analysis [put]
 func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	var generatedSummary string
 	var proposedSolutions components.SolutionPredictionResult
@@ -113,6 +126,24 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	})
 }
 
+// IssuesSearch godoc
+// @Summary Search for issues based on specified criteria.
+// @Description Search for issues based on specified criteria.
+// @Tags issues
+// @Accept json
+// @Produce json
+// @Param offset query int false "Offset for paginated results"
+// @Param limit query int false "Maximum number of results per page (default: 30, max: 100)"
+// @Param searchString query string false "Search string for filtering issues"
+// @Param container query string false "Filter by container name"
+// @Param issueSeverity query string false "Filter by issue severity"
+// @Param issueType query string false "Filter by issue type"
+// @Param startTimestamp query string false "Filter issues starting from this timestamp (RFC3339 format)"
+// @Param endTimestamp query string false "Filter issues until this timestamp (RFC3339 format)"
+// @Param isResolved query bool false "Filter resolved or unresolved issues"
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} map[string]any
+// @Router /issues [get]
 func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	issues := make([]models.IssueSearchResult, 0)
 	var max int64
@@ -200,6 +231,16 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	})
 }
 
+// GetIssue godoc
+// @Summary Get information about a specific issue.
+// @Description Get information about a specific issue by providing its ID.
+// @Tags issues
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the issue"
+// @Success 200 {object} models.Issue
+// @Failure 404 {object} map[string]any
+// @Router /issues/{id} [get]
 func (c *MainController) GetIssue(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var issue models.Issue
@@ -210,6 +251,18 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 	ctx.JSON(200, issue)
 }
 
+// ResolveIssue godoc
+// @Summary Resolve an issue by setting its status to resolved.
+// @Description Resolve an issue by providing its ID and updating its status to resolved.
+// @Tags issues
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the issue to be resolved"
+// @Success 200 {object} map[string]any
+// @Failure 404 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /issues/resolve/{id} [post]
+// @RequestBody application/json ResolveIssueRequest true "Issue resolution request"
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
 	id := ctx.Param("id")
 	res, err := c.issuesCollection.UpdateOne(ctx,
@@ -232,6 +285,16 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 	})
 }
 
+// DeleteIssues godoc
+// @Summary Delete issues based on the provided container name.
+// @Description Delete issues based on the provided container name.
+// @Tags issues
+// @Accept json
+// @Produce json
+// @Param container query string true "Container name to delete issues from"
+// @Success 200 {object} map[string]any
+// @Failure 500 {object} map[string]any
+// @Router /issues [delete]
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
 	container := ctx.Query("container")
 	fmt.Print("Container: ", container)
@@ -246,6 +309,16 @@ func (c *MainController) DeleteIssues(ctx *gin.Context) {
 	})
 }
 
+// GetContainers godoc
+// @Summary Get a list of containers based on the provided user ID.
+// @Description Get a list of containers based on the provided user ID.
+// @Tags containers
+// @Accept json
+// @Produce json
+// @Param userId query string true "User ID to filter containers"
+// @Success 200 {array} string
+// @Failure 500 {object} map[string]any
+// @Router /containers [get]
 func (c *MainController) GetContainers(ctx *gin.Context) {
 	containers := make([]string, 0)
 	userId := ctx.Query("userId")

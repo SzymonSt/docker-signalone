@@ -5,7 +5,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -C ./cmd -o ../backend
+RUN go build -C . -o ./backend
 
 FROM alpine
 WORKDIR /app

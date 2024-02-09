@@ -8,6 +8,8 @@ import (
 	"signalone/pkg/routers"
 	"signalone/pkg/utils"
 
+	_ "signalone/docs" // Import the generated docs package
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -28,6 +30,11 @@ var RAGHyperParameters = map[string]interface{}{
 	"limit": 3,
 }
 
+// @title			SignalOne API
+// @version		1.0
+// @description	API for SignalOne application
+// @host			localhost:8080
+// @BasePath		/api
 func main() {
 	var (
 		server = gin.Default()
@@ -98,7 +105,6 @@ func main() {
 
 	server.Use(cors.New(corsConfig))
 
-	// @BasePath /api
 	router := server.Group("/api")
 	router.GET("/healthz", func(ctx *gin.Context) {
 		message := "signal api is up and running, operational subsystems: {}"
