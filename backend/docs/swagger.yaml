@@ -1,0 +1,262 @@
+basePath: /api
+definitions:
+  controllers.LogAnalysisPayload:
+    properties:
+      containerName:
+        type: string
+      logs:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.Issue:
+    properties:
+      containerName:
+        type: string
+      id:
+        type: string
+      isResolved:
+        type: boolean
+      issuePredictedSolutionsSources:
+        items:
+          $ref: '#/definitions/models.IssueSolutionPredictionSolutionSource'
+        type: array
+      logSummary:
+        type: string
+      logs:
+        type: string
+      predictedSolutionsSummary:
+        type: string
+      severity:
+        type: string
+      timestamp:
+        type: string
+      title:
+        type: string
+      userId:
+        type: string
+    type: object
+  models.IssueSolutionPredictionSolutionSource:
+    properties:
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for SignalOne application
+  title: SignalOne API
+  version: "1.0"
+paths:
+  /containers:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of containers based on the provided user ID.
+      parameters:
+      - description: User ID to filter containers
+        in: query
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a list of containers based on the provided user ID.
+      tags:
+      - containers
+  /issues:
+    delete:
+      consumes:
+      - application/json
+      description: Delete issues based on the provided container name.
+      parameters:
+      - description: Container name to delete issues from
+        in: query
+        name: container
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete issues based on the provided container name.
+      tags:
+      - issues
+    get:
+      consumes:
+      - application/json
+      description: Search for issues based on specified criteria.
+      parameters:
+      - description: Offset for paginated results
+        in: query
+        name: offset
+        type: integer
+      - description: 'Maximum number of results per page (default: 30, max: 100)'
+        in: query
+        name: limit
+        type: integer
+      - description: Search string for filtering issues
+        in: query
+        name: searchString
+        type: string
+      - description: Filter by container name
+        in: query
+        name: container
+        type: string
+      - description: Filter by issue severity
+        in: query
+        name: issueSeverity
+        type: string
+      - description: Filter by issue type
+        in: query
+        name: issueType
+        type: string
+      - description: Filter issues starting from this timestamp (RFC3339 format)
+        in: query
+        name: startTimestamp
+        type: string
+      - description: Filter issues until this timestamp (RFC3339 format)
+        in: query
+        name: endTimestamp
+        type: string
+      - description: Filter resolved or unresolved issues
+        in: query
+        name: isResolved
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search for issues based on specified criteria.
+      tags:
+      - issues
+  /issues/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get information about a specific issue by providing its ID.
+      parameters:
+      - description: ID of the issue
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Issue'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get information about a specific issue.
+      tags:
+      - issues
+  /issues/analysis:
+    put:
+      consumes:
+      - application/json
+      description: Perform log analysis based on the provided logs and generate solutions.
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Log analysis payload
+        in: body
+        name: logAnalysisPayload
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LogAnalysisPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Perform log analysis and generate solutions.
+      tags:
+      - analysis
+  /issues/resolve/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Resolve an issue by providing its ID and updating its status to
+        resolved.
+      parameters:
+      - description: ID of the issue to be resolved
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Resolve an issue by setting its status to resolved.
+      tags:
+      - issues
+swagger: "2.0"

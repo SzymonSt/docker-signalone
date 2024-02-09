@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	_ "signalone/cmd/docs"
+	_ "signalone/docs"
 	"signalone/pkg/components"
 	"signalone/pkg/models"
 	"signalone/pkg/utils"
@@ -53,9 +53,9 @@ func NewMainController(iEngine *utils.InferenceEngine,
 // @Produce json
 // @Param Authorization header string true "Bearer <token>"
 // @Param logAnalysisPayload body LogAnalysisPayload true "Log analysis payload"
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
-// @Failure 401 {object} gin.H
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} map[string]any
+// @Failure 401 {object} map[string]any
 // @Router /issues/analysis [put]
 func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	var generatedSummary string
@@ -141,8 +141,8 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 // @Param startTimestamp query string false "Filter issues starting from this timestamp (RFC3339 format)"
 // @Param endTimestamp query string false "Filter issues until this timestamp (RFC3339 format)"
 // @Param isResolved query bool false "Filter resolved or unresolved issues"
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
+// @Success 200 {object} map[string]any
+// @Failure 400 {object} map[string]any
 // @Router /issues [get]
 func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	issues := make([]models.IssueSearchResult, 0)
@@ -239,7 +239,7 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "ID of the issue"
 // @Success 200 {object} models.Issue
-// @Failure 404 {object} gin.H
+// @Failure 404 {object} map[string]any
 // @Router /issues/{id} [get]
 func (c *MainController) GetIssue(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -258,9 +258,9 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the issue to be resolved"
-// @Success 200 {object} gin.H
-// @Failure 404 {object} gin.H
-// @Failure 500 {object} gin.H
+// @Success 200 {object} map[string]any
+// @Failure 404 {object} map[string]any
+// @Failure 500 {object} map[string]any
 // @Router /issues/resolve/{id} [post]
 // @RequestBody application/json ResolveIssueRequest true "Issue resolution request"
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
@@ -292,8 +292,8 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param container query string true "Container name to delete issues from"
-// @Success 200 {object} gin.H
-// @Failure 500 {object} gin.H
+// @Success 200 {object} map[string]any
+// @Failure 500 {object} map[string]any
 // @Router /issues [delete]
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
 	container := ctx.Query("container")
@@ -317,7 +317,7 @@ func (c *MainController) DeleteIssues(ctx *gin.Context) {
 // @Produce json
 // @Param userId query string true "User ID to filter containers"
 // @Success 200 {array} string
-// @Failure 500 {object} gin.H
+// @Failure 500 {object} map[string]any
 // @Router /containers [get]
 func (c *MainController) GetContainers(ctx *gin.Context) {
 	containers := make([]string, 0)
