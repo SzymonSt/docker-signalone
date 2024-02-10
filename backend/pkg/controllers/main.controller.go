@@ -105,17 +105,19 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	}
 	fmt.Println("Generated Summary: ", generatedSummary)
 	fmt.Println("Proposed Solutions: ", proposedSolutions)
-	fmt.Printf("Soultion Sources: %+v\n", proposedSolutions.SolutionSources)
+	fmt.Printf("Solution Sources: %+v\n", proposedSolutions.SolutionSources)
+
+	formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
 
 	c.issuesCollection.InsertOne(ctx, models.Issue{
 		Id:                        issueId,
 		UserId:                    logAnalysisPayload.UserId,
 		ContainerName:             logAnalysisPayload.ContainerName,
-		Severtiy:                  strings.ToUpper("Critical"),                             // TODO: Implement severity detection
+		Severity:                  strings.ToUpper("Critical"),                             // TODO: Implement severity detection
 		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
 		TimeStamp:                 time.Now(),
 		IsResolved:                false,
-		Logs:                      logAnalysisPayload.Logs,
+		Logs:                      formattedAnalysisLogs,
 		LogSummary:                generatedSummary,
 		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
 		PredictedSolutionsSources: proposedSolutions.SolutionSources,
