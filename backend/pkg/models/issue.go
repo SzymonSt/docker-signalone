@@ -20,8 +20,8 @@ type Issue struct {
 	Id                        string                                  `json:"id" bson:"_id"`
 	UserId                    string                                  `json:"userId" bson:"userId"`
 	ContainerName             string                                  `json:"containerName" bson:"containerName"`
-	Severtiy                  string                                  `json:"severity" bson:"severity"`
-	Logs                      string                                  `json:"logs" bson:"logs"`
+	Severity                  string                                  `json:"severity" bson:"severity"`
+	Logs                      []string                                `json:"logs" bson:"logs"`
 	Title                     string                                  `json:"title" bson:"title"`
 	IsResolved                bool                                    `json:"isResolved" bson:"isResolved"`
 	TimeStamp                 time.Time                               `json:"timestamp" bson:"timestamp"`
