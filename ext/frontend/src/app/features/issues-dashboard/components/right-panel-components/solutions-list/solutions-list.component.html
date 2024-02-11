@@ -2,10 +2,14 @@
     <h3>
         {{'FEATURES.ISSUES.INSIGHTS' | translate}}
     </h3>
-    <p>
+
+    <p class="mb-3">
       {{activeIssue.logSummary}}
     </p>
-    <p>
+    <div class="logs-container mb-3" *ngIf="activeIssue.logs.length">
+        <p *ngFor="let log of activeIssue.logs" class="m-0">{{log}}</p>
+    </div>
+    <p class="mb-3">
         {{activeIssue.predictedSolutionsSummary}}
     </p>
     <h3>{{'FEATURES.ISSUES.SOURCES' | translate}}</h3>
