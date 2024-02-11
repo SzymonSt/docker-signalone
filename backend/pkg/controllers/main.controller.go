@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"net/http"
 	_ "signalone/docs"
 	"signalone/pkg/components"
 	"signalone/pkg/models"
@@ -113,6 +114,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		Id:                        issueId,
 		UserId:                    logAnalysisPayload.UserId,
 		ContainerName:             logAnalysisPayload.ContainerName,
+		Score:                     0,
 		Severity:                  strings.ToUpper("Critical"),                             // TODO: Implement severity detection
 		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
 		TimeStamp:                 time.Now(),
@@ -251,6 +253,80 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, issue)
+}
+
+func (c *MainController) RateIssue(ctx *gin.Context) {
+	var issueRateReq models.IssueRateRequest
+	var user bson.M
+
+	err := ctx.ShouldBindJSON(&issueRateReq)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": issueRateReq.UserId})
+
+	err = userResult.Decode(&user)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	isPro := user["isPro"].(bool)
+
+	if isPro {
+		counter, ok := user["counter"].(int32)
+
+		if !ok {
+			counter = 0
+		}
+
+		_, err := c.usersCollection.UpdateOne(ctx,
+			bson.M{"userId": issueRateReq.UserId},
+			bson.M{
+				"$set": bson.M{
+					"counter": counter + *issueRateReq.Score,
+				},
+			})
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else {
+		id := ctx.Param("id")
+
+		issueConditions := bson.M{
+			"_id":    id,
+			"userId": issueRateReq.UserId,
+		}
+
+		filter := utils.GenerateFilter(issueConditions)
+
+		result, err := c.issuesCollection.UpdateOne(ctx,
+			filter,
+			bson.M{
+				"$set": bson.M{
+					"score": issueRateReq.Score,
+				},
+			})
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if result.MatchedCount == 0 {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue does not exist"})
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Success",
+	})
 }
 
 // ResolveIssue godoc

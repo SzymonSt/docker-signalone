@@ -1,8 +1,13 @@
 package models
 
 type User struct {
-	UserId           string `json:"userId"`
-	UserName         string `json:"userName"`
-	IsPro            bool   `json:"isPro"`
-	AgentBearerToken string `json:"agentBearerToken"`
+	UserId           string `json:"userId" bson:"userId"`
+	UserName         string `json:"userName" bson:"userName"`
+	IsPro            bool   `json:"isPro" bson:"isPro"`
+	AgentBearerToken string `json:"agentBearerToken" bson:"agentBearerToken"`
+}
+
+type UserPro struct {
+	User
+	Counter int32 `json:"counter" bson:"counter"`
 }
