@@ -31,7 +31,7 @@
     border: 2px solid var(--light-bright);
     padding: 12px;
     border-radius: 12px;
-    height: 300px;
+    max-height: 300px;
     overflow-y: auto;
 
     p {
@@ -44,5 +44,8 @@
     p:not(:last-child) {
       border-bottom: 1px solid var(--light-bright);
     }
+  }
+  .accordion-button:not(.collapsed) {
+    background-color: var(--white);
   }
 }
