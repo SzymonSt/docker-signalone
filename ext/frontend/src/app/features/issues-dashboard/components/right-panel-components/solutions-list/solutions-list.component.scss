@@ -26,4 +26,26 @@
       cursor: pointer;
     }
   }
+
+  .logs-container {
+    border: 2px solid var(--light-bright);
+    padding: 12px;
+    border-radius: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+
+    p {
+      display: flex;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      align-items: center;
+    }
+
+    p:not(:last-child) {
+      border-bottom: 1px solid var(--light-bright);
+    }
+  }
+  .accordion-button:not(.collapsed) {
+    background-color: var(--white);
+  }
 }

@@ -3,7 +3,7 @@ import { IssuePredictedSolutionSourceDTO } from 'app/shared/interfaces/IssuePred
 
 export class DetailedIssueDTO extends IssueDTO {
   public logSummary : string;
-  public logs: string;
+  public logs: string[];
   public predictedSolutionsSummary: string;
   public issuePredictedSolutionsSources: IssuePredictedSolutionSourceDTO[];
 }

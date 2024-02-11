@@ -10,7 +10,6 @@ import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 export class SolutionsListComponent {
   @Input()
   public activeIssue: DetailedIssueDTO;
-
   constructor() {
   }
 

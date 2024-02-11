@@ -46,6 +46,7 @@
       "SEARCH": "Search",
       "INSIGHTS": "Insights: ",
       "SOURCES": "Sources: ",
+      "SOURCES_^RAW": "Sources",
       "CHAT": {
         "ASK_MODEL": "Ask model"
       }

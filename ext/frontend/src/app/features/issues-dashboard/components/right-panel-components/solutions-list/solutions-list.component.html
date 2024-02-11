@@ -2,10 +2,25 @@
     <h3>
         {{'FEATURES.ISSUES.INSIGHTS' | translate}}
     </h3>
-    <p>
+
+    <p class="mb-3">
       {{activeIssue.logSummary}}
     </p>
-    <p>
+    <div class="accordion accordion-flush logs-container mb-3 py-0" id="accordionFlushExample" *ngIf="activeIssue.logs?.length">
+        <div class="accordion-item">
+            <h2 class="accordion-header mb-0" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                    {{'FEATURES.ISSUES.SOURCES_^RAW' | translate}}
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body py-1">
+                    <p *ngFor="let log of activeIssue.logs" class="m-0">{{log}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="mb-3">
         {{activeIssue.predictedSolutionsSummary}}
     </p>
     <h3>{{'FEATURES.ISSUES.SOURCES' | translate}}</h3>
