@@ -256,8 +256,9 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 }
 
 func (c *MainController) RateIssue(ctx *gin.Context) {
+	var issue models.Issue
 	var issueRateReq models.IssueRateRequest
-
+	var user models.User
 	// TODO: Implement user authentication with tokens
 	// bearerToken := ctx.GetHeader("Authorization")
 
@@ -284,8 +285,6 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 	}
 
 	// Fetch user doc
-	var user models.User
-
 	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
 
 	err = userResult.Decode(&user)
@@ -304,9 +303,7 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		"userId": userId,
 	}
 
-	filter := utils.GenerateFilter(issueConditions)
-
-	var issue models.Issue
+	filter := utils.GenerateFilter(issueConditions, "$and")
 
 	issueResult := c.issuesCollection.FindOne(ctx, filter)
 
