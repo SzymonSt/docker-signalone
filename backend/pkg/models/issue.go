@@ -1,7 +1,12 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
+type IssueRateRequest struct {
+	Score *int32 `json:"score" binding:"required"` // it must be a pointer because if we get 0 then the required error arises
+}
 type IssueSolutionPredictionSolutionSource struct {
 	Title string `json:"title" bson:"title"`
 	Url   string `json:"url" bson:"url"`
@@ -20,6 +25,7 @@ type Issue struct {
 	Id                        string                                  `json:"id" bson:"_id"`
 	UserId                    string                                  `json:"userId" bson:"userId"`
 	ContainerName             string                                  `json:"containerName" bson:"containerName"`
+	Score                     int32                                   `json:"score" bson:"score" binding:"odeof=-1 0 1"`
 	Severity                  string                                  `json:"severity" bson:"severity"`
 	Logs                      []string                                `json:"logs" bson:"logs"`
 	Title                     string                                  `json:"title" bson:"title"`

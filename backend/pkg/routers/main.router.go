@@ -27,6 +27,7 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	userRouterGroup.GET("/issues", mr.mainController.IssuesSearch)
 	userRouterGroup.GET("/issues/:id", mr.mainController.GetIssue)
 	userRouterGroup.POST("/issues/:id", mr.mainController.ResolveIssue)
+	userRouterGroup.PUT("/issues/:id/score", mr.mainController.RateIssue)
 	userRouterGroup.GET("/containers", mr.mainController.GetContainers)
 	userRouterGroup.POST("/agent/authenticate", func(c *gin.Context) {})
 
