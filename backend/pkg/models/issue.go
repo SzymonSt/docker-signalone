@@ -5,8 +5,7 @@ import (
 )
 
 type IssueRateRequest struct {
-	Score  *int32 `json:"score" binding:"required"` // it must be a pointer because if we get 0 then the required error arises
-	UserId string `json:"userId" binding:"required"`
+	Score *int32 `json:"score" binding:"required"` // it must be a pointer because if we get 0 then the required error arises
 }
 type IssueSolutionPredictionSolutionSource struct {
 	Title string `json:"title" bson:"title"`

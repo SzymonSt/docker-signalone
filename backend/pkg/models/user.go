@@ -5,9 +5,5 @@ type User struct {
 	UserName         string `json:"userName" bson:"userName"`
 	IsPro            bool   `json:"isPro" bson:"isPro"`
 	AgentBearerToken string `json:"agentBearerToken" bson:"agentBearerToken"`
-}
-
-type UserPro struct {
-	User
-	Counter int32 `json:"counter" bson:"counter"`
+	Counter          int32  `json:"counter" bson:"counter"`
 }

@@ -257,7 +257,20 @@ func (c *MainController) GetIssue(ctx *gin.Context) {
 
 func (c *MainController) RateIssue(ctx *gin.Context) {
 	var issueRateReq models.IssueRateRequest
-	var user bson.M
+
+	// TODO: Implement user authentication with tokens
+	// bearerToken := ctx.GetHeader("Authorization")
+
+	// if bearerToken == "" {
+	// 	ctx.JSON(401, gin.H{
+	// 		"message": "Unauthorized",
+	// 	})
+	// 	return
+	// }
+
+	// bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
+
+	userId := "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
 
 	err := ctx.ShouldBindJSON(&issueRateReq)
 
@@ -265,7 +278,10 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": issueRateReq.UserId})
+	// Fetch user doc
+	var user models.User
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
 
 	err = userResult.Decode(&user)
 
@@ -273,56 +289,81 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// Fetch user doc END
 
-	isPro := user["isPro"].(bool)
+	// Fetch issue doc
+	id := ctx.Param("id")
 
-	if isPro {
-		counter, ok := user["counter"].(int32)
-
-		if !ok {
-			counter = 0
-		}
-
-		_, err := c.usersCollection.UpdateOne(ctx,
-			bson.M{"userId": issueRateReq.UserId},
-			bson.M{
-				"$set": bson.M{
-					"counter": counter + *issueRateReq.Score,
-				},
-			})
-
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else {
-		id := ctx.Param("id")
-
-		issueConditions := bson.M{
-			"_id":    id,
-			"userId": issueRateReq.UserId,
-		}
-
-		filter := utils.GenerateFilter(issueConditions)
-
-		result, err := c.issuesCollection.UpdateOne(ctx,
-			filter,
-			bson.M{
-				"$set": bson.M{
-					"score": issueRateReq.Score,
-				},
-			})
-
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		if result.MatchedCount == 0 {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue does not exist"})
-			return
-		}
+	issueConditions := bson.M{
+		"_id":    id,
+		"userId": userId,
 	}
+
+	filter := utils.GenerateFilter(issueConditions)
+
+	var issue models.Issue
+
+	issueResult := c.issuesCollection.FindOne(ctx, filter)
+
+	err = issueResult.Decode(&issue)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Fetch issue doc END
+
+	//Update issue score
+	var currentIssueScore = issue.Score
+	fmt.Println("Current Issue Score: ", currentIssueScore, *issueRateReq.Score)
+
+	if currentIssueScore == *issueRateReq.Score {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Issue already rated with the same score"})
+		return
+	}
+
+	updatedIssueResult, err := c.issuesCollection.UpdateOne(ctx,
+		filter,
+		bson.M{
+			"$set": bson.M{
+				"score": issueRateReq.Score,
+			},
+		})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if updatedIssueResult.MatchedCount == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue cannot be found"})
+		return
+	}
+	// Update issue score END
+
+	// Updating user counter
+	counter := user.Counter
+
+	counter = utils.CalculateNewCounter(currentIssueScore, *issueRateReq.Score, counter)
+
+	updatedUserResult, err := c.usersCollection.UpdateOne(ctx,
+		bson.M{"userId": userId},
+		bson.M{
+			"$set": bson.M{
+				"counter": counter,
+			},
+		})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if updatedUserResult.MatchedCount == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User cannot be found"})
+		return
+	}
+	// Updating user counter END
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
