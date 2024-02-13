@@ -30,4 +30,10 @@
         </div>
 
     </div>
+
+    <div class="likes-container">
+        <i class="bi bi-hand-thumbs-up" [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''" (click)="positiveScoreSelected()" [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"></i>
+        <div class="divider"></div>
+        <i class="bi bi-hand-thumbs-down" [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"  (click)="negativeScoreSelected()" [ngClass]="activeIssue.score === - 1 ? 'score-selected' : ''"></i>
+    </div>
 </div>
