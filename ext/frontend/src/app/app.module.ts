@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as moment from 'moment';
 import { ToastrModule } from 'ngx-toastr';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { AuthModule } from 'app/auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
       extendedTimeOut: moment.duration(3, 'seconds').as('milliseconds'),
       enableHtml: true
     }),
+    AuthModule,
   ],
   providers: [ AlertConfig, BsDatepickerConfig ],
   bootstrap: [ AppComponent ],

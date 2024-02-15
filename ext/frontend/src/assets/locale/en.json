@@ -1,7 +1,8 @@
 {
   "VALIDATION": {
     "DATE_RANGE_INVALID": "The withdrawal date from cannot be later than the withdrawal date to",
-    "REQUIRED": "This field is required"
+    "REQUIRED": "This field is required",
+    "INVALID_EMAIL": "This email address is invalid"
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",
@@ -31,25 +32,29 @@
       "AGENT_STATE": "Agent state"
     }
   },
+  "AUTH": {
+    "LOGIN_HEADER": "Log in to your Signal account",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "LOGIN": "Sign in"
+  },
   "FEATURES": {
-    "ISSUES": {
-      "SEARCH_CRITERIA": "Search criteria",
-      "ISSUE_NAME": "Issue name",
-      "TYPE": "Type",
-      "SEVERITY": "Severity",
-      "CONTAINER": "Container",
-      "DATE_FROM": "Date from",
-      "DATE_TO": "Date to",
-      "DATE_PLACEHOLDER": "DD/MM/YYYY",
-      "UNRESOLVED_ONLY": "Show only unresolved issues",
-      "CLEAR": "Clear",
-      "SEARCH": "Search",
-      "INSIGHTS": "Insights: ",
-      "SOURCES": "Sources: ",
-      "SOURCES_^RAW": "Sources",
-      "CHAT": {
-        "ASK_MODEL": "Ask model"
-      }
+    "SEARCH_CRITERIA": "Search criteria",
+    "ISSUE_NAME": "Issue name",
+    "TYPE": "Type",
+    "SEVERITY": "Severity",
+    "CONTAINER": "Container",
+    "DATE_FROM": "Date from",
+    "DATE_TO": "Date to",
+    "DATE_PLACEHOLDER": "DD/MM/YYYY",
+    "UNRESOLVED_ONLY": "Show only unresolved issues",
+    "CLEAR": "Clear",
+    "SEARCH": "Search",
+    "INSIGHTS": "Insights: ",
+    "SOURCES": "Sources: ",
+    "SOURCES_^RAW": "Sources",
+    "CHAT": {
+      "ASK_MODEL": "Ask model"
     }
   }
 }
