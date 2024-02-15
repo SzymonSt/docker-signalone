@@ -44,8 +44,8 @@ class ChatAgent:
             logs (str): logs from the user
         Returns: summary of the logs"""
 
-        answer =  self.llm(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail in points.
-                                Only give summary and not solutions. Give summary in short points. Here are the logs: \n {logs} 
+        answer =  self.llm(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail.
+                                Only give summary in form of paragraph and not solutions. Here are the logs: \n {logs} 
                                 Summary: """)
         return answer
 
@@ -55,7 +55,7 @@ class ChatAgent:
             summary (str): summary of the logs
         Returns: solution to the logs"""
 
-        answer =  self.agent_executor.invoke({"input":f"""Imagine you are a software developer who has to provide solutions to errors in logs of a software.
+        answer =  self.agent_executor.invoke({"input":f"""Imagine you are a software developer who has to provide short summary of available solutions to errors in logs of a software.
                                      Use all tools available to make your answer. You can ask multiple questions from the webagent. Use websearch agent to search about information. You can use the summary provided. Also provide the sources of your solutions.
                                      Here are the logs for which you need to find solution and provide code if necessary: \n {summary}"""})
         
