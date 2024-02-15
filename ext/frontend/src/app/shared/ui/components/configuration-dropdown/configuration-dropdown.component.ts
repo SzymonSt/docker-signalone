@@ -18,7 +18,6 @@ export class ConfigurationDropdownComponent implements OnInit {
   }
 
   public setAgentState(): void {
-    console.log(this.agentState)
     this.configurationService.setAgentState(this.agentState);
   }
 

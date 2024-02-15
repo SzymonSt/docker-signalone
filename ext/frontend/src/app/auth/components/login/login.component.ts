@@ -22,7 +22,6 @@ export class LoginComponent implements OnInit{
     this.isSubmitted = true;
     this.loginForm.markAsDirty();
     this.loginForm.markAllAsTouched();
-    console.log('TEST', this.loginForm)
     if (this.loginForm.valid) {
       console.log(this.loginForm.value)
     }
