@@ -1,7 +1,6 @@
 """Module for crawling the web."""
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-
 class WebCrawler:
     """Class for crawling the web."""
     def __init__(self):
