@@ -1,7 +1,8 @@
 {
   "VALIDATION": {
     "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do",
-    "REQUIRED": "To pole jest wymagane"
+    "REQUIRED": "To pole jest wymagane",
+    "INVALID_EMAIL": "Ten adres email jest nieprawidłowy"
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
@@ -32,6 +33,12 @@
     "CONFIGURATION_DROPDOWN": {
       "AGENT_STATE": "Stan agenta"
     }
+  },
+  "AUTH": {
+    "LOGIN_HEADER": "Zaloguj się do konta Signal",
+    "EMAIL": "Email",
+    "PASSWORD": "Hasło",
+    "LOGIN": "Zaloguj się"
   },
   "FEATURES": {
     "ISSUES": {

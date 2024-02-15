@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 
 @Component({
@@ -10,7 +9,8 @@ import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 export class IssuesRightPanelComponent {
   @Input()
   public activeIssue: DetailedIssueDTO;
-
+  @Output()
+  public scoreSelected: EventEmitter<number> = new EventEmitter<number>();
   constructor() {
   }
 }

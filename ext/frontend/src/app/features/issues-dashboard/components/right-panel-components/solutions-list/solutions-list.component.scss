@@ -48,4 +48,31 @@
   .accordion-button:not(.collapsed) {
     background-color: var(--white);
   }
+
+  .likes-container {
+    border: 1px solid var(--light-bright);
+    display: flex;
+    width: 9rem;
+    font-size: 3rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 12px;
+    margin-top: 1rem;
+
+    i {
+      color: black;
+      opacity: .2;
+      cursor: pointer;
+
+      &.score-selected {
+        opacity: 1;
+      }
+    }
+    .divider {
+      height: 3rem;
+      width: 3px;
+      background-color: var(--light-bright);
+    }
+  }
 }

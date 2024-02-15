@@ -7,6 +7,7 @@ import { HttpEncoder } from 'app/shared/util/HttpEncoder';
 import { NormalizeObjectValue } from 'app/shared/util/NormalizeObjectValue';
 import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
 import { SearchIssuesResponseDTO } from 'app/shared/interfaces/SearchIssuesResponseDTO';
+import { RateIssueDTO } from 'app/shared/interfaces/RateIssueDTO';
 
 @Injectable({ providedIn: 'root' })
 export class IssuesService {
@@ -40,6 +41,10 @@ export class IssuesService {
 
   public getIssue(issueId: string): Observable<DetailedIssueDTO> {
     return this.httpClient.get<DetailedIssueDTO>(`${environment.apiUrl}/user/issues/${issueId}`);
+  }
+
+  public rateIssue(issueId: number, rateIssueData: RateIssueDTO): Observable<void> {
+    return this.httpClient.post<void>(`${environment.apiUrl}/user/issues/${issueId}/score`, rateIssueData);
   }
 
 }
