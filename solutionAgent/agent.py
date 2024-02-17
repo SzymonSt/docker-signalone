@@ -16,13 +16,33 @@ class ChatAgent:
     def __init__(self):
         load_dotenv()
         self.llm = HuggingFaceEndpoint(
-                endpoint_url=os.getenv("ENDPOINT_URL"),
+                endpoint_url=os.environ.get("ENDPOINT_URL"),
                 task="text-generation",
                 model_kwargs={
                     "max_new_tokens": 512,
                     "top_k": 50,
+                    "temperature": 0.4,
+                    "repetition_penalty": 1.1,
+                },
+            )
+        self.summarizer = HuggingFaceEndpoint(
+                endpoint_url=os.environ.get("ENDPOINT_URL"),
+                task="text-generation",
+                model_kwargs={
+                    "max_new_tokens": 256,
+                    "top_k": 50,
+                    "temperature": 0.3,
+                    "repetition_penalty": 1.1,
+                },
+            )
+        self.title_gen = HuggingFaceEndpoint(
+                endpoint_url=os.environ.get("ENDPOINT_URL"),
+                task="text-generation",
+                model_kwargs={
+                    "max_new_tokens": 256,
+                    "top_k": 30,
                     "temperature": 0.5,
-                    "repetition_penalty": 1.03,
+                    "repetition_penalty": 1.1,
                 },
             )
         self.webcrawler = WebCrawler()
@@ -36,7 +56,7 @@ class ChatAgent:
         
         prompt = hub.pull("hwchase17/react")
         agent = create_react_agent(self.llm, self.tools, prompt)
-        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=True, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=2) 
+        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=False, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=3)
      
     def understand_logs(self,logs):
         """Function to understand logs and return a summary
@@ -44,7 +64,7 @@ class ChatAgent:
             logs (str): logs from the user
         Returns: summary of the logs"""
 
-        answer =  self.llm(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail.
+        answer =  self.summarizer(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail.
                                 Only give summary in form of paragraph and not solutions. Here are the logs: \n {logs} 
                                 Summary: """)
         return answer
@@ -75,8 +95,8 @@ class ChatAgent:
         urls = re.findall(r'https?://\S+', urls)
         return urls
 
-    def generate_severity(self, logs):
-        """Function to generate json object 
+    def generate_title(self, summary):
+        """Function to generate title for the logs 
         Args:
             logs (str): logs from the user
             summary (str): summary of the logs
@@ -86,31 +106,17 @@ class ChatAgent:
             container_name (str): container name of the user
         Returns: json object"""
 
-        response = self.llm(f'''Give a relevant title and severity for these logs: {logs}.
-                            Only give the title and severity and nothing else in your output.
-                            Give output in a structured format like:
-                            \n Title: <title for the error log>\n
-                                Severity: <severity of the error log>\n
-                            Do not include any other parameters in the output.''')
+        response = self.title_gen(f'''Give a heading for this log summary: {summary}.
+                                  Title:''')
+        # title_pattern = re.compile(r'Title:\s*(.*)', re.IGNORECASE)
+        # title_match = title_pattern.search(response)
+        # if title_match:
+        #     title = title_match.group(1).strip()
+        # else:
+        #     title = "Error Log"
+        return response
 
-        title_pattern = re.compile(r'Title:\s*(.*)', re.IGNORECASE)
-        severity_pattern = re.compile(r'Severity:\s*(\w+)', re.IGNORECASE)
-
-        title_match = title_pattern.search(response)
-        severity_match = severity_pattern.search(response)
-
-        if title_match:
-            title = title_match.group(1).strip()
-        else:
-            title = "Error Log"
-
-        if severity_match:
-            severity = severity_match.group(1).strip()
-        else:
-            severity = "High"
-        return title, severity
-
-    def run(self, logs, unique_id="test_id", userid="test_user1", container_name="testcontainer"):
+    def run(self, logs):
         """Function to run the agent
         Args:
             logs (str): logs from the user
@@ -125,18 +131,16 @@ class ChatAgent:
                        Do not assume anything that is not there in the intermediate steps and give a proper answer.
                        \n Solution:''')
         urls = self.extract_urls(logs, urls)
-        title , severity = self.generate_severity(logs)        
+        title = self.generate_title(summary)
+        # if title is None:
+        #     print("Title not found")
+        # else:
+        #     print(title)
         final = {
-            "id": {unique_id},
-            "userid": userid,
-            "containerName": container_name,
-            "logs":logs,
-            "severity": severity,
             "title": title,
-            "timestamp": str(datetime.now()),
             "logsummary": summary,
             "predicted_solution":sol,
             "sources": urls
                 }
 
-        return final
+        return json.dumps(final)
