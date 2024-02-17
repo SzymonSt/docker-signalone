@@ -11,9 +11,6 @@ logset = [
 url = "http://localhost:8000/run_chat_agent"
 data = {
     "logs": logset[0],
-    "unique_id": "32234123",
-    "userid": "sdfwff23f32",
-    "container_name": "232332ewe"
 }
 response = None
 while response is None:
