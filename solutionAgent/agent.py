@@ -76,7 +76,7 @@ class ChatAgent:
         Returns: solution to the logs"""
 
         answer =  self.agent_executor.invoke({"input":f"""Imagine you are a software developer who has to provide short summary of available solutions to errors in logs of a software.
-                                     Use all tools available to make your answer. You can ask multiple questions from the webagent. Use websearch agent to search about information. You can use the summary provided. Also provide the sources of your solutions.
+                                     Use websearch tool available to make your answer. You can ask multiple questions from the webagent. Use websearch agent to search about information. You can use the summary provided. Also provide the sources of your solutions.
                                      Here are the logs for which you need to find solution and provide code if necessary: \n {summary}"""})
         
         return answer['intermediate_steps']
