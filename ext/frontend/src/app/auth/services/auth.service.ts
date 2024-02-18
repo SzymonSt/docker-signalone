@@ -2,21 +2,46 @@ import { Injectable } from '@angular/core';
 import { Token } from 'app/shared/interfaces/Token';
 import { map, Observable } from 'rxjs';
 import { OAuth2TokenDTO } from 'app/shared/interfaces/OAuth2TokenDTO';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'environment/environment.development';
+import { StorageUtil } from 'app/shared/util/StorageUtil';
+import { SocialUser } from '@abacritt/angularx-social-login';
+import { HttpEncoder } from 'app/shared/util/HttpEncoder';
+import { NormalizeObjectValue } from 'app/shared/util/NormalizeObjectValue';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private static readonly TOKEN_KEY: string = 'token';
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private storageUtil: StorageUtil) {
   }
 
   public login(email: string, password: string): Observable<{ token: Token }> {
-    return this.httpClient.post(`${environment.authUrl}/login`, { email, password })
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login`, { email, password })
       .pipe(
         map((response: any) => {
           const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
-          return { token: token, securityData: undefined };
+          return { token: token};
+        })
+      );
+  }
+
+  public loginWithGoogle(user: SocialUser): Observable<{ token: Token }> {
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { user})
+      .pipe(
+        map((response: any) => {
+          const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
+          return { token: token};
+        })
+      );
+  }
+
+  public loginWithGithub(): Observable<{ token: Token }> {
+    const params: HttpParams = new HttpParams().set('client_id', 'c88a4f9d4868879974e').set('redirect_uri', 'http://localhost:8080/oauth/redirect');
+    return this.httpClient.get<{ token: Token }>(`https://github.com/login/oauth/authorize`, {params})
+      .pipe(
+        map((response: any) => {
+          const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
+          return { token: token};
         })
       );
   }
@@ -40,7 +65,7 @@ export class AuthService {
       .pipe(
         map((response: any) => {
           const refreshedToken: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
-          return { token: refreshedToken, securityData: undefined };
+          return { token: refreshedToken};
         })
       );
   }
@@ -93,11 +118,10 @@ export class AuthService {
     return this.httpClient.put<void>(`${environment.apiUrl}/users/me/passwordForced`, request);
   }
 
-  public setToken(token: Token): Observable<Token> {
-    return new Observable<Token>((observer) => {
-      // null values aren't even saved to storage, so this basically does nothing but resolves fine
-      this.storageUtil.saveData<OAuth2TokenDTO>(null, AuthService.TOKEN_KEY)
-        .then((result: OAuth2TokenDTO) => {
+  public setToken(token: Token): Observable<OAuth2TokenDTO> {
+    return new Observable<OAuth2TokenDTO>((observer) => {
+      this.storageUtil.saveData<Token>(token, AuthService.TOKEN_KEY)
+        .then((result: any) => {
           observer.next(result);
           observer.complete();
         })
@@ -110,7 +134,7 @@ export class AuthService {
   public getToken(): Observable<Token> {
     return new Observable<Token>((observer) => {
       this.storageUtil.loadData<OAuth2TokenDTO>(AuthService.TOKEN_KEY, OAuth2TokenDTO)
-        .then((result: OAuth2TokenDTO) => {
+        .then((result: any) => {
           observer.next(result);
           observer.complete();
         })

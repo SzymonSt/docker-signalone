@@ -12,8 +12,8 @@ import { AlertConfig } from 'ngx-bootstrap/alert';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as moment from 'moment';
 import { ToastrModule } from 'ngx-toastr';
-import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AuthModule } from 'app/auth/auth.module';
+import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -36,7 +36,19 @@ import { AuthModule } from 'app/auth/auth.module';
     }),
     AuthModule,
   ],
-  providers: [ AlertConfig, BsDatepickerConfig ],
+  providers: [ AlertConfig, BsDatepickerConfig,
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider('359898712853-rcec16l3ivs24rod4hb2kcsr9qvotf3t.apps.googleusercontent.com'),
+          },
+        ],
+      } as SocialAuthServiceConfig,
+    },],
   bootstrap: [ AppComponent ],
 
 })

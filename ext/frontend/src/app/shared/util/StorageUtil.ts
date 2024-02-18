@@ -26,7 +26,7 @@ export class StorageUtil {
       }
 
       saveObservable
-        .subscribe((value) => {
+        .subscribe(() => {
           resolve(data);
         }, (error) => {
           reject(error);

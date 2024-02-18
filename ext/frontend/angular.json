@@ -87,10 +87,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "SignalOne:build:production"
+              "buildTarget": "SignalOne:build:production"
             },
             "development": {
-              "browserTarget": "SignalOne:build:development"
+              "buildTarget": "SignalOne:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -98,7 +98,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "SignalOne:build"
+            "buildTarget": "SignalOne:build"
           }
         },
         "test": {

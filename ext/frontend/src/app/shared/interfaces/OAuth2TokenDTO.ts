@@ -1,10 +1,9 @@
 import { Exclude, Transform } from 'class-transformer';
-import { Token } from 'app/data/local/auth/Token';
 import * as moment from 'moment';
 import { Duration } from 'moment';
 import * as _ from 'lodash';
-import { DateUtil } from 'app/util/DateUtil';
-
+import { Token } from 'app/shared/interfaces/Token';
+import { DateUtil } from 'app/shared/util/DateUtil';
 export class OAuth2TokenDTO extends Token {
 
   public accessToken: string;

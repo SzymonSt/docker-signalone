@@ -38,7 +38,8 @@
     "LOGIN_HEADER": "Zaloguj się do konta Signal",
     "EMAIL": "Email",
     "PASSWORD": "Hasło",
-    "LOGIN": "Zaloguj się"
+    "LOGIN": "Zaloguj się",
+    "GITHUB_SIGN_IN": "Zaloguj sie przez github"
   },
   "FEATURES": {
     "ISSUES": {

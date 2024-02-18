@@ -36,7 +36,8 @@
     "LOGIN_HEADER": "Log in to your Signal account",
     "EMAIL": "Email",
     "PASSWORD": "Password",
-    "LOGIN": "Sign in"
+    "LOGIN": "Sign in",
+    "GITHUB_SIGN_IN": "Sign in with github"
   },
   "FEATURES": {
     "SEARCH_CRITERIA": "Search criteria",

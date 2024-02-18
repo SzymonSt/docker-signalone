@@ -5,15 +5,19 @@ import * as moment from 'moment';
 import { Duration } from 'moment';
 import { Token } from 'app/shared/interfaces/Token';
 import { AuthService } from 'app/auth/services/auth.service';
+import { Router } from '@angular/router';
+import { SocialUser } from '@abacritt/angularx-social-login';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService implements OnDestroy {
   private static readonly TOKEN_REFRESH_INTERVAL: Duration = moment.duration('1', 'minutes');
   public token$: BehaviorSubject<Token> = new BehaviorSubject<Token>(null);
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private wasNavigatedFromLogin: boolean = false;
   private tokenRefreshIntervalId!: ReturnType<typeof setInterval>;
   constructor(private zone: NgZone,
-              private authService: AuthService) {}
+              private authService: AuthService,
+              private router: Router,) {}
 
   public get token(): Token {
     return this.token$.value;
@@ -41,12 +45,53 @@ export class AuthStateService implements OnDestroy {
         .then((result: { token: Token }) => {
           this.setToken(result.token)
             .then((savedToken: Token) => {
-              this.token = result.token;
-              this.isLoggedIn = true;
-              if (!_.isNil(this.token)) {
-                this.scheduleTokenRefresh(this.token);
-              }
+              this.manageLoginSuccess(result)
+              resolve(this.token);
+            })
+            .catch((error) => {
+              this.token = null;
+              this.isLoggedIn = false;
+              reject(error);
+            });
+        })
+        .catch((error: any) => {
+          this.token = null;
+          this.isLoggedIn = false;
+          reject(error);
+        });
+    });
+  }
 
+  public loginWithGoogle(user: SocialUser): Promise<Token> {
+    return new Promise((resolve, reject) => {
+      this.authService.loginWithGoogle(user).toPromise()
+        .then((result: { token: Token }) => {
+          this.setToken(result.token)
+            .then((savedToken: Token) => {
+              this.manageLoginSuccess(result)
+              resolve(this.token);
+            })
+            .catch((error) => {
+              this.token = null;
+              this.isLoggedIn = false;
+              reject(error);
+            });
+        })
+        .catch((error: any) => {
+          this.token = null;
+          this.isLoggedIn = false;
+          reject(error);
+        });
+    });
+  }
+
+  public loginWithGithub(): Promise<Token> {
+    return new Promise((resolve, reject) => {
+      this.authService.loginWithGithub().toPromise()
+        .then((result: { token: Token }) => {
+          this.setToken(result.token)
+            .then((savedToken: Token) => {
+              this.manageLoginSuccess(result)
               resolve(this.token);
             })
             .catch((error) => {
@@ -72,6 +117,7 @@ export class AuthStateService implements OnDestroy {
               this.token = null;
               this.isLoggedIn = false;
               this.cancelTokenRefreshSchedule();
+              this.goToLogin();
               resolve();
             })
             .catch((error) => {
@@ -91,6 +137,7 @@ export class AuthStateService implements OnDestroy {
               this.token = null;
               this.isLoggedIn = false;
               this.cancelTokenRefreshSchedule();
+              this.goToLogin();
               reject(error);
             });
         });
@@ -202,4 +249,24 @@ export class AuthStateService implements OnDestroy {
     return this.authService.deleteToken().toPromise();
   }
 
+  private goToDashboard():void {
+    if (!this.wasNavigatedFromLogin) {
+      this.router.navigateByUrl('/issues-dashboard')
+    }
+    this.wasNavigatedFromLogin = true;
+  }
+  private goToLogin():void {
+    this.router.navigateByUrl('/login')
+    this.wasNavigatedFromLogin = false;
+  }
+
+  private manageLoginSuccess(result: {token: Token}): void {
+    this.token = result.token;
+    this.isLoggedIn = true;
+    if (!_.isNil(this.token)) {
+      this.scheduleTokenRefresh(this.token);
+    }
+
+    this.goToDashboard();
+  }
 }

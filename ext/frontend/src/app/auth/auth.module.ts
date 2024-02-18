@@ -9,6 +9,9 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AuthRoutingModule } from 'app/auth/auth-routing.module';
 import { LoginComponent } from 'app/auth/components/login/login.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from 'app/shared/interceptors/auth.interceptor';
+import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 
 @NgModule({
   declarations: [ LoginComponent ],
@@ -18,13 +21,17 @@ import { LoginComponent } from 'app/auth/components/login/login.component';
     SharedModule,
     NgSelectModule,
     FormsModule,
+    GoogleSigninButtonModule,
     ReactiveFormsModule,
     NgbModule,
     BsDatepickerModule,
     AuthRoutingModule,
     AngularSvgIconModule.forRoot()
   ],
-  exports: []
+  exports: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ]
 })
 export class AuthModule {
 }
