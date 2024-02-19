@@ -35,9 +35,9 @@ export class AuthService {
       );
   }
 
-  public loginWithGithub(): Observable<{ token: Token }> {
-    const params: HttpParams = new HttpParams().set('client_id', 'c88a4f9d4868879974e').set('redirect_uri', 'http://localhost:8080/oauth/redirect');
-    return this.httpClient.get<{ token: Token }>(`https://github.com/login/oauth/authorize`, {params})
+  public loginWithGithub(code: string): Observable<{ token: Token }> {
+
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-github`, {code})
       .pipe(
         map((response: any) => {
           const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
@@ -77,45 +77,6 @@ export class AuthService {
           return;
         })
       );
-  }
-
-  public completePasswordReset(email: string, verificationCode: string, newPassword: string): Observable<void> {
-    const request: {
-      verificationCode: string;
-      newPassword: string;
-    } = {
-      verificationCode: verificationCode,
-      newPassword: newPassword
-    };
-
-    return this.httpClient.post(`${environment.apiUrl}/accounts/${encodeURIComponent(email)}/password/set-new`, request)
-      .pipe(
-        map(() => {
-          return;
-        })
-      );
-  }
-
-  public changePassword(currentPassword: string, newPassword: string): Observable<void> {
-    const request: {
-      oldPassword: string;
-      newPassword: string;
-    } = {
-      oldPassword: currentPassword,
-      newPassword: newPassword
-    };
-
-    return this.httpClient.patch<void>(`${environment.apiUrl}/accounts/me/password`, request);
-  }
-
-  public changePasswordForced(newPassword: string): Observable<void> {
-    const request: {
-      newPassword: string;
-    } = {
-      newPassword: newPassword
-    };
-
-    return this.httpClient.put<void>(`${environment.apiUrl}/users/me/passwordForced`, request);
   }
 
   public setToken(token: Token): Observable<OAuth2TokenDTO> {

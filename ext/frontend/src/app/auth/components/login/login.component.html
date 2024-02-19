@@ -2,7 +2,9 @@
     <h2>{{'AUTH.LOGIN_HEADER' | translate}}</h2>
     <asl-google-signin-button type='standard' size='medium' [locale]="'en-GB'">
     </asl-google-signin-button>
-    <button (click)="loginWithGithub()" class="btn btn-primary mt-3">{{'AUTH.GITHUB_SIGN_IN' | translate}}</button>
+    <a [href]="githubLoginUrl">
+        <button class="btn btn-primary mt-3">{{'AUTH.GITHUB_SIGN_IN' | translate}}</button>
+    </a>
     <!--    <form [formGroup]="loginForm">-->
 <!--        <div class="form-group mb-3">-->
 <!--            <label class="form-label"-->

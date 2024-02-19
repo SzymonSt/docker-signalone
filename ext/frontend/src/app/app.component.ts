@@ -22,7 +22,9 @@ export class AppComponent implements OnInit{
       this.configurationService.getCurrentAgentState();
       this.router.navigateByUrl('/issues-dashboard')
     }).catch(err => {
-      this.router.navigateByUrl('/login')
+      if (!this.router.url.includes('login')) {
+        this.router.navigateByUrl('/login')
+      }
     })
   }
 }

@@ -6,7 +6,6 @@ import { AuthStateService } from 'app/auth/services/auth-state.service';
 export class NotLoggedInGuardService implements CanActivate {
   constructor(public authStateService: AuthStateService, public router: Router) {}
   canActivate(): boolean {
-    console.log(this.authStateService.isLoggedIn)
   if (this.authStateService.isLoggedIn) {
     this.router.navigate(['issues-dashboard']);
     return false;

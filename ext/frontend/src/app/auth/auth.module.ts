@@ -12,9 +12,10 @@ import { LoginComponent } from 'app/auth/components/login/login.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'app/shared/interceptors/auth.interceptor';
 import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-login.component';
 
 @NgModule({
-  declarations: [ LoginComponent ],
+  declarations: [ LoginComponent,GithubLoginComponent ],
   imports: [
     CommonModule,
     TranslateModule,

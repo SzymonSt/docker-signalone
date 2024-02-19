@@ -85,9 +85,9 @@ export class AuthStateService implements OnDestroy {
     });
   }
 
-  public loginWithGithub(): Promise<Token> {
+  public loginWithGithub(code: string): Promise<Token> {
     return new Promise((resolve, reject) => {
-      this.authService.loginWithGithub().toPromise()
+      this.authService.loginWithGithub(code).toPromise()
         .then((result: { token: Token }) => {
           this.setToken(result.token)
             .then((savedToken: Token) => {

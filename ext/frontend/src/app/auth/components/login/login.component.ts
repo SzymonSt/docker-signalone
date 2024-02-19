@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { AuthStateService } from 'app/auth/services/auth-state.service';
-import { ApplicationStateService } from 'app/shared/services/application-state.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { environment } from 'environment/environment.development';
 
 @Component({
   selector: 'app-login',
@@ -14,9 +14,9 @@ export class LoginComponent implements OnInit{
   public loginForm: FormGroup;
   public isSubmitted: boolean = false;
   public activeLocale: string
+  public githubLoginUrl: string = `https://github.com/login/oauth/authorize?client_id=6c88a4f9d4868879974e`;
   constructor(private socialAuthService: SocialAuthService, private authStateService: AuthStateService) {
     this.loginWithGoogle();
-
   }
 
   public ngOnInit(): void {
@@ -37,11 +37,6 @@ export class LoginComponent implements OnInit{
       this.authStateService.loginWithGoogle(user);
     });
   }
-
-  public loginWithGithub(): void {
-    this.authStateService.loginWithGithub();
-  }
-
 
   private initForm(): void {
     this.loginForm = new FormGroup({
