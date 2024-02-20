@@ -21,10 +21,10 @@ async def run_chat_agent(data: LogData):
         try:
             print(f"Number of retries {retries}")
             retries =retries + 1
-            result = chat_agent.run(data.logs, data.unique_id, data.userid, data.container_name)
+            result = chat_agent.run(data.logs)
             return result
         except Exception as e:
             if retries > 4:
-                return {"error": "Unable to process the logs"}
+                return {"error": f"Unable to process the logs, error: {e}"}
             time.sleep(5)
         
