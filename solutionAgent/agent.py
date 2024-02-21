@@ -106,7 +106,7 @@ class ChatAgent:
             container_name (str): container name of the user
         Returns: json object"""
 
-        response = self.title_gen(f'''Give a heading for this log summary: {summary}.
+        response = self.title_gen(f'''Give a short title for this log summary: {summary}.
                                   Title:''')
         # title_pattern = re.compile(r'Title:\s*(.*)', re.IGNORECASE)
         # title_match = title_pattern.search(response)
