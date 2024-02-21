@@ -29,7 +29,7 @@ class ChatAgent:
                 endpoint_url=os.environ.get("ENDPOINT_URL"),
                 task="text-generation",
                 model_kwargs={
-                    "max_new_tokens": 256,
+                    "max_new_tokens": 100,
                     "top_k": 50,
                     "temperature": 0.3,
                     "repetition_penalty": 1.1,
@@ -65,8 +65,12 @@ class ChatAgent:
         Returns: summary of the logs"""
 
         answer =  self.summarizer(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail.
-                                Only give summary in form of paragraph with technical details and not solutions. Here are the logs: \n {logs} 
+                                Only give summary in form of paragraph with technical details and not solutions. Include error message in the summary. Here are the logs: \n {logs} 
                                 Summary: """)
+        if answer[-1] != '.':
+            answer_sentences = answer.split(".")
+            answer_sentences.pop()
+            answer = ".".join(answer_sentences)
         return answer
 
     def master_agent(self,summary):
@@ -126,10 +130,12 @@ class ChatAgent:
         Returns: json object"""
         summary = self.understand_logs(logs)
         urls = self.master_agent(summary)
-        sol = self.llm(f'''Use this information to provide the solution to the issue summary: {summary}.
+        sol = self.llm(f'''Use this information to provide solutions to the issue summary: {summary}.
                        \n Here are the intermediate steps for you to use as in information source: {urls}
+                       Provide just solutions anythign else will be punished.
                        Do not assume anything that is not there in the intermediate steps and give a proper answer.
-                       Do not output any code or commands if not confirmed by the intermediate steps.
+                       Do not output any code or commands if not confirmed by the intermediate steps it must be as accurate as possible. You will be punsihed for wrong information.
+                       Do not prompt user to search anything in web or ask support.
                        \n Solution:''')
         urls = self.extract_urls(logs, urls)
         title = self.generate_title(summary)
