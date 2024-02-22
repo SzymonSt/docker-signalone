@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"signalone/cmd/config"
 	_ "signalone/docs"
 	"signalone/pkg/components"
 	"signalone/pkg/models"
@@ -12,6 +16,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -372,6 +377,123 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 	})
 }
 
+func (c *MainController) RateIssue(ctx *gin.Context) {
+	var issue models.Issue
+	var issueRateReq models.IssueRateRequest
+	var user models.User
+	// TODO: Implement user authentication with tokens
+	// bearerToken := ctx.GetHeader("Authorization")
+
+	// if bearerToken == "" {
+	// 	ctx.JSON(401, gin.H{
+	// 		"message": "Unauthorized",
+	// 	})
+	// 	return
+	// }
+
+	// bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
+
+	userId := "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
+
+	err := ctx.ShouldBindJSON(&issueRateReq)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	if *issueRateReq.Score != -1 && *issueRateReq.Score != 0 && *issueRateReq.Score != 1 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Score must be one of: -1, 0, 1"})
+		return
+	}
+
+	// Fetch user doc
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
+
+	err = userResult.Decode(&user)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Fetch user doc END
+
+	// Fetch issue doc
+	id := ctx.Param("id")
+
+	issueConditions := bson.M{
+		"_id":    id,
+		"userId": userId,
+	}
+
+	filter := utils.GenerateFilter(issueConditions, "$and")
+
+	issueResult := c.issuesCollection.FindOne(ctx, filter)
+
+	err = issueResult.Decode(&issue)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// Fetch issue doc END
+
+	//Update issue score
+	var currentIssueScore = issue.Score
+	fmt.Println("Current Issue Score: ", currentIssueScore, *issueRateReq.Score)
+
+	if currentIssueScore == *issueRateReq.Score {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Issue already rated with the same score"})
+		return
+	}
+
+	updatedIssueResult, err := c.issuesCollection.UpdateOne(ctx,
+		filter,
+		bson.M{
+			"$set": bson.M{
+				"score": issueRateReq.Score,
+			},
+		})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if updatedIssueResult.MatchedCount == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue cannot be found"})
+		return
+	}
+	// Update issue score END
+
+	// Updating user counter
+	counter := user.Counter
+
+	counter = utils.CalculateNewCounter(currentIssueScore, *issueRateReq.Score, counter)
+
+	updatedUserResult, err := c.usersCollection.UpdateOne(ctx,
+		bson.M{"userId": userId},
+		bson.M{
+			"$set": bson.M{
+				"counter": counter,
+			},
+		})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if updatedUserResult.MatchedCount == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User cannot be found"})
+		return
+	}
+	// Updating user counter END
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Success",
+	})
+}
+
 // ResolveIssue godoc
 // @Summary Resolve an issue by setting its status to resolved.
 // @Description Resolve an issue by providing its ID and updating its status to resolved.
@@ -454,4 +576,247 @@ func (c *MainController) GetContainers(ctx *gin.Context) {
 		}
 	}
 	ctx.JSON(200, containers)
+}
+
+func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
+	var requestData models.GoogleTokenRequest
+	var user models.User
+
+	if err := ctx.ShouldBindJSON(&requestData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	claims, err := validateGoogleJWT(requestData.IdToken)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": claims.Subject})
+
+	err = userResult.Decode(&user)
+
+	if err != nil && err.Error() != mongo.ErrNoDocuments.Error() {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err != nil && err.Error() == mongo.ErrNoDocuments.Error() {
+		user = models.User{
+			UserId:           claims.Subject,
+			UserName:         claims.FirstName,
+			IsPro:            false,
+			AgentBearerToken: "",
+			Counter:          0,
+			Type:             "google",
+		}
+
+		_, err = c.usersCollection.InsertOne(ctx, user)
+
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	accessTokenString, err := createToken(user.UserId, false)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	refreshTokenString, err := createToken(user.UserId, true)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "Success",
+		"accessToken":  accessTokenString,
+		"refreshToken": refreshTokenString,
+	})
+}
+
+func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
+	var cfg = config.GetInstance()
+	var claimsStruct = models.GoogleClaims{}
+
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&claimsStruct,
+		func(token *jwt.Token) (interface{}, error) {
+			pem, err := getGooglePublicKey(fmt.Sprintf("%s", token.Header["kid"]))
+
+			if err != nil {
+				return nil, err
+			}
+
+			key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pem))
+
+			if err != nil {
+				return nil, err
+			}
+
+			return key, nil
+		},
+	)
+
+	if err != nil {
+		return models.GoogleClaims{}, err
+	}
+
+	claims, ok := token.Claims.(*models.GoogleClaims)
+
+	if !ok {
+		return models.GoogleClaims{}, errors.New("invalid claims")
+	}
+
+	if claims.Issuer != "accounts.google.com" && claims.Issuer != "https://accounts.google.com" {
+		return models.GoogleClaims{}, errors.New("iss is invalid")
+	}
+
+	audienceToCheck := cfg.GoogleClientId
+	found := false
+
+	for _, audience := range claims.Audience {
+		if audience == audienceToCheck {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return models.GoogleClaims{}, errors.New("aud is invalid")
+	}
+
+	if claims.ExpiresAt != nil && claims.ExpiresAt.Unix() < time.Now().UTC().Unix() {
+		return models.GoogleClaims{}, errors.New("jwt is expired")
+	}
+
+	return *claims, nil
+}
+
+func getGooglePublicKey(keyId string) (string, error) {
+	resp, err := http.Get("https://www.googleapis.com/oauth2/v1/certs")
+
+	if err != nil {
+		return "", err
+	}
+
+	data, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		return "", err
+	}
+
+	googleData := map[string]string{}
+	err = json.Unmarshal(data, &googleData)
+
+	if err != nil {
+		return "", err
+	}
+
+	key, ok := googleData[keyId]
+
+	if !ok {
+		return "", errors.New("key not found")
+	}
+
+	return key, nil
+}
+
+func createToken(id string, isRefreshToken bool) (string, error) {
+	var cfg = config.GetInstance()
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+	var expTime time.Duration
+
+	if isRefreshToken {
+		expTime = time.Hour * 24
+	} else {
+		expTime = time.Minute * 10
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"exp": time.Now().Add(expTime).Unix(),
+			"id":  id,
+		})
+
+	tokenString, err := token.SignedString(SECRET_KEY)
+
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
+	var data models.RefreshTokenRequest
+	var cfg = config.GetInstance()
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	claims := &models.JWTClaimsWithId{}
+	token, err := jwt.ParseWithClaims(data.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return SECRET_KEY, nil
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !token.Valid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		return
+	}
+
+	accessTokenString, err := createToken(claims.Id, false)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	refreshTokenString, err := createToken(claims.Id, true)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "Success",
+		"accessToken":  accessTokenString,
+		"refreshToken": refreshTokenString,
+	})
+}
+
+func verifyToken(tokenString string) error {
+	var cfg = config.GetInstance()
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+
+	claims := &jwt.RegisteredClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return SECRET_KEY, nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		return fmt.Errorf("invalid token")
+	}
+
+	return nil
 }
