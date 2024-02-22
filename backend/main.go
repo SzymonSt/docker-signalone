@@ -39,7 +39,7 @@ func main() {
 	var (
 		server = gin.Default()
 	)
-	cfg := config.New()
+	cfg := config.GetInstance()
 	if cfg == nil {
 		panic("critical: unable to load config")
 	}

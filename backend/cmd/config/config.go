@@ -1,12 +1,22 @@
 package config
 
 import (
+	"sync"
+
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	ServerPort string `mapstructure:"SERVER_PORT"`
 	Mode       string `mapstructure:"MODE"`
+
+	//Google Data
+	GoogleClientId     string `mapstructure:"GOOGLE_CLIENT_ID"`
+	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
+
+	//SignalOne Data
+	SignalOneSecret string `mapstructure:"SIGNAL_ONE_SECRET"`
+
 	//Inference Engine API
 	InferenceApiUrl    string `mapstructure:"INFERENCE_API_URL"`
 	InferenceApiKey    string `mapstructure:"INFERENCE_API_KEY"`
@@ -28,19 +38,31 @@ type Config struct {
 	SavedAnalysisCollectionName string `mapstructure:"SAVED_ANALYSIS_COLLECTION_NAME"`
 }
 
-func New() (config *Config) {
-	viper.SetConfigName(".default")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
+var (
+	once   sync.Once
+	config *Config
+)
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		return nil
-	}
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		return nil
-	}
+func GetInstance() *Config {
+	once.Do(func() {
+		viper.SetConfigName(".default")
+		viper.AddConfigPath(".")
+		viper.SetConfigType("env")
+		viper.AutomaticEnv()
+
+		err := viper.ReadInConfig()
+
+		if err != nil {
+			return
+		}
+
+		config = &Config{}
+		err = viper.Unmarshal(config)
+
+		if err != nil {
+			return
+		}
+	})
+
 	return config
 }

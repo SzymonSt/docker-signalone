@@ -18,6 +18,8 @@ func NewMainRouter(mainController *controllers.MainController) *MainRouter {
 
 func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	authorizationRouterGroup := rg.Group("/auth")
+	authorizationRouterGroup.POST("/login-with-google", mr.mainController.LoginWithGoogleHandler)
+	authorizationRouterGroup.POST("/token/refresh", mr.mainController.RefreshTokenHandler)
 	authorizationRouterGroup.POST("/user/login", func(c *gin.Context) {})
 	authorizationRouterGroup.PUT("/user/register", func(c *gin.Context) {})
 
@@ -34,5 +36,4 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	agentRouterGroup := rg.Group("/agent")
 	agentRouterGroup.DELETE("/issues", mr.mainController.DeleteIssues)
 	agentRouterGroup.PUT("/issues/analysis", mr.mainController.LogAnalysisTask)
-
 }
