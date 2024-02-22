@@ -1,34 +1,39 @@
 <div id="login-container">
     <h2>{{'AUTH.LOGIN_HEADER' | translate}}</h2>
-    <form [formGroup]="loginForm">
-        <div class="form-group mb-3">
-            <label class="form-label"
-                   for="email">{{'AUTH.EMAIL' | translate}}</label>
-            <input [placeholder]="'AUTH.EMAIL' | translate" class="form-control"
-                   formControlName="email"
-                   id="email"
-                   type="text">
-            <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">
-                <div *ngIf="loginForm.controls['email'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>
-                <div *ngIf="loginForm.controls['email'].hasError('email')">{{ 'VALIDATION.INVALID_EMAIL' | translate }}</div>
-            </div>
-        </div>
-        <div class="form-group mb-3">
-            <label class="form-label"
-                   for="password">{{'AUTH.PASSWORD' | translate}}</label>
-            <input [placeholder]="'AUTH.PASSWORD' | translate" class="form-control"
-                   formControlName="password"
-                   id="password"
-                   type="password">
-            <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">
-                <div *ngIf="loginForm.controls['password'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col">
-                <button (click)="submitForm()"
-                        class="btn btn-primary w-50 mx-auto d-block mt-3">{{ 'AUTH.LOGIN' | translate }}</button>
-            </div>
-        </div>
-    </form>
+    <asl-google-signin-button type='standard' size='medium' [locale]="'en-GB'">
+    </asl-google-signin-button>
+    <a [href]="githubLoginUrl">
+        <button class="btn btn-primary mt-3">{{'AUTH.GITHUB_SIGN_IN' | translate}}</button>
+    </a>
+    <!--    <form [formGroup]="loginForm">-->
+<!--        <div class="form-group mb-3">-->
+<!--            <label class="form-label"-->
+<!--                   for="email">{{'AUTH.EMAIL' | translate}}</label>-->
+<!--            <input [placeholder]="'AUTH.EMAIL' | translate" class="form-control"-->
+<!--                   formControlName="email"-->
+<!--                   id="email"-->
+<!--                   type="text">-->
+<!--            <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">-->
+<!--                <div *ngIf="loginForm.controls['email'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>-->
+<!--                <div *ngIf="loginForm.controls['email'].hasError('email')">{{ 'VALIDATION.INVALID_EMAIL' | translate }}</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="form-group mb-3">-->
+<!--            <label class="form-label"-->
+<!--                   for="password">{{'AUTH.PASSWORD' | translate}}</label>-->
+<!--            <input [placeholder]="'AUTH.PASSWORD' | translate" class="form-control"-->
+<!--                   formControlName="password"-->
+<!--                   id="password"-->
+<!--                   type="password">-->
+<!--            <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">-->
+<!--                <div *ngIf="loginForm.controls['password'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="row mt-3">-->
+<!--            <div class="col">-->
+<!--                <button (click)="submitForm()"-->
+<!--                        class="btn btn-primary w-50 mx-auto d-block mt-3">{{ 'AUTH.LOGIN' | translate }}</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
 </div>

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Constants } from 'app/config/Constant';
-import { dateRangeValidator } from 'app/shared/validators/date-range.validator';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { AuthStateService } from 'app/auth/services/auth-state.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { environment } from 'environment/environment.development';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +12,11 @@ import { dateRangeValidator } from 'app/shared/validators/date-range.validator';
 })
 export class LoginComponent implements OnInit{
   public loginForm: FormGroup;
-  public isSubmitted = false;
-  constructor() {
+  public isSubmitted: boolean = false;
+  public activeLocale: string
+  public githubLoginUrl: string = `https://github.com/login/oauth/authorize?client_id=6c88a4f9d4868879974e`;
+  constructor(private socialAuthService: SocialAuthService, private authStateService: AuthStateService) {
+    this.loginWithGoogle();
   }
 
   public ngOnInit(): void {
@@ -25,6 +30,12 @@ export class LoginComponent implements OnInit{
     if (this.loginForm.valid) {
       console.log(this.loginForm.value)
     }
+  }
+
+  public loginWithGoogle(): void {
+    this.socialAuthService.authState.pipe(takeUntilDestroyed()).subscribe((user) => {
+      this.authStateService.loginWithGoogle(user);
+    });
   }
 
   private initForm(): void {

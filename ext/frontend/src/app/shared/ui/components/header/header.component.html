@@ -3,8 +3,9 @@
         <svg-icon class="img-logo" src="assets/image/signal_img_logo.svg" alt="Signal0ne"></svg-icon>
         <svg-icon class="text-logo" src="assets/image/signal_text_logo.svg" alt="Signal0ne"></svg-icon>
     </a>
-    <div class="d-flex">
+    <div class="d-flex align-items-center">
         <app-configuration-dropdown *ngIf="configurationService.isCurrentAgentStateInitialized"></app-configuration-dropdown>
+        <i *ngIf="(isLoggedIn$ | async)" class="sign-out-icon bi bi-box-arrow-left" (click)="logOut()"></i>
         <div *ngIf="(activeLanguage$ | async) as activeLanguage" class="flags-container ms-4">
             <img (click)="changeLanguage(LanguageVersion.EN)" [alt]="'UI.HEADER.US_FLAG_ALT' | translate"
                  [ngClass]="activeLanguage === LanguageVersion.EN ? 'active' :''"

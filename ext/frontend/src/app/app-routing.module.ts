@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoggedInGuardService } from 'app/shared/guards/logged-in-guard.service';
 
 const routes: Routes = [
   {
@@ -9,7 +10,8 @@ const routes: Routes = [
   },
   {
     path: 'issues-dashboard',
-    loadChildren: () => import('app/features/issues-dashboard/issues-dashboard.module').then(m => m.IssuesDashboardModule)
+    loadChildren: () => import('app/features/issues-dashboard/issues-dashboard.module').then(m => m.IssuesDashboardModule),
+    canActivate: [LoggedInGuardService]
   }
 ];
 
