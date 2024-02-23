@@ -8,8 +8,6 @@ export class OAuth2TokenDTO extends Token {
 
   public accessToken: string;
 
-  public idToken: string;
-
   public refreshToken: string;
 
   public expiresIn: number; // in seconds
@@ -17,9 +15,6 @@ export class OAuth2TokenDTO extends Token {
   @Transform(DateUtil.dateTimeConversion)
   public issuedAt: Date;    // this is not OAuth2 standard, see below
 
-  public tokenType: string;
-
-  public scope: string;
 
   constructor() {
     super();
@@ -50,13 +45,10 @@ export class OAuth2TokenDTO extends Token {
   public static fromOAuth2Object(oAuth2Object: any): OAuth2TokenDTO {
     let token: OAuth2TokenDTO = new OAuth2TokenDTO();
 
-    token.accessToken = oAuth2Object['access_token'];
-    token.idToken = oAuth2Object['id_token'];
-    token.refreshToken = oAuth2Object['refresh_token'];
-    token.expiresIn = _.isNumber(oAuth2Object['expires_in']) ? oAuth2Object['expires_in'] : undefined;
-    token.tokenType = oAuth2Object['token_type'];
-    token.scope = oAuth2Object['scope'];
-    
+    token.accessToken = oAuth2Object['accessToken'];
+    token.refreshToken = oAuth2Object['refreshToken'];
+    token.expiresIn = _.isNumber(oAuth2Object['expiresIn']) ? oAuth2Object['expiresIn'] : undefined;
+
     return token;
   }
 

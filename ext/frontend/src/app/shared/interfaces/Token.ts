@@ -5,8 +5,6 @@ export abstract class Token {
 
   public abstract accessToken: string;
 
-  public abstract idToken: string;
-
   public abstract refreshToken: string;
 
   public abstract expiryDate: Date;
