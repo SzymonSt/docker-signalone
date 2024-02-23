@@ -12,7 +12,7 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    if (req.url.includes('token/refresh')) {
+    if (!req.url.includes('token/refresh')) {
       return next.handle(req).pipe(
         catchError((err) => {
           if (err.status === 401) {
