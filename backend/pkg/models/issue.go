@@ -22,16 +22,16 @@ type IssueSearchResult struct {
 }
 
 type Issue struct {
-	Id                        string                                  `json:"id" bson:"_id"`
-	UserId                    string                                  `json:"userId" bson:"userId"`
-	ContainerName             string                                  `json:"containerName" bson:"containerName"`
-	Score                     int32                                   `json:"score" bson:"score" binding:"odeof=-1 0 1"`
-	Severity                  string                                  `json:"severity" bson:"severity"`
-	Logs                      []string                                `json:"logs" bson:"logs"`
-	Title                     string                                  `json:"title" bson:"title"`
-	IsResolved                bool                                    `json:"isResolved" bson:"isResolved"`
-	TimeStamp                 time.Time                               `json:"timestamp" bson:"timestamp"`
-	LogSummary                string                                  `json:"logSummary" bson:"logSummary"`
-	PredictedSolutionsSummary string                                  `json:"predictedSolutionsSummary" bson:"predictedSolutionsSummary"`
-	PredictedSolutionsSources []IssueSolutionPredictionSolutionSource `json:"issuePredictedSolutionsSources" bson:"issuePredictedSolutionsSources"`
+	Id                        string    `json:"id" bson:"_id"`
+	UserId                    string    `json:"userId" bson:"userId"`
+	ContainerName             string    `json:"containerName" bson:"containerName"`
+	Score                     int32     `json:"score" bson:"score" binding:"odeof=-1 0 1"`
+	Severity                  string    `json:"severity" bson:"severity"`
+	Logs                      []string  `json:"logs" bson:"logs"`
+	Title                     string    `json:"title" bson:"title"`
+	IsResolved                bool      `json:"isResolved" bson:"isResolved"`
+	TimeStamp                 time.Time `json:"timestamp" bson:"timestamp"`
+	LogSummary                string    `json:"logSummary" bson:"logSummary"`
+	PredictedSolutionsSummary string    `json:"predictedSolutionsSummary" bson:"predictedSolutionsSummary"`
+	PredictedSolutionsSources []string  `json:"issuePredictedSolutionsSources" bson:"issuePredictedSolutionsSources"`
 }

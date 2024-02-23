@@ -6,7 +6,6 @@ import (
 	"signalone/cmd/config"
 	"signalone/pkg/controllers"
 	"signalone/pkg/routers"
-	"signalone/pkg/utils"
 
 	_ "signalone/docs" // Import the generated docs package
 
@@ -67,32 +66,7 @@ func main() {
 	}
 	savedAnalysisCollectionClient := savedAnalysisDbClient.Database(cfg.SavedAnalysisDbName).Collection(cfg.SavedAnalysisCollectionName)
 
-	hfwrapper := utils.NewHfWrapper(
-		cfg.InferenceApiUrl,
-		"models",
-		cfg.InferenceBaseModel,
-		cfg.InferenceApiKey,
-		InferenceHyperParameters["temperature"].(float64),
-		InferenceHyperParameters["top_k"].(int),
-		InferenceHyperParameters["top_p"].(float64),
-		InferenceHyperParameters["do_sample"].(bool),
-		InferenceHyperParameters["max_new_tokens"].(int),
-	)
-
-	ragwrapper := utils.NewRagWrapper(
-		cfg.SolutionDbHost,
-		hfwrapper,
-		cfg.SolutionCollectionName,
-		uint64(RAGHyperParameters["limit"].(int)),
-	)
-
-	inferenceEngine := utils.NewInferenceEngine(
-		hfwrapper,
-		ragwrapper,
-	)
-
 	mainController := controllers.NewMainController(
-		inferenceEngine,
 		issuesCollectionClient,
 		usersCollectionClient,
 		savedAnalysisCollectionClient,

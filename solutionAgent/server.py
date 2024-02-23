@@ -6,13 +6,10 @@ from agent import ChatAgent
 class LogData(BaseModel):
     '''Class for the log data'''
     logs: str
-    unique_id: str = "test_id"
-    userid: str = "test_user1"
-    container_name: str = "testcontainer"
 
 app = FastAPI()
 
-@app.post("/run_chat_agent")
+@app.post("/run_analysis")
 async def run_chat_agent(data: LogData):
     '''Function to run the chat agent'''
     chat_agent = ChatAgent()

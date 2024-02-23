@@ -6,17 +6,16 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - qdrant-db
+      - solutions-agent
       - mongo-db
 
-  qdrant-db:
-      image: qdrant/qdrant
+  solutions-agent:
+      image: '322456/solutions-agent:dev'
       ports:
-        - 6333:6333
-      volumes:
-        - ./qdrant-data:/qdrant/storage
+        - 8081:8081
       
   mongo-db:
+      container_name: mongo-db
       image: mongo
       ports:
         - 27017:27017

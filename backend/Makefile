@@ -1,8 +1,12 @@
 IMAGE?=322456/signalonebackend
 TAG?=dev
 
+SOLUTIONS_AGENT_IMAGE?=322456/solutions-agent
+SOLUTIONS_AGENT_TAG?=dev
+
 build-backend: ## Build service image - dev version
 	docker build --tag=$(IMAGE):$(TAG) .
+	docker build --tag=$(SOLUTIONS_AGENT_IMAGE):$(SOLUTIONS_AGENT_TAG) ../solutionAgent
 
 start-backend: ## Start service locally (local development only)
 	docker compose -f ./docker-compose.yaml up -d
