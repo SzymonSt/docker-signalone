@@ -1,12 +1,12 @@
+import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+import { AuthService } from 'app/auth/services/auth.service';
+import { Token } from 'app/shared/interfaces/Token';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Duration } from 'moment';
-import { Token } from 'app/shared/interfaces/Token';
-import { AuthService } from 'app/auth/services/auth.service';
-import { Router } from '@angular/router';
-import { SocialUser } from '@abacritt/angularx-social-login';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService implements OnDestroy {
@@ -17,6 +17,7 @@ export class AuthStateService implements OnDestroy {
   private tokenRefreshIntervalId!: ReturnType<typeof setInterval>;
   constructor(private zone: NgZone,
               private authService: AuthService,
+              private socialAuthService: SocialAuthService,
               private router: Router,) {}
 
   public get token(): Token {
@@ -109,53 +110,34 @@ export class AuthStateService implements OnDestroy {
   }
 
   public logout(silent: boolean = false): void {
-    this.deleteToken()
+    this.socialAuthService.signOut(true)
       .then(() => {
-        this.token = null;
-        this.isLoggedIn = false;
-        this.cancelTokenRefreshSchedule();
-        this.goToLogin();
+        this.deleteToken()
+          .then(() => {
+            this.token = null;
+            this.isLoggedIn = false;
+            this.cancelTokenRefreshSchedule();
+            this.goToLogin();
+          })
+          .catch((error) => {
+            // shouldn't happen really, but we're covering for safety
+            // we need to wipe the state anyway, even if there's an error
+            this.token = null;
+            this.isLoggedIn = false;
+            this.cancelTokenRefreshSchedule();
+          });
       })
-      .catch((error) => {
-        // shouldn't happen really, but we're covering for safety
+      .catch((error: any) => {
         // we need to wipe the state anyway, even if there's an error
-        this.token = null;
-        this.isLoggedIn = false;
-        this.cancelTokenRefreshSchedule();
+        // we don't care about the result of the deleteToken operation at this point, we're in error state anyway
+        this.deleteToken()
+          .finally(() => {
+            this.token = null;
+            this.isLoggedIn = false;
+            this.cancelTokenRefreshSchedule();
+            this.goToLogin();
+          });
       });
-    // return new Promise((resolve, reject) => {
-    //   this.authService.logout(this.token).toPromise()
-    //     .then(() => {
-    //       this.deleteToken()
-    //         .then(() => {
-    //           this.token = null;
-    //           this.isLoggedIn = false;
-    //           this.cancelTokenRefreshSchedule();
-    //           this.goToLogin();
-    //           resolve();
-    //         })
-    //         .catch((error) => {
-    //           // shouldn't happen really, but we're covering for safety
-    //           // we need to wipe the state anyway, even if there's an error
-    //           this.token = null;
-    //           this.isLoggedIn = false;
-    //           this.cancelTokenRefreshSchedule();
-    //           reject(error);
-    //         });
-    //     })
-    //     .catch((error: any) => {
-    //       // we need to wipe the state anyway, even if there's an error
-    //       // we don't care about the result of the deleteToken operation at this point, we're in error state anyway
-    //       this.deleteToken()
-    //         .finally(() => {
-    //           this.token = null;
-    //           this.isLoggedIn = false;
-    //           this.cancelTokenRefreshSchedule();
-    //           this.goToLogin();
-    //           reject(error);
-    //         });
-    //     });
-    // });
   }
 
   public refresh(token: Token): Promise<Token> {
