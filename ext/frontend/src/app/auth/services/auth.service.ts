@@ -9,7 +9,7 @@ import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private static readonly TOKEN_KEY: string = 'token';
+  private static readonly TOKEN_KEY: string = 'signal_token';
   constructor(private httpClient: HttpClient, private storageUtil: StorageUtil) {
   }
 
