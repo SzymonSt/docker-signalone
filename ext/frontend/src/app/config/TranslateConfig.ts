@@ -1,5 +1,6 @@
 import { TranslateLoader, TranslateModuleConfig } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
+import { ApplicationConfig } from 'app/config/ApplicationConfig';
 import { from, Observable } from 'rxjs';
 
 // newer, webpack approach (compiled-in direct import (webpackMode: 'eager') or lazy import (webpackMode: 'lazy') + cache busting during production build by webpack)
@@ -25,5 +26,5 @@ export const TranslateConfig: TranslateModuleConfig = {
     useFactory: WebpackTranslateLoaderFactory,
     deps: [ HttpClient ]
   },
-  defaultLanguage: 'en'
+  defaultLanguage: ApplicationConfig.defaultLanguage
 };

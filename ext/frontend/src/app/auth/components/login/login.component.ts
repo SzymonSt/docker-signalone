@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
-import { AuthStateService } from 'app/auth/services/auth-state.service';
+import { Component, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { environment } from 'environment/environment.development';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthStateService } from 'app/auth/services/auth-state.service';
 
 @Component({
   selector: 'app-login',
