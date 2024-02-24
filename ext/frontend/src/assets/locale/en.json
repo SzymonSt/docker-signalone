@@ -6,7 +6,8 @@
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",
-    "UNDEFINED": "The error was not recognized"
+    "UNDEFINED": "The error was not recognized",
+    "UNAUTHORIZED": "Authorization error! Please log in again."
   },
   "ENUM": {
     "ISSUE_TYPE": {

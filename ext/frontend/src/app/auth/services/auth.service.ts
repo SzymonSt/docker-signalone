@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Token } from 'app/shared/interfaces/Token';
-import { map, Observable } from 'rxjs';
-import { OAuth2TokenDTO } from 'app/shared/interfaces/OAuth2TokenDTO';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { environment } from 'environment/environment.development';
-import { StorageUtil } from 'app/shared/util/StorageUtil';
 import { SocialUser } from '@abacritt/angularx-social-login';
-import { HttpEncoder } from 'app/shared/util/HttpEncoder';
-import { NormalizeObjectValue } from 'app/shared/util/NormalizeObjectValue';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { OAuth2TokenDTO } from 'app/shared/interfaces/OAuth2TokenDTO';
+import { Token } from 'app/shared/interfaces/Token';
+import { StorageUtil } from 'app/shared/util/StorageUtil';
+import { environment } from 'environment/environment.development';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,7 +24,7 @@ export class AuthService {
   }
 
   public loginWithGoogle(user: SocialUser): Observable<{ token: Token }> {
-    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { user})
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: user.idToken })
       .pipe(
         map((response: any) => {
           const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);

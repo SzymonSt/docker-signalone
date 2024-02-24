@@ -10,13 +10,17 @@ export class LoadingInterceptor implements HttpInterceptor {
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    // this.applicationStateService.isLoading = true;
-    return next.handle(req).pipe(
-      finalize(() => this.applicationStateService.isLoading = false),
-      catchError((err) => {
-        this.applicationStateService.isLoading = false
-        return throwError(err);
-      })
-    )
+    if (!req.url.includes('token/refresh')) {
+      this.applicationStateService.isLoading = true;
+      return next.handle(req).pipe(
+        finalize(() => this.applicationStateService.isLoading = false),
+        catchError((err) => {
+          this.applicationStateService.isLoading = false
+          return throwError(err);
+        })
+      )
+    } else {
+      return next.handle(req)
+    }
   }
 }
