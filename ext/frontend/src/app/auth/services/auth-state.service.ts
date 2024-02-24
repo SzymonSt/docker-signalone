@@ -114,30 +114,25 @@ export class AuthStateService implements OnDestroy {
       .then(() => {
         this.deleteToken()
           .then(() => {
-            this.token = null;
-            this.isLoggedIn = false;
-            this.cancelTokenRefreshSchedule();
-            this.goToLogin();
+            this.manageTokenDeletion();
           })
           .catch((error) => {
-            // shouldn't happen really, but we're covering for safety
-            // we need to wipe the state anyway, even if there's an error
-            this.token = null;
-            this.isLoggedIn = false;
-            this.cancelTokenRefreshSchedule();
+            this.manageTokenDeletion();
           });
       })
       .catch((error: any) => {
-        // we need to wipe the state anyway, even if there's an error
-        // we don't care about the result of the deleteToken operation at this point, we're in error state anyway
         this.deleteToken()
           .finally(() => {
-            this.token = null;
-            this.isLoggedIn = false;
-            this.cancelTokenRefreshSchedule();
-            this.goToLogin();
+            this.manageTokenDeletion();
           });
       });
+  }
+
+  public manageTokenDeletion(): void {
+    this.token = null;
+    this.isLoggedIn = false;
+    this.cancelTokenRefreshSchedule();
+    this.goToLogin();
   }
 
   public refresh(token: Token): Promise<Token> {
