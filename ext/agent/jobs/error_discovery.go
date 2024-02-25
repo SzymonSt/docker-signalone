@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 	"signal/helpers"
+	"signal/models"
 	"strings"
 	"sync"
 	"time"
@@ -13,7 +14,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string) {
+func ScanForErrors(cli *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload) {
 	containers, err := helpers.ListContainers(cli)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
@@ -22,11 +23,14 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		wg.Add(1)
-		go func(cli *client.Client, c types.Container, l *logrus.Logger, wg *sync.WaitGroup, bearerToken string) {
+		go func(cli *client.Client,
+			c types.Container, l *logrus.Logger,
+			wg *sync.WaitGroup, taskPayload models.TaskPayload) {
 			isErrorState := false
-			timeTail := time.Now().Add(time.Second * -15).Format(time.RFC3339)
+			execTimeOffsetInSeconds := -0.5
+			timeTail := time.Now().Add(time.Duration(-15 + execTimeOffsetInSeconds)).Format(time.RFC3339)
 			defer wg.Done()
-			l.Infof("Authorization: Bearer %s \n", bearerToken)
+			l.Infof("Authorization: Bearer %s \n", taskPayload.BearerToken)
 			container, err := cli.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
 				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
@@ -38,14 +42,14 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string
 			}
 			isErrorState = isContainerInErrorState(container.State)
 			if isErrorState {
-				// TODO: send logs to analysis
+				helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 				return
 			}
 			isErrorState = areLogsIndicatingErrorOrWarning(logs)
 			if isErrorState {
-				// TODO: send logs to analysis
+				helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 			}
-		}(cli, c, logger, &wg, bearerToken)
+		}(cli, c, logger, &wg, taskPayload)
 	}
 
 	wg.Wait()
@@ -57,7 +61,11 @@ func isContainerInErrorState(state *types.ContainerState) bool {
 }
 
 func areLogsIndicatingErrorOrWarning(logs string) bool {
-	regexWarningError := `(?i)(error|warning|exception|err|warn)`
+	regexWarningError := `(?i)(error|warning|exception|err|warn|critical|fatal|stacktrace|
+	traceback|issue|crash|hang|freeze|
+	timeout|deadlock|corrupt|invalid|illegal|unhandled|uncaught|
+	unexpected|unimplemented|unsupported|missing|invalid|illegal|
+	unauthorized|denied|forbidden|blocked|rejected|panic|abort)`
 	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
 	return matched
 }

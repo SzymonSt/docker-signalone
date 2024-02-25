@@ -4,6 +4,7 @@ import (
 	"os"
 	"signal/helpers"
 	"signal/jobs"
+	"signal/models"
 	"time"
 
 	"github.com/docker/docker/client"
@@ -18,6 +19,7 @@ var logger = logrus.New()
 var jscheduler, _ = gocron.NewScheduler()
 var state = false
 var token = ""
+var userId = ""
 var jId = uuid.Nil
 var cli *client.Client
 
@@ -25,19 +27,25 @@ type AgentStatePayload struct {
 	State bool `json:"state"`
 }
 
-type AgentTokenPayload struct {
-	Token string `json:"token"`
+type AgentAuthDataPayload struct {
+	UserId string `json:"user_id"`
+	Token  string `json:"token"`
 }
 
 func main() {
 	var bearerToken = "Bearer " + token
 	logger.SetOutput(os.Stdout)
 
-	_ = helpers.GetEnvVariables()
+	cfs := helpers.GetEnvVariables()
 	cli, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	taskPayload := models.TaskPayload{
+		BearerToken: bearerToken,
+		BackendUrl:  cfs.BackendApiAddress,
+		UserId:      userId,
+	}
 	j, err := jscheduler.NewJob(
 		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, cli, logger, bearerToken),
+		gocron.NewTask(jobs.ScanForErrors, cli, logger, taskPayload),
 	)
 	if err != nil {
 		logger.Fatalf("Failed to create job: %v", err)
@@ -52,7 +60,7 @@ func main() {
 
 	router.POST("/api/control/state", ControlPower)
 	router.GET("/api/control/state", GetState)
-	router.POST("/api/control/token", ControlToken)
+	router.POST("/api/control/auth_data", ControlAuthData)
 	logger.Fatal(router.Start(":37002"))
 
 }
@@ -88,13 +96,14 @@ func ControlPower(c echo.Context) error {
 	return nil
 }
 
-func ControlToken(c echo.Context) error {
-	var tokenPayload AgentTokenPayload
-	if err := c.Bind(&tokenPayload); err != nil {
+func ControlAuthData(c echo.Context) error {
+	var agentAuthDataPayload AgentAuthDataPayload
+	if err := c.Bind(&agentAuthDataPayload); err != nil {
 		c.JSON(400, "Invalid value for token")
 		return nil
 	}
-	token = tokenPayload.Token
+	token = agentAuthDataPayload.Token
+	userId = agentAuthDataPayload.UserId
 	jscheduler.Update(
 		jId,
 		gocron.DurationJob(time.Second*15),

@@ -1,9 +1,13 @@
 package helpers
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"signal/models"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -59,6 +63,31 @@ func GetEnvVariables() (cfs ConfigServer) {
 	err = viper.Unmarshal(&cfs)
 	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+	return
+}
+
+func CallLogAnalysis(logs string, cName string, taskPayload models.TaskPayload) (err error) {
+	data := map[string]string{
+		"logs":          logs,
+		"containerName": cName,
+		"userId":        taskPayload.UserId,
+	}
+	jsonData, _ := json.Marshal(data)
+	issueAnalysisReq, err := http.NewRequest("POST", taskPayload.BackendUrl+"/api/agent/issues/analysis", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return
+	}
+	issueAnalysisReq.Header.Set("Content-Type", "application/json")
+	issueAnalysisReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", taskPayload.BearerToken))
+	client := &http.Client{}
+	resp, err := client.Do(issueAnalysisReq)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("failed to call log analysis: %v", resp.Status)
 	}
 	return
 }
