@@ -18,6 +18,7 @@ func NewMainRouter(mainController *controllers.MainController) *MainRouter {
 
 func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	authorizationRouterGroup := rg.Group("/auth")
+	authorizationRouterGroup.POST("/login-with-github", mr.mainController.LoginWithGithubHandler)
 	authorizationRouterGroup.POST("/login-with-google", mr.mainController.LoginWithGoogleHandler)
 	authorizationRouterGroup.POST("/token/refresh", mr.mainController.RefreshTokenHandler)
 	authorizationRouterGroup.POST("/user/login", func(c *gin.Context) {})

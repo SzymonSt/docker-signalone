@@ -10,6 +10,10 @@ type Config struct {
 	ServerPort string `mapstructure:"SERVER_PORT"`
 	Mode       string `mapstructure:"MODE"`
 
+	//GitHub Data
+	GithubClientId     string `mapstructure:"GITHUB_CLIENT_ID"`
+	GithubClientSecret string `mapstructure:"GITHUB_CLIENT_SECRET"`
+
 	//Google Data
 	GoogleClientId     string `mapstructure:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
