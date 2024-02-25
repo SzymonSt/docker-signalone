@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -450,6 +451,68 @@ func (c *MainController) GetContainers(ctx *gin.Context) {
 	ctx.JSON(200, containers)
 }
 
+// Auth Handlers
+func (c *MainController) LoginWithGithubHandler(ctx *gin.Context) {
+	var requestData models.GithubTokenRequest
+	var user models.User
+
+	if err := ctx.ShouldBindJSON(&requestData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userData, err = getGithubData(requestData.Code)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": strconv.Itoa(userData.Id)})
+
+	err = userResult.Decode(&user)
+
+	if err != nil && err.Error() != mongo.ErrNoDocuments.Error() {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err != nil && err.Error() == mongo.ErrNoDocuments.Error() {
+		user = models.User{
+			UserId:           strconv.Itoa(userData.Id),
+			UserName:         userData.Login,
+			IsPro:            false,
+			AgentBearerToken: "",
+			Counter:          0,
+			Type:             "github",
+		}
+
+		_, err = c.usersCollection.InsertOne(ctx, user)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	accessTokenString, err := createToken(user.UserId, false)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	refreshTokenString, err := createToken(user.UserId, true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "Success",
+		"accessToken":  accessTokenString,
+		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
+		"refreshToken": refreshTokenString,
+	})
+}
+
 func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	var requestData models.GoogleTokenRequest
 	var user models.User
@@ -485,7 +548,6 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 		}
 
 		_, err = c.usersCollection.InsertOne(ctx, user)
-
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -493,14 +555,12 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	}
 
 	accessTokenString, err := createToken(user.UserId, false)
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
 	refreshTokenString, err := createToken(user.UserId, true)
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -514,6 +574,164 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	})
 }
 
+func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
+	var cfg = config.GetInstance()
+	var claims = &models.JWTClaimsWithId{}
+	var data models.RefreshTokenRequest
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := jwt.ParseWithClaims(data.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return SECRET_KEY, nil
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !token.Valid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		return
+	}
+
+	accessTokenString, err := createToken(claims.Id, false)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	refreshTokenString, err := createToken(claims.Id, true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "Success",
+		"accessToken":  accessTokenString,
+		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
+		"refreshToken": refreshTokenString,
+	})
+}
+
+func createToken(id string, isRefreshToken bool) (string, error) {
+	var cfg = config.GetInstance()
+	var expTime time.Duration
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+
+	if isRefreshToken {
+		expTime = REFRESH_TOKEN_EXPIRATION_TIME
+	} else {
+		expTime = ACCESS_TOKEN_EXPIRATION_TIME
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"exp": time.Now().Add(expTime).Unix(),
+			"id":  id,
+		})
+
+	tokenString, err := token.SignedString(SECRET_KEY)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func getGithubData(code string) (models.GithubUserData, error) {
+	var cfg = config.GetInstance()
+	var githubData = models.GithubUserData{}
+	var githubJWTData = models.GithubTokenResponse{}
+	var httpClient = &http.Client{}
+
+	ghJWTReqBody := map[string]string{
+		"client_id":     cfg.GithubClientId,
+		"client_secret": cfg.GithubClientSecret,
+		"code":          code,
+	}
+
+	jsonData, _ := json.Marshal(ghJWTReqBody)
+
+	ghJWTReq, err := http.NewRequest("POST", "https://github.com/login/oauth/access_token", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	ghJWTReq.Header.Set("Accept", "application/json")
+	ghJWTReq.Header.Set("Content-Type", "application/json")
+
+	ghJWTResp, err := httpClient.Do(ghJWTReq)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	ghJWTRespBody, err := io.ReadAll(ghJWTResp.Body)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	err = json.Unmarshal(ghJWTRespBody, &githubJWTData)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	ghUserDataReq, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	ghUserDataReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", githubJWTData.AccessToken))
+
+	ghUserDataResp, err := httpClient.Do(ghUserDataReq)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	ghUserDataRespBody, err := io.ReadAll(ghUserDataResp.Body)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	err = json.Unmarshal(ghUserDataRespBody, &githubData)
+	if err != nil {
+		return models.GithubUserData{}, err
+	}
+
+	return githubData, nil
+}
+
+func getGooglePublicKey(keyId string) (string, error) {
+	var googleData = map[string]string{}
+
+	resp, err := http.Get("https://www.googleapis.com/oauth2/v1/certs")
+	if err != nil {
+		return "", err
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	err = json.Unmarshal(data, &googleData)
+	if err != nil {
+		return "", err
+	}
+
+	key, ok := googleData[keyId]
+	if !ok {
+		return "", errors.New("key not found")
+	}
+
+	return key, nil
+}
+
 func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 	var cfg = config.GetInstance()
 	var claimsStruct = models.GoogleClaims{}
@@ -523,13 +741,11 @@ func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 		&claimsStruct,
 		func(token *jwt.Token) (interface{}, error) {
 			pem, err := getGooglePublicKey(fmt.Sprintf("%s", token.Header["kid"]))
-
 			if err != nil {
 				return nil, err
 			}
 
 			key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pem))
-
 			if err != nil {
 				return nil, err
 			}
@@ -543,7 +759,6 @@ func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 	}
 
 	claims, ok := token.Claims.(*models.GoogleClaims)
-
 	if !ok {
 		return models.GoogleClaims{}, errors.New("invalid claims")
 	}
@@ -573,113 +788,11 @@ func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 	return *claims, nil
 }
 
-func getGooglePublicKey(keyId string) (string, error) {
-	resp, err := http.Get("https://www.googleapis.com/oauth2/v1/certs")
-
-	if err != nil {
-		return "", err
-	}
-
-	data, err := io.ReadAll(resp.Body)
-
-	if err != nil {
-		return "", err
-	}
-
-	googleData := map[string]string{}
-	err = json.Unmarshal(data, &googleData)
-
-	if err != nil {
-		return "", err
-	}
-
-	key, ok := googleData[keyId]
-
-	if !ok {
-		return "", errors.New("key not found")
-	}
-
-	return key, nil
-}
-
-func createToken(id string, isRefreshToken bool) (string, error) {
-	var cfg = config.GetInstance()
-	var SECRET_KEY = []byte(cfg.SignalOneSecret)
-	var expTime time.Duration
-
-	if isRefreshToken {
-		expTime = REFRESH_TOKEN_EXPIRATION_TIME
-	} else {
-		expTime = ACCESS_TOKEN_EXPIRATION_TIME
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"exp": time.Now().Add(expTime).Unix(),
-			"id":  id,
-		})
-
-	tokenString, err := token.SignedString(SECRET_KEY)
-
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
-}
-
-func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
-	var data models.RefreshTokenRequest
-	var cfg = config.GetInstance()
-	var SECRET_KEY = []byte(cfg.SignalOneSecret)
-
-	if err := ctx.ShouldBindJSON(&data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	claims := &models.JWTClaimsWithId{}
-	token, err := jwt.ParseWithClaims(data.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return SECRET_KEY, nil
-	})
-
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if !token.Valid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
-		return
-	}
-
-	accessTokenString, err := createToken(claims.Id, false)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
-		return
-	}
-
-	refreshTokenString, err := createToken(claims.Id, true)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":      "Success",
-		"accessToken":  accessTokenString,
-		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
-		"refreshToken": refreshTokenString,
-	})
-}
-
 func verifyToken(tokenString string) error {
 	var cfg = config.GetInstance()
+	var claims = &jwt.RegisteredClaims{}
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
 
-	claims := &jwt.RegisteredClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return SECRET_KEY, nil
 	})
