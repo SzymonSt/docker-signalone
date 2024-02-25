@@ -38,6 +38,9 @@ type MainController struct {
 	analysisStoreCollection *mongo.Collection
 }
 
+const ACCESS_TOKEN_EXPIRATION_TIME = time.Minute * 10
+const REFRESH_TOKEN_EXPIRATION_TIME = time.Hour * 24
+
 func NewMainController(issuesCollection *mongo.Collection,
 	usersCollection *mongo.Collection,
 	analysisStoreCollection *mongo.Collection) *MainController {
@@ -506,6 +509,7 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":      "Success",
 		"accessToken":  accessTokenString,
+		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
 		"refreshToken": refreshTokenString,
 	})
 }
@@ -604,9 +608,9 @@ func createToken(id string, isRefreshToken bool) (string, error) {
 	var expTime time.Duration
 
 	if isRefreshToken {
-		expTime = time.Hour * 24
+		expTime = REFRESH_TOKEN_EXPIRATION_TIME
 	} else {
-		expTime = time.Minute * 10
+		expTime = ACCESS_TOKEN_EXPIRATION_TIME
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
@@ -666,6 +670,7 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":      "Success",
 		"accessToken":  accessTokenString,
+		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
 		"refreshToken": refreshTokenString,
 	})
 }

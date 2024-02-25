@@ -75,6 +75,7 @@ func main() {
 	//authController TBD
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"*"}
+	corsConfig.AllowHeaders = []string{"*"}
 	corsConfig.AllowCredentials = true
 
 	server.Use(cors.New(corsConfig))

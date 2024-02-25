@@ -29,7 +29,7 @@ class ChatAgent:
                 endpoint_url=os.environ.get("ENDPOINT_URL"),
                 task="text-generation",
                 model_kwargs={
-                    "max_new_tokens": 256,
+                    "max_new_tokens": 100,
                     "top_k": 50,
                     "temperature": 0.3,
                     "repetition_penalty": 1.1,
@@ -39,7 +39,7 @@ class ChatAgent:
                 endpoint_url=os.environ.get("ENDPOINT_URL"),
                 task="text-generation",
                 model_kwargs={
-                    "max_new_tokens": 256,
+                    "max_new_tokens": 60,
                     "top_k": 30,
                     "temperature": 0.5,
                     "repetition_penalty": 1.1,
@@ -65,8 +65,12 @@ class ChatAgent:
         Returns: summary of the logs"""
 
         answer =  self.summarizer(f"""Imagine you are an expert software developer who helps in creating summary to ask websearch in detail.
-                                Only give summary in form of paragraph and not solutions. Here are the logs: \n {logs} 
+                                Only give summary in form of paragraph with technical details and not solutions. Include error message in the summary. Here are the logs: \n {logs} 
                                 Summary: """)
+        if answer[-1] != '.':
+            answer_sentences = answer.split(".")
+            answer_sentences.pop()
+            answer = ".".join(answer_sentences)
         return answer
 
     def master_agent(self,summary):
@@ -75,9 +79,9 @@ class ChatAgent:
             summary (str): summary of the logs
         Returns: solution to the logs"""
 
-        answer =  self.agent_executor.invoke({"input":f"""Imagine you are a software developer who has to provide short summary of available solutions to errors in logs of a software.
+        answer =  self.agent_executor.invoke({"input":f"""Imagine you are a software developer who has to provide short summary of available solutions to issues of a software.
                                      Use websearch tool available to make your answer. You can ask multiple questions from the webagent. Use websearch agent to search about information. You can use the summary provided. Also provide the sources of your solutions.
-                                     Here are the logs for which you need to find solution and provide code if necessary: \n {summary}"""})
+                                     Here is the summary of issue for which you need to find solution and provide code or commands if it would help to resolve issue: \n {summary}"""})
         
         return answer['intermediate_steps']
     
@@ -106,7 +110,7 @@ class ChatAgent:
             container_name (str): container name of the user
         Returns: json object"""
 
-        response = self.title_gen(f'''Give a short title for this log summary: {summary}.
+        response = self.title_gen(f'''Give a short title for this text: {summary}.
                                   Title:''')
         # title_pattern = re.compile(r'Title:\s*(.*)', re.IGNORECASE)
         # title_match = title_pattern.search(response)
@@ -114,7 +118,7 @@ class ChatAgent:
         #     title = title_match.group(1).strip()
         # else:
         #     title = "Error Log"
-        return response
+        return response.split("\n")[0]
 
     def run(self, logs):
         """Function to run the agent
@@ -126,9 +130,12 @@ class ChatAgent:
         Returns: json object"""
         summary = self.understand_logs(logs)
         urls = self.master_agent(summary)
-        sol = self.llm(f'''Use this information to provide the solution to the logs: {summary}.
+        sol = self.llm(f'''Use this information to provide solutions to the issue summary: {summary}.
                        \n Here are the intermediate steps for you to use as in information source: {urls}
+                       Provide just solutions anythign else will be punished.
                        Do not assume anything that is not there in the intermediate steps and give a proper answer.
+                       Do not output any code or commands if not confirmed by the intermediate steps it must be as accurate as possible. You will be punsihed for wrong information.
+                       Do not prompt user to search anything in web or ask support.
                        \n Solution:''')
         urls = self.extract_urls(logs, urls)
         title = self.generate_title(summary)

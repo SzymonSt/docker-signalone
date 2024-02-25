@@ -6,7 +6,8 @@
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",
-    "UNDEFINED": "The error was not recognized"
+    "UNDEFINED": "The error was not recognized",
+    "UNAUTHORIZED": "Authorization error! Please log in again."
   },
   "ENUM": {
     "ISSUE_TYPE": {
@@ -40,22 +41,24 @@
     "GITHUB_SIGN_IN": "Sign in with github"
   },
   "FEATURES": {
-    "SEARCH_CRITERIA": "Search criteria",
-    "ISSUE_NAME": "Issue name",
-    "TYPE": "Type",
-    "SEVERITY": "Severity",
-    "CONTAINER": "Container",
-    "DATE_FROM": "Date from",
-    "DATE_TO": "Date to",
-    "DATE_PLACEHOLDER": "DD/MM/YYYY",
-    "UNRESOLVED_ONLY": "Show only unresolved issues",
-    "CLEAR": "Clear",
-    "SEARCH": "Search",
-    "INSIGHTS": "Insights: ",
-    "SOURCES": "Sources: ",
-    "SOURCES_^RAW": "Sources",
-    "CHAT": {
-      "ASK_MODEL": "Ask model"
+    "ISSUES": {
+      "SEARCH_CRITERIA": "Search criteria",
+      "ISSUE_NAME": "Issue name",
+      "TYPE": "Type",
+      "SEVERITY": "Severity",
+      "CONTAINER": "Container",
+      "DATE_FROM": "Date from",
+      "DATE_TO": "Date to",
+      "DATE_PLACEHOLDER": "DD/MM/YYYY",
+      "UNRESOLVED_ONLY": "Show only unresolved issues",
+      "CLEAR": "Clear",
+      "SEARCH": "Search",
+      "INSIGHTS": "Insights: ",
+      "SOURCES": "Sources: ",
+      "SOURCES_^RAW": "Sources",
+      "CHAT": {
+        "ASK_MODEL": "Ask model"
+      }
     }
   }
 }

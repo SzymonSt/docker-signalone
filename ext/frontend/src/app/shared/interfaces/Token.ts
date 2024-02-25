@@ -5,8 +5,6 @@ export abstract class Token {
 
   public abstract accessToken: string;
 
-  public abstract idToken: string;
-
   public abstract refreshToken: string;
 
   public abstract expiryDate: Date;
@@ -47,7 +45,7 @@ export abstract class Token {
     // 1/3 (rounded) of token lifetime, but no less than 2 minutes
     return moment.duration(
       Math.max(
-        Math.floor(Math.round(this.lifetime.as('minutes')) / 3),
+        Math.floor(Math.round(this.lifetime.as('minutes')) / 1.5),
         2
       ),
       'minutes');
