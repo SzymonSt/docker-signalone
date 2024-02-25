@@ -1,9 +1,9 @@
-langchain
-langchainhub
+langchain==0.1.7
+langchainhub==0.1.14
 openai
-langchain-community 
+langchain-community==0.0.20 
 tavily-python
 python-dotenv
-gradio
 uvicorn
-huggingface-hub
+huggingface-hub==0.20.3
+fastapi

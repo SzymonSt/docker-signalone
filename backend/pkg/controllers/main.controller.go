@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"signalone/cmd/config"
 	_ "signalone/docs"
-	"signalone/pkg/components"
 	"signalone/pkg/models"
 	"signalone/pkg/utils"
 	"strconv"
@@ -34,7 +33,6 @@ type GetIssuesPayload struct {
 }
 
 type MainController struct {
-	iEngine                 *utils.InferenceEngine
 	issuesCollection        *mongo.Collection
 	usersCollection         *mongo.Collection
 	analysisStoreCollection *mongo.Collection
@@ -43,11 +41,10 @@ type MainController struct {
 const ACCESS_TOKEN_EXPIRATION_TIME = time.Minute * 10
 const REFRESH_TOKEN_EXPIRATION_TIME = time.Hour * 24
 
-func NewMainController(iEngine *utils.InferenceEngine,
-	issuesCollection *mongo.Collection, usersCollection *mongo.Collection,
+func NewMainController(issuesCollection *mongo.Collection,
+	usersCollection *mongo.Collection,
 	analysisStoreCollection *mongo.Collection) *MainController {
 	return &MainController{
-		iEngine:                 iEngine,
 		issuesCollection:        issuesCollection,
 		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
@@ -67,12 +64,8 @@ func NewMainController(iEngine *utils.InferenceEngine,
 // @Failure 401 {object} map[string]any
 // @Router /issues/analysis [put]
 func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
-	var generatedSummary string
-	var proposedSolutions components.SolutionPredictionResult
 	var user models.User
-	summarizationTaskPromptTemplate := `<|user|>
-	Summarize these logs and generate a single paragraph summary of what is happening in these logs in high technical detail: %s</s>
-	<|assistant|>`
+	var analysisResponse models.IssueAnalysis
 
 	bearerToken := ctx.GetHeader("Authorization")
 	if bearerToken == "" {
@@ -93,28 +86,21 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	//Commented our for testing purposes
-	// if user.AgentBearerToken != bearerToken {
-	// 	ctx.JSON(401, gin.H{
-	// 		"message": "Unauthorized",
-	// 	})
-	// 	return
-	// }
 	issueId := uuid.New().String()
-	generatedSummary = c.iEngine.LogSummarization(
-		fmt.Sprintf(summarizationTaskPromptTemplate, logAnalysisPayload.Logs),
-	)
-	generatedSummary = strings.Split(generatedSummary, "<|assistant|>")[1]
-	proposedSolutions = c.iEngine.PredictSolutions(generatedSummary)
+	data := map[string]string{"logs": logAnalysisPayload.Logs}
+	jsonData, _ := json.Marshal(data)
+	analysisResponse, err = utils.CallPredictionAgentService(jsonData)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
 	if !user.IsPro {
 		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
 			Logs:       logAnalysisPayload.Logs,
-			LogSummary: generatedSummary,
+			LogSummary: analysisResponse.LogSummary,
 		})
 	}
-	fmt.Println("Generated Summary: ", generatedSummary)
-	fmt.Println("Proposed Solutions: ", proposedSolutions)
-	fmt.Printf("Solution Sources: %+v\n", proposedSolutions.SolutionSources)
 
 	formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
 
@@ -123,14 +109,14 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		UserId:                    logAnalysisPayload.UserId,
 		ContainerName:             logAnalysisPayload.ContainerName,
 		Score:                     0,
-		Severity:                  strings.ToUpper("Critical"),                             // TODO: Implement severity detection
-		Title:                     "Sample issue title from 8 to 15 words. Quick summary.", // TODO: Produce title
+		Severity:                  strings.ToUpper("Critical"), // TODO: Implement severity detection
+		Title:                     analysisResponse.Title,
 		TimeStamp:                 time.Now(),
 		IsResolved:                false,
 		Logs:                      formattedAnalysisLogs,
-		LogSummary:                generatedSummary,
-		PredictedSolutionsSummary: proposedSolutions.SolutionSummary,
-		PredictedSolutionsSources: proposedSolutions.SolutionSources,
+		LogSummary:                analysisResponse.LogSummary,
+		PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
+		PredictedSolutionsSources: analysisResponse.Sources,
 	})
 	ctx.JSON(200, gin.H{
 		"message": "Success",

@@ -15,7 +15,7 @@ from datasets import load_dataset
 
 dataset_url = "Signal0ne/logs-for-evaluation"
 test_output_dir_name = 'output-test-results'
-url = "http://localhost:8000/run_chat_agent"
+url = "http://localhost:8000/run_analysis"
 results = []
 
 dataset = load_dataset(dataset_url, split=None)

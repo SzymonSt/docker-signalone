@@ -18,9 +18,10 @@ type Config struct {
 	SignalOneSecret string `mapstructure:"SIGNAL_ONE_SECRET"`
 
 	//Inference Engine API
-	InferenceApiUrl    string `mapstructure:"INFERENCE_API_URL"`
-	InferenceApiKey    string `mapstructure:"INFERENCE_API_KEY"`
-	InferenceBaseModel string `mapstructure:"BASE_MODEL_NAME"`
+	PredicitonAgentServiceUrl string `mapstructure:"PREDICTION_AGENT_SERVICE_URL"`
+	InferenceApiUrl           string `mapstructure:"INFERENCE_API_URL"`
+	InferenceApiKey           string `mapstructure:"INFERENCE_API_KEY"`
+	InferenceBaseModel        string `mapstructure:"BASE_MODEL_NAME"`
 
 	//Tokenized Solution for Prediction Database Details
 	SolutionDbHost         string `mapstructure:"SOLUTION_DB_HOST"`

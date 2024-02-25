@@ -27,7 +27,7 @@ def main():
         solution_sources = json.load(solution_sources_file)
     
     init_users(users, mongo_client, db_name, coll_name)
-    init_solution_sources(solution_sources, qdrant_client, sources_coll_name)
+    # init_solution_sources(solution_sources, qdrant_client, sources_coll_name)
 
 def init_users(users, mongo_client, db_name, coll_name):
     db = mongo_client[db_name]

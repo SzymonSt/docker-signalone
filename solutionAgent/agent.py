@@ -139,15 +139,13 @@ class ChatAgent:
                        \n Solution:''')
         urls = self.extract_urls(logs, urls)
         title = self.generate_title(summary)
-        # if title is None:
-        #     print("Title not found")
-        # else:
-        #     print(title)
+        for ui, url in enumerate(urls):
+            urls[ui] = url.split("'")[0]
         final = {
             "title": title,
             "logsummary": summary,
-            "predicted_solution":sol,
+            "predictedSolutions":sol,
             "sources": urls
                 }
 
-        return json.dumps(final)
+        return final
