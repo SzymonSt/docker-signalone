@@ -6,4 +6,4 @@ services:
   smoked_server: # nginx server hosting the website with the miss-configuration
     image: '322456/smoked_server:dev'
     ports:
-      - '8081:8081'
+      - '8082:8082'
