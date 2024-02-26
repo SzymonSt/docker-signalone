@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 	"signal/helpers"
+	"signal/models"
 	"strings"
 	"sync"
 	"time"
@@ -13,8 +14,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string) {
-	containers, err := helpers.ListContainers(cli)
+func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload) {
+	containers, err := helpers.ListContainers(dockerClient)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
 		return
@@ -22,30 +23,33 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, bearerToken string
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		wg.Add(1)
-		go func(cli *client.Client, c types.Container, l *logrus.Logger, wg *sync.WaitGroup, bearerToken string) {
+		go func(dockerClient *client.Client,
+			c types.Container, l *logrus.Logger,
+			wg *sync.WaitGroup, taskPayload models.TaskPayload) {
 			isErrorState := false
-			timeTail := time.Now().Add(time.Second * -15).Format(time.RFC3339)
+			execTimeOffsetInSeconds := -0.5
+			timeTail := time.Now().Add(time.Duration(-15 + execTimeOffsetInSeconds)).Format(time.RFC3339)
 			defer wg.Done()
-			l.Infof("Authorization: Bearer %s \n", bearerToken)
-			container, err := cli.ContainerInspect(context.Background(), c.ID)
+			l.Infof("Authorization: Bearer %s \n", taskPayload.BearerToken)
+			container, err := dockerClient.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
 				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
 				return
 			}
-			logs, err := helpers.CollectLogsForAnalysis(c.ID, cli, timeTail)
+			logs, err := helpers.CollectLogsForAnalysis(c.ID, dockerClient, timeTail)
 			if err != nil {
 				l.Errorf("Failed to collect logs for container %s: %v", c.ID, err)
 			}
 			isErrorState = isContainerInErrorState(container.State)
 			if isErrorState {
-				// TODO: send logs to analysis
+				helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 				return
 			}
 			isErrorState = areLogsIndicatingErrorOrWarning(logs)
 			if isErrorState {
-				// TODO: send logs to analysis
+				helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 			}
-		}(cli, c, logger, &wg, bearerToken)
+		}(dockerClient, c, logger, &wg, taskPayload)
 	}
 
 	wg.Wait()
@@ -57,7 +61,10 @@ func isContainerInErrorState(state *types.ContainerState) bool {
 }
 
 func areLogsIndicatingErrorOrWarning(logs string) bool {
-	regexWarningError := `(?i)(error|warning|exception|err|warn)`
+	regexWarningError := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|denied|
+		err|error|exception|fatal|forbidden|freeze|hang|illegal|invalid|issue|missing|
+		panic|rejected|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
+		unimplemented|unsupported|warn|warning)`
 	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
 	return matched
 }

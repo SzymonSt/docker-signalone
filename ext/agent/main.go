@@ -4,6 +4,7 @@ import (
 	"os"
 	"signal/helpers"
 	"signal/jobs"
+	"signal/models"
 	"time"
 
 	"github.com/docker/docker/client"
@@ -15,34 +16,41 @@ import (
 )
 
 var logger = logrus.New()
-var jscheduler, _ = gocron.NewScheduler()
+var jobScheduler, _ = gocron.NewScheduler()
 var state = false
 var token = ""
-var jId = uuid.Nil
-var cli *client.Client
+var userId = ""
+var jobId = uuid.Nil
+var dockerClient *client.Client
 
 type AgentStatePayload struct {
 	State bool `json:"state"`
 }
 
-type AgentTokenPayload struct {
-	Token string `json:"token"`
+type AgentAuthDataPayload struct {
+	UserId string `json:"user_id"`
+	Token  string `json:"token"`
 }
 
 func main() {
 	var bearerToken = "Bearer " + token
 	logger.SetOutput(os.Stdout)
 
-	_ = helpers.GetEnvVariables()
-	cli, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	j, err := jscheduler.NewJob(
+	cfs := helpers.GetEnvVariables()
+	dockerClient, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	taskPayload := models.TaskPayload{
+		BearerToken: bearerToken,
+		BackendUrl:  cfs.BackendApiAddress,
+		UserId:      userId,
+	}
+	job, err := jobScheduler.NewJob(
 		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, cli, logger, bearerToken),
+		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload),
 	)
 	if err != nil {
 		logger.Fatalf("Failed to create job: %v", err)
 	}
-	jId = j.ID()
+	jobId = job.ID()
 	router := echo.New()
 	router.HideBanner = true
 	router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -52,7 +60,7 @@ func main() {
 
 	router.POST("/api/control/state", ControlPower)
 	router.GET("/api/control/state", GetState)
-	router.POST("/api/control/token", ControlToken)
+	router.POST("/api/control/auth_data", ControlAuthData)
 	logger.Fatal(router.Start(":37002"))
 
 }
@@ -78,27 +86,28 @@ func ControlPower(c echo.Context) error {
 	if statePayload.State {
 		state = statePayload.State
 		logger.Infof("Starting collector")
-		jscheduler.Start()
+		jobScheduler.Start()
 		logger.Infof("Collector started")
 	} else {
 		state = statePayload.State
-		jscheduler.StopJobs()
+		jobScheduler.StopJobs()
 	}
 	c.JSON(200, "Success")
 	return nil
 }
 
-func ControlToken(c echo.Context) error {
-	var tokenPayload AgentTokenPayload
-	if err := c.Bind(&tokenPayload); err != nil {
+func ControlAuthData(c echo.Context) error {
+	var agentAuthDataPayload AgentAuthDataPayload
+	if err := c.Bind(&agentAuthDataPayload); err != nil {
 		c.JSON(400, "Invalid value for token")
 		return nil
 	}
-	token = tokenPayload.Token
-	jscheduler.Update(
-		jId,
+	token = agentAuthDataPayload.Token
+	userId = agentAuthDataPayload.UserId
+	jobScheduler.Update(
+		jobId,
 		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, cli, logger, token),
+		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, token),
 	)
 	c.JSON(200, "Success")
 	return nil

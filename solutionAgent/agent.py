@@ -130,7 +130,7 @@ class ChatAgent:
         Returns: json object"""
         summary = self.understand_logs(logs)
         urls = self.master_agent(summary)
-        sol = self.llm(f'''Use this information to provide solutions to the issue summary: {summary}.
+        sol = self.llm(f'''System: Use this information to provide solutions to the issue summary: {summary}.
                        \n Here are the intermediate steps for you to use as in information source: {urls}
                        Provide just solutions anythign else will be punished.
                        Do not assume anything that is not there in the intermediate steps and give a proper answer.
