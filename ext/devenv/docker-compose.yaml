@@ -7,3 +7,4 @@ services:
     image: '322456/smoked_server:dev'
     ports:
       - '8082:8082'
+      

@@ -14,8 +14,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(cli *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload) {
-	containers, err := helpers.ListContainers(cli)
+func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload) {
+	containers, err := helpers.ListContainers(dockerClient)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
 		return
@@ -23,7 +23,7 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, taskPayload models
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		wg.Add(1)
-		go func(cli *client.Client,
+		go func(dockerClient *client.Client,
 			c types.Container, l *logrus.Logger,
 			wg *sync.WaitGroup, taskPayload models.TaskPayload) {
 			isErrorState := false
@@ -31,12 +31,12 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, taskPayload models
 			timeTail := time.Now().Add(time.Duration(-15 + execTimeOffsetInSeconds)).Format(time.RFC3339)
 			defer wg.Done()
 			l.Infof("Authorization: Bearer %s \n", taskPayload.BearerToken)
-			container, err := cli.ContainerInspect(context.Background(), c.ID)
+			container, err := dockerClient.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
 				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
 				return
 			}
-			logs, err := helpers.CollectLogsForAnalysis(c.ID, cli, timeTail)
+			logs, err := helpers.CollectLogsForAnalysis(c.ID, dockerClient, timeTail)
 			if err != nil {
 				l.Errorf("Failed to collect logs for container %s: %v", c.ID, err)
 			}
@@ -49,7 +49,7 @@ func ScanForErrors(cli *client.Client, logger *logrus.Logger, taskPayload models
 			if isErrorState {
 				helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 			}
-		}(cli, c, logger, &wg, taskPayload)
+		}(dockerClient, c, logger, &wg, taskPayload)
 	}
 
 	wg.Wait()
@@ -61,11 +61,10 @@ func isContainerInErrorState(state *types.ContainerState) bool {
 }
 
 func areLogsIndicatingErrorOrWarning(logs string) bool {
-	regexWarningError := `(?i)(error|warning|exception|err|warn|critical|fatal|stacktrace|
-	traceback|issue|crash|hang|freeze|
-	timeout|deadlock|corrupt|invalid|illegal|unhandled|uncaught|
-	unexpected|unimplemented|unsupported|missing|invalid|illegal|
-	unauthorized|denied|forbidden|blocked|rejected|panic|abort)`
+	regexWarningError := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|denied|
+		err|error|exception|fatal|forbidden|freeze|hang|illegal|invalid|issue|missing|
+		panic|rejected|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
+		unimplemented|unsupported|warn|warning)`
 	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
 	return matched
 }

@@ -67,10 +67,10 @@ func GetEnvVariables() (cfs ConfigServer) {
 	return
 }
 
-func CallLogAnalysis(logs string, cName string, taskPayload models.TaskPayload) (err error) {
+func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskPayload) (err error) {
 	data := map[string]string{
 		"logs":          logs,
-		"containerName": cName,
+		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}
 	jsonData, _ := json.Marshal(data)
@@ -85,7 +85,9 @@ func CallLogAnalysis(logs string, cName string, taskPayload models.TaskPayload) 
 	if err != nil {
 		return
 	}
+
 	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("failed to call log analysis: %v", resp.Status)
 	}
