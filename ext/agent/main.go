@@ -18,8 +18,11 @@ import (
 var logger = logrus.New()
 var jobScheduler, _ = gocron.NewScheduler()
 var state = false
-var token = ""
-var userId = ""
+var taskPayload = models.TaskPayload{
+	BearerToken: "",
+	BackendUrl:  "",
+	UserId:      "",
+}
 var jobId = uuid.Nil
 var dockerClient *client.Client
 
@@ -33,16 +36,11 @@ type AgentAuthDataPayload struct {
 }
 
 func main() {
-	var bearerToken = "Bearer " + token
 	logger.SetOutput(os.Stdout)
 
 	cfs := helpers.GetEnvVariables()
 	dockerClient, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	taskPayload := models.TaskPayload{
-		BearerToken: bearerToken,
-		BackendUrl:  cfs.BackendApiAddress,
-		UserId:      userId,
-	}
+	taskPayload.BackendUrl = cfs.BackendApiAddress
 	job, err := jobScheduler.NewJob(
 		gocron.DurationJob(time.Second*15),
 		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload),
@@ -102,12 +100,12 @@ func ControlAuthData(c echo.Context) error {
 		c.JSON(400, "Invalid value for token")
 		return nil
 	}
-	token = agentAuthDataPayload.Token
-	userId = agentAuthDataPayload.UserId
+	taskPayload.BearerToken = agentAuthDataPayload.Token
+	taskPayload.UserId = agentAuthDataPayload.UserId
 	jobScheduler.Update(
 		jobId,
 		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, token),
+		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload),
 	)
 	c.JSON(200, "Success")
 	return nil
