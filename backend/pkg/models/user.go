@@ -66,8 +66,9 @@ type GoogleTokenRequest struct {
 	IdToken string `json:"idToken"`
 }
 
-type JWTClaimsWithId struct {
-	Id string `json:"id"`
+type JWTClaimsWithUserData struct {
+	Id       string `json:"id"`
+	UserName string `json:"userName"`
 	jwt.RegisteredClaims
 }
 
