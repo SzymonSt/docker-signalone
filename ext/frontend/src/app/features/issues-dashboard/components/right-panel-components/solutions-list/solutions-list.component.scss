@@ -14,10 +14,9 @@
   }
 
   .solution-sources-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr;
-    grid-gap: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
 
     .solution-source {
       border: 1px solid var(--light-bright);

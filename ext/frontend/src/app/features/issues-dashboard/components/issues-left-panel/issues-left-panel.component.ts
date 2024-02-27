@@ -18,12 +18,17 @@ export class IssuesLeftPanelComponent {
   public max: number;
   @Input()
   public internalPage: number = 1;
+  @Input()
+  public isSidebarHidden: boolean;
+
   public pageSize: number = Constants.paginationLimit;
 
   @Output()
   public criteriaChanged: EventEmitter<IssueSearchCriteriaDTO> = new EventEmitter<IssueSearchCriteriaDTO>();
   @Output()
   public viewIssue: EventEmitter<IssueDTO> = new EventEmitter<IssueDTO>()
+  @Output()
+  public toggleSidebarVisibility: EventEmitter<boolean> = new EventEmitter<boolean>()
 
   private criteria: IssueSearchCriteriaDTO = new IssueSearchCriteriaDTO();
 
@@ -48,5 +53,9 @@ export class IssuesLeftPanelComponent {
       ...newCriteria
     }
     this.criteriaChanged.emit(this.criteria);
+  }
+
+  public toggleSidebarHidden(): void {
+    this.toggleSidebarVisibility.emit(!this.isSidebarHidden);
   }
 }

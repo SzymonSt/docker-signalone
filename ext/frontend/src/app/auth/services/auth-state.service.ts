@@ -3,6 +3,7 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/auth/services/auth.service';
 import { Token } from 'app/shared/interfaces/Token';
+import { ConfigurationService } from 'app/shared/services/configuration.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Duration } from 'moment';
@@ -18,7 +19,8 @@ export class AuthStateService implements OnDestroy {
   constructor(private zone: NgZone,
               private authService: AuthService,
               private socialAuthService: SocialAuthService,
-              private router: Router,) {}
+              private router: Router,
+              private configurationService: ConfigurationService) {}
 
   public get token(): Token {
     return this.token$.value;
@@ -257,7 +259,7 @@ export class AuthStateService implements OnDestroy {
     if (!_.isNil(this.token)) {
       this.scheduleTokenRefresh(this.token);
     }
-
+    this.configurationService.getCurrentAgentState();
     this.goToDashboard();
   }
 }

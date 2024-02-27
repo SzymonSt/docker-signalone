@@ -12,7 +12,6 @@ import { AuthStateService } from 'app/auth/services/auth-state.service';
 export class LoginComponent implements OnInit{
   public loginForm: FormGroup;
   public isSubmitted: boolean = false;
-  public activeLocale: string
   public githubLoginUrl: string = `https://github.com/login/oauth/authorize?client_id=6c88a4f9d4868879974e`;
   constructor(private socialAuthService: SocialAuthService, private authStateService: AuthStateService) {
     this.loginWithGoogle();

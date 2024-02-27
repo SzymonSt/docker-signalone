@@ -18,7 +18,7 @@ export class IssuesService {
     return this.httpClient.get<string[]>(`${environment.apiUrl}/user/containers`);
   }
 
-  public getIssuesList(searchCriteria?: IssueSearchCriteriaDTO): Observable<SearchIssuesResponseDTO> {
+  public getIssuesList(searchCriteria?: IssueSearchCriteriaDTO, revokeLoader: boolean = false): Observable<SearchIssuesResponseDTO> {
     if (searchCriteria) {
       if (searchCriteria.startTimestamp) {
         searchCriteria.startTimestamp = new Date(searchCriteria.startTimestamp).toISOString();
@@ -32,9 +32,9 @@ export class IssuesService {
         fromObject: { ...(NormalizeObjectValue(searchCriteria, [ 'startTimestamp', 'endTimestamp' ]) as any) }
       });
 
-      return this.httpClient.get<SearchIssuesResponseDTO>(`${environment.apiUrl}/user/issues`, { params });
+      return this.httpClient.get<SearchIssuesResponseDTO>(`${environment.apiUrl}/user/issues?revokeLoader=${revokeLoader}`, { params });
     } else {
-      return this.httpClient.get<SearchIssuesResponseDTO>(`${environment.apiUrl}/user/issues`);
+      return this.httpClient.get<SearchIssuesResponseDTO>(`${environment.apiUrl}/user/issues?revokeLoader=${revokeLoader}`);
     }
 
   }

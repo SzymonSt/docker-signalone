@@ -32,7 +32,7 @@ export class ConfigurationService {
   public setAgentState(agentStatePayload: AgentStateDTO): void {
     this.httpClient.post<void>(`${environment.agentApiUrl}/control/state`, agentStatePayload).subscribe(() => {
       this.currentAgentState = agentStatePayload.state;
-      this.toastrService.success(this.translateService.instant('configuration.agentStateUpdated'));
+      this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_UPDATED'));
     });
   }
 }
