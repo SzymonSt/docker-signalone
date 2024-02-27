@@ -135,7 +135,6 @@ class ChatAgent:
                        Provide just solutions anythign else will be punished.
                        Do not prompt user to search anything in web or ask support or you will be punished.
                        Do not assume anything that is not there in the intermediate steps and give a proper answer.
-                       You will be punished for showing intermediate steps you must show output of intermediate steps only.
                        Do not output any code or commands if not confirmed by the intermediate steps it must be as accurate as possible. You will be punsihed for wrong information.
                        \n Solution:''')
         urls = self.extract_urls(logs, urls)
