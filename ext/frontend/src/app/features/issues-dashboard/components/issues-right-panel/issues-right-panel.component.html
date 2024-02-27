@@ -1,3 +1,4 @@
 <div id="issues-right-panel">
-    <app-solutions-list (scoreSelected)="scoreSelected.emit($event)" [activeIssue]="activeIssue"></app-solutions-list>
+    <app-solutions-list (scoreSelected)="scoreSelected.emit($event)" *ngIf="activeIssue" [activeIssue]="activeIssue"></app-solutions-list>
+    <h3 class="mt-5" *ngIf="!activeIssue">{{'FEATURES.ISSUES.EMPTY_ISSUE_DETAIL_MESSAGE' | translate}}</h3>
 </div>

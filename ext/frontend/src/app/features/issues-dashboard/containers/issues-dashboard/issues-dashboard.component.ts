@@ -15,6 +15,7 @@ export class IssuesDashboardComponent implements OnInit {
   public activeIssue: DetailedIssueDTO;
   public max: number;
   public activePage: number = 1;
+  public isSidebarHidden: boolean = false;
   private lastSearchCriteria: IssueSearchCriteriaDTO = new IssueSearchCriteriaDTO();
   constructor(private issuesService: IssuesService) {
   }
@@ -25,7 +26,7 @@ export class IssuesDashboardComponent implements OnInit {
     this.subscribeIssuesContainers();
   }
 
-  public searchIssues(searchCriteria?: IssueSearchCriteriaDTO): void {
+  public searchIssues(searchCriteria?: IssueSearchCriteriaDTO, revokeLoader: boolean = false): void {
     if (searchCriteria) {
       this.activePage = searchCriteria.offset ? searchCriteria.offset * searchCriteria.limit : 1;
       this.lastSearchCriteria = {
@@ -33,7 +34,7 @@ export class IssuesDashboardComponent implements OnInit {
         ...searchCriteria
       };
     }
-    this.issuesService.getIssuesList(this.lastSearchCriteria).subscribe((res) => {
+    this.issuesService.getIssuesList(this.lastSearchCriteria, revokeLoader).subscribe((res) => {
       this.issues = res.issues
       this.max = res.max;
     });
@@ -54,7 +55,7 @@ export class IssuesDashboardComponent implements OnInit {
 
   private subscribeIssuesContainers(): void {
     setInterval(() => {
-      this.searchIssues();
+      this.searchIssues(this.lastSearchCriteria, true);
     }, 15000)
   }
 }
