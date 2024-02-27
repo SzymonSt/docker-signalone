@@ -493,13 +493,13 @@ func (c *MainController) LoginWithGithubHandler(ctx *gin.Context) {
 		}
 	}
 
-	accessTokenString, err := createToken(user.UserId, false)
+	accessTokenString, err := createToken(user.UserId, user.UserName, false)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(user.UserId, true)
+	refreshTokenString, err := createToken(user.UserId, user.UserName, true)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -554,13 +554,13 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 		}
 	}
 
-	accessTokenString, err := createToken(user.UserId, false)
+	accessTokenString, err := createToken(user.UserId, user.UserName, false)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(user.UserId, true)
+	refreshTokenString, err := createToken(user.UserId, user.UserName, true)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -576,7 +576,7 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 
 func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 	var cfg = config.GetInstance()
-	var claims = &models.JWTClaimsWithId{}
+	var claims = &models.JWTClaimsWithUserData{}
 	var data models.RefreshTokenRequest
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
 
@@ -599,13 +599,13 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 		return
 	}
 
-	accessTokenString, err := createToken(claims.Id, false)
+	accessTokenString, err := createToken(claims.Id, claims.UserName, false)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(claims.Id, true)
+	refreshTokenString, err := createToken(claims.Id, claims.UserName, true)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -619,7 +619,7 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 	})
 }
 
-func createToken(id string, isRefreshToken bool) (string, error) {
+func createToken(id string, userName string, isRefreshToken bool) (string, error) {
 	var cfg = config.GetInstance()
 	var expTime time.Duration
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
@@ -632,8 +632,9 @@ func createToken(id string, isRefreshToken bool) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"exp": time.Now().Add(expTime).Unix(),
-			"id":  id,
+			"exp":      time.Now().Add(expTime).Unix(),
+			"id":       id,
+			"userName": userName,
 		})
 
 	tokenString, err := token.SignedString(SECRET_KEY)
@@ -790,7 +791,7 @@ func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 
 func verifyToken(tokenString string) error {
 	var cfg = config.GetInstance()
-	var claims = &jwt.RegisteredClaims{}
+	var claims = &models.JWTClaimsWithUserData{}
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
