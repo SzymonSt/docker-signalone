@@ -56,6 +56,8 @@
       "INSIGHTS": "Insights: ",
       "SOURCES": "Sources: ",
       "SOURCES_^RAW": "Sources",
+      "EMPTY_ISSUE_DETAIL_MESSAGE": "There is no issue selected. Select the issue to see issue report.",
+      "EMPTY_ISSUES_LIST": "No issues found",
       "CHAT": {
         "ASK_MODEL": "Ask model"
       }
