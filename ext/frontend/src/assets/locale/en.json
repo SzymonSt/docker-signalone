@@ -33,6 +33,9 @@
       "AGENT_STATE": "Agent state"
     }
   },
+  "CONFIGURATION": {
+    "AGENT_STATE_UPDATED": "Selected agent activated"
+  },
   "AUTH": {
     "LOGIN_HEADER": "Log in to your Signal account",
     "EMAIL": "Email",
