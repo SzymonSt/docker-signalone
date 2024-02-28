@@ -22,7 +22,7 @@ dataset = load_dataset(dataset_url, split=None)
 logset = dataset['train']['logs']
 
 # limit the number of logs
-logset = logset[34:35]
+logset = logset[:25]
 
 if not os.path.exists(test_output_dir_name):
     os.makedirs(test_output_dir_name)

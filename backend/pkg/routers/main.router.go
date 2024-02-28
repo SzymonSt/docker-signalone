@@ -25,14 +25,14 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	authorizationRouterGroup.PUT("/user/register", func(c *gin.Context) {})
 
 	userRouterGroup := rg.Group("/user")
-	userRouterGroup.GET("/settings", func(c *gin.Context) {})
-	userRouterGroup.POST("/settings", func(c *gin.Context) {})
+	userRouterGroup.POST("/agent/authenticate", func(c *gin.Context) {})
+	userRouterGroup.GET("/containers", mr.mainController.GetContainers)
 	userRouterGroup.GET("/issues", mr.mainController.IssuesSearch)
 	userRouterGroup.GET("/issues/:id", mr.mainController.GetIssue)
 	userRouterGroup.POST("/issues/:id", mr.mainController.ResolveIssue)
 	userRouterGroup.PUT("/issues/:id/score", mr.mainController.RateIssue)
-	userRouterGroup.GET("/containers", mr.mainController.GetContainers)
-	userRouterGroup.POST("/agent/authenticate", func(c *gin.Context) {})
+	userRouterGroup.GET("/settings", func(c *gin.Context) {})
+	userRouterGroup.POST("/settings", func(c *gin.Context) {})
 
 	agentRouterGroup := rg.Group("/agent")
 	agentRouterGroup.DELETE("/issues", mr.mainController.DeleteIssues)
