@@ -12,7 +12,6 @@ import { AuthRoutingModule } from 'app/auth/auth-routing.module';
 import { LoginComponent } from 'app/auth/components/login/login.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from 'app/shared/interceptors/auth.interceptor';
-import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-login.component';
 
 @NgModule({
@@ -23,7 +22,6 @@ import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-log
     SharedModule,
     NgSelectModule,
     FormsModule,
-    GoogleSigninButtonModule,
     ReactiveFormsModule,
     NgbModule,
     BsDatepickerModule,

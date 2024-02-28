@@ -2,17 +2,20 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/auth/services/auth.service';
 import { Token } from 'app/shared/interfaces/Token';
+import { UserDataDTO } from 'app/shared/interfaces/UserDataDTO';
 import { ConfigurationService } from 'app/shared/services/configuration.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Duration } from 'moment';
 import { BehaviorSubject } from 'rxjs';
+import { jwtDecode } from "jwt-decode";
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService implements OnDestroy {
   private static readonly TOKEN_REFRESH_INTERVAL: Duration = moment.duration('1', 'minutes');
   public token$: BehaviorSubject<Token> = new BehaviorSubject<Token>(null);
   public isLoggedIn$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public userData$: BehaviorSubject<UserDataDTO> = new BehaviorSubject<UserDataDTO>(null);
   private wasNavigatedFromLogin: boolean = false;
   private tokenRefreshIntervalId!: ReturnType<typeof setInterval>;
   constructor(private zone: NgZone,
@@ -25,6 +28,11 @@ export class AuthStateService implements OnDestroy {
   }
 
   public set token(value: Token) {
+    if (value && !this.userData) {
+      this.decodeTokenToUserData(value.accessToken)
+    } else {
+      this.userData = null;
+    }
     this.token$.next(value);
   }
 
@@ -34,6 +42,14 @@ export class AuthStateService implements OnDestroy {
 
   public set isLoggedIn(value: boolean) {
     this.isLoggedIn$.next(value);
+  }
+
+  public get userData(): UserDataDTO {
+    return this.userData$.value;
+  }
+
+  public set userData(value: UserDataDTO) {
+    this.userData$.next(value);
   }
 
   public ngOnDestroy(): void {
@@ -250,5 +266,11 @@ export class AuthStateService implements OnDestroy {
     }
     this.configurationService.getCurrentAgentState();
     this.goToDashboard();
+  }
+
+  private decodeTokenToUserData(accessToken: string) {
+    const decodedToken = jwtDecode(accessToken);
+    // @ts-ignore
+    this.userData = new UserDataDTO(decodedToken['id'] ,decodedToken['userName'])
   }
 }

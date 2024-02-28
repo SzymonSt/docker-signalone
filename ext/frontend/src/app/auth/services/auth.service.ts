@@ -1,4 +1,3 @@
-import { SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OAuth2TokenDTO } from 'app/shared/interfaces/OAuth2TokenDTO';
