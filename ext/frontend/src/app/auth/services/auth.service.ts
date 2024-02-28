@@ -23,8 +23,8 @@ export class AuthService {
       );
   }
 
-  public loginWithGoogle(user: SocialUser): Observable<{ token: Token }> {
-    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: user.idToken })
+  public loginWithGoogle(accessToken: string): Observable<{ token: Token }> {
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: accessToken })
       .pipe(
         map((response: any) => {
           const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);

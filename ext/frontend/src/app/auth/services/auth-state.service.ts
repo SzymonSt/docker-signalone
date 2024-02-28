@@ -1,4 +1,3 @@
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/auth/services/auth.service';
@@ -18,7 +17,6 @@ export class AuthStateService implements OnDestroy {
   private tokenRefreshIntervalId!: ReturnType<typeof setInterval>;
   constructor(private zone: NgZone,
               private authService: AuthService,
-              private socialAuthService: SocialAuthService,
               private router: Router,
               private configurationService: ConfigurationService) {}
 
@@ -65,9 +63,9 @@ export class AuthStateService implements OnDestroy {
     });
   }
 
-  public loginWithGoogle(user: SocialUser): Promise<Token> {
+  public loginWithGoogle(accessToken: string): Promise<Token> {
     return new Promise((resolve, reject) => {
-      this.authService.loginWithGoogle(user).toPromise()
+      this.authService.loginWithGoogle(accessToken).toPromise()
         .then((result: { token: Token }) => {
           this.setToken(result.token)
             .then((savedToken: Token) => {
@@ -112,21 +110,12 @@ export class AuthStateService implements OnDestroy {
   }
 
   public logout(silent: boolean = false): void {
-    this.socialAuthService.signOut(true)
+    this.deleteToken()
       .then(() => {
-        this.deleteToken()
-          .then(() => {
-            this.manageTokenDeletion();
-          })
-          .catch((error) => {
-            this.manageTokenDeletion();
-          });
+        this.manageTokenDeletion();
       })
-      .catch((error: any) => {
-        this.deleteToken()
-          .finally(() => {
-            this.manageTokenDeletion();
-          });
+      .catch((error) => {
+        this.manageTokenDeletion();
       });
   }
 

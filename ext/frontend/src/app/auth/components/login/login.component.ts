@@ -1,8 +1,6 @@
-import { SocialAuthService } from '@abacritt/angularx-social-login';
 import { Component, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthStateService } from 'app/auth/services/auth-state.service';
+import { environment } from 'environment/environment.development';
 
 @Component({
   selector: 'app-login',
@@ -12,10 +10,8 @@ import { AuthStateService } from 'app/auth/services/auth-state.service';
 export class LoginComponent implements OnInit{
   public loginForm: FormGroup;
   public isSubmitted: boolean = false;
-  public githubLoginUrl: string = `https://github.com/login/oauth/authorize?client_id=6c88a4f9d4868879974e`;
-  constructor(private socialAuthService: SocialAuthService, private authStateService: AuthStateService) {
-    this.loginWithGoogle();
-  }
+  public githubLoginUrl: string = `https://github.com/login/oauth/authorize?client_id=${environment.githubClientId}`;
+  public googleLoginUrl: string = `https://accounts.google.com/o/oauth2/v2/auth?scope=openid%20email&nonce=${Math.random() * 100000000}&response_type=id_token&redirect_uri=http://localhost:37001/google-login&client_id=${environment.googleLoginProvider}`;
 
   public ngOnInit(): void {
     this.initForm();
@@ -28,12 +24,6 @@ export class LoginComponent implements OnInit{
     if (this.loginForm.valid) {
       console.log(this.loginForm.value)
     }
-  }
-
-  public loginWithGoogle(): void {
-    this.socialAuthService.authState.pipe(takeUntilDestroyed()).subscribe((user) => {
-      this.authStateService.loginWithGoogle(user);
-    });
   }
 
   private initForm(): void {

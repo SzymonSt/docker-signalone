@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { GoogleLoginComponent } from 'app/auth/components/googleLogin/google-login.component';
 import { SharedModule } from 'app/shared/SharedModule';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-login.component';
 
 @NgModule({
-  declarations: [ LoginComponent,GithubLoginComponent ],
+  declarations: [ LoginComponent, GithubLoginComponent, GoogleLoginComponent ],
   imports: [
     CommonModule,
     TranslateModule,

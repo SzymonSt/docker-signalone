@@ -39,7 +39,8 @@
     "EMAIL": "Email",
     "PASSWORD": "Hasło",
     "LOGIN": "Zaloguj się",
-    "GITHUB_SIGN_IN": "Zaloguj sie przez github"
+    "GITHUB_SIGN_IN": "Zaloguj sie przez github",
+    "GOOGLE_SIGN_IN": "Zaloguj sie przez google"
   },
   "FEATURES": {
     "ISSUES": {

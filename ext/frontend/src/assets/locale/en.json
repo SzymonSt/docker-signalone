@@ -34,14 +34,16 @@
     }
   },
   "CONFIGURATION": {
-    "AGENT_STATE_UPDATED": "Selected agent activated"
+    "AGENT_STATE_ACTIVATED": "Agent activated",
+    "AGENT_STATE_DEACTIVATED": "Agent deactivated"
   },
   "AUTH": {
     "LOGIN_HEADER": "Log in to your Signal account",
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "LOGIN": "Sign in",
-    "GITHUB_SIGN_IN": "Sign in with github"
+    "GITHUB_SIGN_IN": "Sign in with github",
+    "GOOGLE_SIGN_IN": "Sign in with google"
   },
   "FEATURES": {
     "ISSUES": {

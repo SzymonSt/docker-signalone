@@ -1,20 +1,22 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateModule } from '@ngx-translate/core';
+import { AuthModule } from 'app/auth/auth.module';
+import { TranslateConfig } from 'app/config/TranslateConfig';
+import * as moment from 'moment';
+import { AlertConfig } from 'ngx-bootstrap/alert';
+import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TranslateModule } from '@ngx-translate/core';
 import { SharedModule } from './shared/SharedModule';
-import { TranslateConfig } from 'app/config/TranslateConfig';
-import { HttpClientModule } from '@angular/common/http';
-import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { AlertConfig } from 'ngx-bootstrap/alert';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import * as moment from 'moment';
-import { ToastrModule } from 'ngx-toastr';
-import { AuthModule } from 'app/auth/auth.module';
-import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
 
+// @ts-ignore
+// @ts-ignore
+// @ts-ignore
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,19 +38,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig } from '@abacritt/angularx
     }),
     AuthModule,
   ],
-  providers: [ AlertConfig, BsDatepickerConfig,
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('359898712853-rcec16l3ivs24rod4hb2kcsr9qvotf3t.apps.googleusercontent.com'),
-          },
-        ],
-      } as SocialAuthServiceConfig,
-    },],
+  providers: [ AlertConfig, BsDatepickerConfig],
   bootstrap: [ AppComponent ],
 
 })
