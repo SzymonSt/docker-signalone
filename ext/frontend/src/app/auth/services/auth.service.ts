@@ -1,4 +1,3 @@
-import { SocialUser } from '@abacritt/angularx-social-login';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OAuth2TokenDTO } from 'app/shared/interfaces/OAuth2TokenDTO';
@@ -23,8 +22,8 @@ export class AuthService {
       );
   }
 
-  public loginWithGoogle(user: SocialUser): Observable<{ token: Token }> {
-    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: user.idToken })
+  public loginWithGoogle(accessToken: string): Observable<{ token: Token }> {
+    return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: accessToken })
       .pipe(
         map((response: any) => {
           const token: OAuth2TokenDTO = OAuth2TokenDTO.fromOAuth2Object(response);
