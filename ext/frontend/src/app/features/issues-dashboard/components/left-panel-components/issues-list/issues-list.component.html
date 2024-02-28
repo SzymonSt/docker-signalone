@@ -1,1 +1,1 @@
-<app-issue-cell (click)="selectIssue(issue)" *ngFor="let issue of issues" [issue]="issue" [isSelected]="issue.id === selectedIssueId"></app-issue-cell>
+<app-issue-cell tabindex="1" (click)="selectIssue(issue)" *ngFor="let issue of issues" [issue]="issue" [isSelected]="issue.id === selectedIssueId"></app-issue-cell>

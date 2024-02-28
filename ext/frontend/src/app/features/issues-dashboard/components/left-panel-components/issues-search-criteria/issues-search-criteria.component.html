@@ -38,9 +38,11 @@
                             <ng-select [placeholder]="'FEATURES.ISSUES.SEVERITY' | translate"
                                        [searchable]="false" class="form-control"
                                        formControlName="issueSeverity"
+                                       tabindex="1"
                                        id="issueSeverity"
                                        name="issueSeverity">
                                 <ng-option *ngFor="let severity of severityOptions"
+                                           tabindex="1"
                                            [value]="severity">{{('ENUM.SEVERITY.' + severity) | translate}}</ng-option>
                             </ng-select>
                         </div>
@@ -51,8 +53,10 @@
                                        [searchable]="true" class="form-control"
                                        formControlName="container"
                                        id="container"
+                                       tabindex="1"
                                        name="container">
                                 <ng-option *ngFor="let container of containers"
+                                           tabindex="1"
                                            [value]="container">{{ container }}</ng-option>
                             </ng-select>
                         </div>
@@ -101,7 +105,7 @@
                                    id="isResolved"
                                    name="isResolved"
                                    type="checkbox">
-                            <label class="form-label ms-3"
+                            <label class="form-label ms-3 mb-0"
                                    for="isResolved">{{ 'FEATURES.ISSUES.UNRESOLVED_ONLY' | translate }}</label>
                         </div>
                         <div class="row mt-3">

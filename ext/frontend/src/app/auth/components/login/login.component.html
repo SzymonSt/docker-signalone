@@ -1,10 +1,14 @@
 <div id="login-container">
     <h2>{{'AUTH.LOGIN_HEADER' | translate}}</h2>
-    <asl-google-signin-button type='standard' size='medium' [locale]="'en-GB'">
-    </asl-google-signin-button>
-    <a [href]="githubLoginUrl">
-        <button class="btn btn-primary mt-3">{{'AUTH.GITHUB_SIGN_IN' | translate}}</button>
-    </a>
+    <div class="d-flex flex-column">
+        <a [href]="googleLoginUrl">
+            <button class="btn btn-primary mt-3">{{'AUTH.GOOGLE_SIGN_IN' | translate}}</button>
+        </a>
+        <a [href]="githubLoginUrl">
+            <button class="btn btn-secondary mt-3">{{'AUTH.GITHUB_SIGN_IN' | translate}}</button>
+        </a>
+    </div>
+
     <!--    <form [formGroup]="loginForm">-->
 <!--        <div class="form-group mb-3">-->
 <!--            <label class="form-label"-->
