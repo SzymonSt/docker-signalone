@@ -79,8 +79,11 @@ func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskP
 		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}
-	jsonData, _ := json.Marshal(data)
-	issueAnalysisReq, err := http.NewRequest("POST", taskPayload.BackendUrl+"/api/agent/issues/analysis", bytes.NewBuffer(jsonData))
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
+	issueAnalysisReq, err := http.NewRequest("PUT", taskPayload.BackendUrl+"/api/agent/issues/analysis", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return
 	}

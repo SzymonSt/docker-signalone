@@ -28,7 +28,7 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			c types.Container, l *logrus.Logger,
 			wg *sync.WaitGroup, taskPayload models.TaskPayload) {
 			isErrorState := false
-			execTimeOffsetInSeconds := -0.5
+			execTimeOffsetInSeconds := -5
 			timeTail := time.Now().Add(time.Duration(-15 + execTimeOffsetInSeconds)).Format(time.RFC3339)
 			defer wg.Done()
 			l.Infof("Authorization: Bearer %s \n", taskPayload.BearerToken)
@@ -42,7 +42,7 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 				l.Errorf("Failed to collect logs for container %s: %v", c.ID, err)
 			}
 			isErrorState = isContainerInErrorState(container.State)
-			if isErrorState {
+			if isErrorState && logs != "" {
 				fmt.Printf("Container %s is in error state\n", c.Names[0])
 				err := helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 				if err != nil {
@@ -72,9 +72,9 @@ func isContainerInErrorState(state *types.ContainerState) bool {
 func areLogsIndicatingErrorOrWarning(logs string) bool {
 	regexWarningError := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|denied|
 		err|error|exception|fatal|forbidden|freeze|hang|illegal|invalid|issue|missing|
-		panic|rejected|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
+		panic|rejected|refused|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
 		unimplemented|unsupported|warn|warning)`
 	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
-	fmt.Printf("Matched: %v\n", matched)
+	fmt.Printf("### %s Matched: %v\n", logs, matched)
 	return matched
 }
