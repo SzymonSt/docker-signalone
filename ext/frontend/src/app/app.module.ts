@@ -8,6 +8,7 @@ import { TranslateConfig } from 'app/config/TranslateConfig';
 import * as moment from 'moment';
 import { AlertConfig } from 'ngx-bootstrap/alert';
 import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { MarkdownModule } from 'ngx-markdown';
 import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -36,7 +37,7 @@ import { SharedModule } from './shared/SharedModule';
       extendedTimeOut: moment.duration(3, 'seconds').as('milliseconds'),
       enableHtml: true
     }),
-    AuthModule,
+    AuthModule
   ],
   providers: [ AlertConfig, BsDatepickerConfig],
   bootstrap: [ AppComponent ],

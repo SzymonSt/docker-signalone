@@ -13,7 +13,7 @@
   </a>
   <div class="d-flex align-items-center controls-container">
     <app-configuration-dropdown
-      *ngIf="configurationService.isCurrentAgentStateInitialized"
+      *ngIf="configurationService.isCurrentAgentStateInitialized && (isLoggedIn$ | async)"
     ></app-configuration-dropdown>
     <button
       *ngIf="isLoggedIn$ | async"

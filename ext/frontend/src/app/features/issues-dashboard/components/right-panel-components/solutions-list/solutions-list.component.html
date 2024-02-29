@@ -37,17 +37,17 @@
     </div>
   </div>
   <p class="mb-3">
-    {{ activeIssue.predictedSolutionsSummary }}
+    <markdown class="variable-binding" [data]="activeIssue.predictedSolutionsSummary"></markdown>
   </p>
   <h3>{{ "FEATURES.ISSUES.SOURCES" | translate }}</h3>
   <div class="solution-sources-container">
     <div
       class="solution-source"
       *ngFor="let solutionSource of activeIssue.issuePredictedSolutionsSources"
-      (click)="goToSolutionSource(solutionSource.url)"
+      (click)="goToSolutionSource(solutionSource)"
       tabindex="0"
     >
-      <h4>{{ solutionSource.title }}</h4>
+      <h4>{{ solutionSource }}</h4>
     </div>
   </div>
 
