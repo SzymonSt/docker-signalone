@@ -4,11 +4,34 @@
   border-radius: 8px;
   margin-top: 16px;
   cursor: pointer;
-  transition: .5s;
 
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+  }
+  
   &.selected, &:hover {
     background-color: var(--pale);
     border-color: var(--primary);
+  }
+
+  .issue-content-container {
+    flex-wrap: unset;
+    gap: 0.75rem;
+
+    .issue-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .issue-container-name {
+        word-break: break-all;
+      }
+
+      .issue-title {
+        margin-bottom: unset;
+        word-break: break-all;
+      }
+    }
   }
 
   p {

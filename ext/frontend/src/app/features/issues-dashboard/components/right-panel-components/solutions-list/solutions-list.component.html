@@ -1,39 +1,69 @@
 <div *ngIf="activeIssue" class="solutions-list mt-3">
-    <h3>
-        {{'FEATURES.ISSUES.INSIGHTS' | translate}}
-    </h3>
+  <h3>
+    {{ "FEATURES.ISSUES.INSIGHTS" | translate }}
+  </h3>
 
-    <p class="mb-3">
-      {{activeIssue.logSummary}}
-    </p>
-    <div class="accordion accordion-flush logs-container mb-3 py-0" id="accordionFlushExample" *ngIf="activeIssue.logs?.length">
-        <div class="accordion-item">
-            <h2 class="accordion-header mb-0" id="flush-headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                    {{'FEATURES.ISSUES.SOURCES_^RAW' | translate}}
-                </button>
-            </h2>
-            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                <div class="accordion-body py-1">
-                    <p *ngFor="let log of activeIssue.logs" class="m-0">{{log}}</p>
-                </div>
-            </div>
+  <p class="mb-3">
+    {{ activeIssue.logSummary }}
+  </p>
+  <div
+    class="accordion accordion-flush logs-container mb-3 py-0"
+    id="accordionFlushExample"
+    *ngIf="activeIssue.logs?.length"
+  >
+    <div class="accordion-item">
+      <h2 class="accordion-header mb-0" id="flush-headingOne">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#flush-collapseOne"
+          aria-expanded="false"
+          aria-controls="flush-collapseOne"
+        >
+          {{ "FEATURES.ISSUES.SOURCES_^RAW" | translate }}
+        </button>
+      </h2>
+      <div
+        id="flush-collapseOne"
+        class="accordion-collapse collapse"
+        aria-labelledby="flush-headingOne"
+        data-bs-parent="#accordionFlushExample"
+      >
+        <div class="accordion-body py-1">
+          <p *ngFor="let log of activeIssue.logs" class="m-0">{{ log }}</p>
         </div>
+      </div>
     </div>
-    <p class="mb-3">
-        {{activeIssue.predictedSolutionsSummary}}
-    </p>
-    <h3>{{'FEATURES.ISSUES.SOURCES' | translate}}</h3>
-    <div class="solution-sources-container">
-        <div class="solution-source" *ngFor="let solutionSource of activeIssue.issuePredictedSolutionsSources" (click)="goToSolutionSource(solutionSource.url)">
-            <h4>{{solutionSource.title}}</h4>
-        </div>
+  </div>
+  <p class="mb-3">
+    {{ activeIssue.predictedSolutionsSummary }}
+  </p>
+  <h3>{{ "FEATURES.ISSUES.SOURCES" | translate }}</h3>
+  <div class="solution-sources-container">
+    <div
+      class="solution-source"
+      *ngFor="let solutionSource of activeIssue.issuePredictedSolutionsSources"
+      (click)="goToSolutionSource(solutionSource.url)"
+      tabindex="0"
+    >
+      <h4>{{ solutionSource.title }}</h4>
+    </div>
+  </div>
 
-    </div>
-
-    <div class="likes-container">
-        <i class="bi bi-hand-thumbs-up" [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''" (click)="positiveScoreSelected()" [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"></i>
-        <div class="divider"></div>
-        <i class="bi bi-hand-thumbs-down" [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"  (click)="negativeScoreSelected()" [ngClass]="activeIssue.score === - 1 ? 'score-selected' : ''"></i>
-    </div>
+  <div class="likes-container">
+    <i
+      class="bi bi-hand-thumbs-up"
+      [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
+      (click)="positiveScoreSelected()"
+      [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
+    ></i>
+    <div class="divider"></div>
+    <i
+      class="bi bi-hand-thumbs-down"
+      [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
+      (click)="negativeScoreSelected()"
+      [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
+    ></i>
+  </div>
 </div>

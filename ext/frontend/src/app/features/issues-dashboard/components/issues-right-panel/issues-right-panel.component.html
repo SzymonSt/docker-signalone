@@ -1,4 +1,17 @@
 <div id="issues-right-panel">
-    <app-solutions-list (scoreSelected)="scoreSelected.emit($event)" *ngIf="activeIssue" [activeIssue]="activeIssue"></app-solutions-list>
-    <h3 class="mt-5" *ngIf="!activeIssue">{{'FEATURES.ISSUES.EMPTY_ISSUE_DETAIL_MESSAGE' | translate}}</h3>
+  <app-solutions-list
+    (scoreSelected)="scoreSelected.emit($event)"
+    *ngIf="activeIssue"
+    [activeIssue]="activeIssue"
+  ></app-solutions-list>
+  <div class="no-issue-message-container">
+    <h3 class="no-issue-msg mt-5" *ngIf="!activeIssue">
+      {{ "FEATURES.ISSUES.EMPTY_ISSUE_DETAIL_MESSAGE_NO_ISSUE" | translate }}
+    </h3>
+    <h3 *ngIf="!activeIssue">
+      {{
+        "FEATURES.ISSUES.EMPTY_ISSUE_DETAIL_MESSAGE_SELECT_ISSUE" | translate
+      }}
+    </h3>
+  </div>
 </div>

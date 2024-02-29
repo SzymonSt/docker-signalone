@@ -2,6 +2,9 @@
   button.dropdown-toggle {
     border: none;
     color: var(--black) !important;
+    height: 1.5rem;
+    transition: 0s outline;
+    width: 1.5rem;
 
     &::after {
       display: none;
@@ -10,6 +13,12 @@
     &:hover {
       background-color: transparent !important;
       color: var(--black) !important;
+    }
+
+    &:focus-visible {
+      background-color: unset !important;
+      box-shadow: none !important;
+      outline: 2px solid var(--primary);
     }
   }
 

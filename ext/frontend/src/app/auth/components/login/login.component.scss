@@ -1,10 +1,56 @@
 #login-container {
-  margin-left: auto;
-  margin-right: auto;
   background-color: var(--strong-white);
   border: 2px solid var(--light-bright);
   border-radius: 12px;
-  width: 50%;
+  box-shadow: 2px 4px 4px 0 rgba(0,0,0,0.15);
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 10rem;
   padding: 2rem;
+  width: 50%;
+
+  .login-content-container{
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .btn-container {
+      border-radius: 9px;
+      &:focus-visible {
+        outline-color: var(--primary);
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: 0.2s all;
+
+        &.github {
+          background-color: black !important;
+          color: white;
+          &:hover {
+            box-shadow: 0 0 3px 3px rgba(#000000, 0.3);
+          }
+        }
+
+        &.google {
+          background-color: #4285f4;
+          color: white;
+          &:hover {
+            box-shadow: 0 0 3px 3px rgba(#4285f4, 0.3);
+          }
+        }
+
+        .bi {
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  }
+  
+  .login-title {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
 }

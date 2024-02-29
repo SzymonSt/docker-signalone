@@ -12,3 +12,29 @@
     margin-bottom: 0 !important;
   }
 }
+
+.accordion-body {
+  .custom-checkbox {
+    display: flex;
+
+    .form-label {
+      margin-left: 0.5rem !important;
+    }
+
+    .input-checkbox {
+      &:focus-visible {
+        outline: 2px solid var(--primary);
+      }
+    }
+  }
+}
+
+.accordion-header {
+  margin-bottom: 0;
+  
+  .accordion-button.collapsed {
+    &::after {
+      color: var(--primary);
+    }
+  }
+}

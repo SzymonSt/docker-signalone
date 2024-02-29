@@ -30,7 +30,7 @@
       "PL_FLAG_ALT": "Polish flag"
     },
     "CONFIGURATION_DROPDOWN": {
-      "AGENT_STATE": "Agent state"
+      "AGENT_STATE": "Agent status"
     }
   },
   "CONFIGURATION": {
@@ -38,12 +38,12 @@
     "AGENT_STATE_DEACTIVATED": "Agent deactivated"
   },
   "AUTH": {
-    "LOGIN_HEADER": "Log in to your Signal account",
+    "LOGIN_HEADER": "Login to your SignalOne account",
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "LOGIN": "Sign in",
-    "GITHUB_SIGN_IN": "Sign in with github",
-    "GOOGLE_SIGN_IN": "Sign in with google"
+    "GITHUB_SIGN_IN": "Sign in with Github",
+    "GOOGLE_SIGN_IN": "Sign in with Google"
   },
   "FEATURES": {
     "ISSUES": {
@@ -61,7 +61,8 @@
       "INSIGHTS": "Insights: ",
       "SOURCES": "Sources: ",
       "SOURCES_^RAW": "Sources",
-      "EMPTY_ISSUE_DETAIL_MESSAGE": "There is no issue selected. Select the issue to see issue report.",
+      "EMPTY_ISSUE_DETAIL_MESSAGE_NO_ISSUE": "There is no issue selected.",
+      "EMPTY_ISSUE_DETAIL_MESSAGE_SELECT_ISSUE": "Select the issue to see issue report.",
       "EMPTY_ISSUES_LIST": "No issues found",
       "CHAT": {
         "ASK_MODEL": "Ask model"
