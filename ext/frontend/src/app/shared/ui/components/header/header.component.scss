@@ -7,22 +7,35 @@
   justify-content: space-between;
   align-items: center;
 
-  .flags-container {
-    cursor: pointer;
+  .controls-container {
+    gap: 0.75rem;
 
-    img {
-      border-bottom: 3px solid transparent;
-      padding-bottom: 8px;
-    }
+    .flags-container {
+      cursor: pointer;
+      margin-left: 0.25rem;
 
-    img.active {
-      border-color: var(--primary);
+      img {
+        border-bottom: 3px solid transparent;
+        padding-bottom: 8px;
+        &:focus-visible {
+          outline: 2px solid var(--primary);
+        }
+      }
+  
+      img.active {
+        border-color: var(--primary);
+      }
     }
   }
 
   .logos-container {
-    display: flex;
     align-items: center;
+    border-radius: 0.25rem;
+    display: flex;
+    
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+    }
 
     svg-icon {
       display: block;
@@ -38,7 +51,14 @@
   }
 
   .sign-out-icon {
+    background-color: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    color: var(--primary);
     cursor: pointer;
-    color: var(--primary)
+    padding: 0.25rem;
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+    }
   }
 }

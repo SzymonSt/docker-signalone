@@ -1,35 +1,69 @@
 <div id="issues-left-panel" [ngClass]="isSidebarHidden ? 'sidebar-hidden' : ''">
-    <button class="toggle-left-panel-button btn btn-secondary mb-3" (click)="toggleSidebarHidden()">
-        <i *ngIf="!isSidebarHidden" class="bi bi-arrow-left-short"></i>
-        <i *ngIf="isSidebarHidden" class="bi bi-arrow-right-short"></i>
-    </button>
-    <app-issues-search-criteria (criteriaChanged)="onCriteriaChange($event)"
-                                *ngIf="!isSidebarHidden"
-                                [containers]="containers"></app-issues-search-criteria>
-    <pagination (pageChanged)="onPageChanged($event)"
-                [boundaryLinks]="true"
-                [itemsPerPage]="pageSize" [maxSize]="6" [rotate]="true"
-                [customFirstTemplate]="firstTemplate"
-                [(ngModel)]="internalPage"
-                *ngIf="!isSidebarHidden"
-                [customLastTemplate]="lastTemplate" [customNextTemplate]="nextTemplate" [customPreviousTemplate]="prevTemplate"
-                [totalItems]="max" class="justify-content-center my-4"></pagination>
-    <app-issues-list (viewIssue)="viewIssue.emit($event)" *ngIf="issues?.length && !isSidebarHidden" [issues]="issues"></app-issues-list>
-    <p *ngIf="!issues?.length && !isSidebarHidden" class="empty-issues mt-5">{{'FEATURES.ISSUES.EMPTY_ISSUES_LIST' | translate}}</p>
+  <button
+    class="toggle-left-panel-button btn btn-secondary mb-3"
+    (click)="toggleSidebarHidden()"
+  >
+    <i *ngIf="!isSidebarHidden" class="bi bi-arrow-left-short"></i>
+    <i *ngIf="isSidebarHidden" class="bi bi-arrow-right-short"></i>
+  </button>
+  <app-issues-search-criteria
+    (criteriaChanged)="onCriteriaChange($event)"
+    *ngIf="!isSidebarHidden"
+    [containers]="containers"
+  ></app-issues-search-criteria>
+  <pagination
+    (pageChanged)="onPageChanged($event)"
+    [boundaryLinks]="true"
+    [itemsPerPage]="pageSize"
+    [maxSize]="6"
+    [rotate]="true"
+    [customFirstTemplate]="firstTemplate"
+    [(ngModel)]="internalPage"
+    *ngIf="!isSidebarHidden"
+    [customLastTemplate]="lastTemplate"
+    [customNextTemplate]="nextTemplate"
+    [customPreviousTemplate]="prevTemplate"
+    [totalItems]="max"
+    class="justify-content-center my-4"
+  ></pagination>
+  <app-issues-list
+    (viewIssue)="viewIssue.emit($event)"
+    *ngIf="issues?.length && !isSidebarHidden"
+    [issues]="issues"
+  ></app-issues-list>
+  <p *ngIf="!issues?.length && !isSidebarHidden" class="empty-issues mt-5">
+    {{ "FEATURES.ISSUES.EMPTY_ISSUES_LIST" | translate }}
+  </p>
 </div>
 
-<ng-template #firstTemplate let-currentPage="currentPage" let-disabled="disabled">
-    <i class="bi bi-chevron-double-left" *ngIf="disabled"></i>
+<ng-template
+  #firstTemplate
+  let-currentPage="currentPage"
+  let-disabled="disabled"
+>
+  <i class="bi bi-chevron-double-left"></i>
 </ng-template>
 
-<ng-template #lastTemplate let-currentPage="currentPage" let-disabled="disabled">
-    <i class="bi bi-chevron-double-right"></i>
+<ng-template
+  #lastTemplate
+  let-currentPage="currentPage"
+  let-disabled="disabled"
+>
+  <i class="bi bi-chevron-double-right"></i>
 </ng-template>
 
-<ng-template #prevTemplate let-currentPage="currentPage" let-disabled="disabled">
-    <i class="bi bi-chevron-left"></i>
+<ng-template
+  #prevTemplate
+  let-currentPage="currentPage"
+  let-disabled="disabled"
+>
+  <i class="bi bi-chevron-left"></i>
 </ng-template>
 
-<ng-template #nextTemplate let-currentPage="currentPage" let-disabled="disabled">
-    <i class="bi bi-chevron-right"></i>
+<ng-template
+  #nextTemplate
+  let-currentPage="currentPage"
+  let-disabled="disabled"
+>
+  <i class="bi bi-chevron-right"></i>
 </ng-template>

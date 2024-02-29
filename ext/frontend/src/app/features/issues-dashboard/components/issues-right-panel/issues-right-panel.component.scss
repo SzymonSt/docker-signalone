@@ -2,4 +2,15 @@
 
 #issues-right-panel {
   @include sides-spacing();
+
+  .no-issue-message-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .no-issue-msg {
+      margin-bottom: 0;
+    }
+  }
 }

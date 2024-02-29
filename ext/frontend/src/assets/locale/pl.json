@@ -35,12 +35,12 @@
     }
   },
   "AUTH": {
-    "LOGIN_HEADER": "Zaloguj się do konta Signal",
+    "LOGIN_HEADER": "Zaloguj się do konta SignalOne",
     "EMAIL": "Email",
     "PASSWORD": "Hasło",
     "LOGIN": "Zaloguj się",
-    "GITHUB_SIGN_IN": "Zaloguj sie przez github",
-    "GOOGLE_SIGN_IN": "Zaloguj sie przez google"
+    "GITHUB_SIGN_IN": "Zaloguj sie przez Github",
+    "GOOGLE_SIGN_IN": "Zaloguj sie przez Google"
   },
   "FEATURES": {
     "ISSUES": {
@@ -57,6 +57,9 @@
       "SEARCH": "Szukaj",
       "INSIGHTS": "Wgląd: ",
       "SOURCES": "Źródła: ",
+      "SOURCES_^RAW": "Źródła",
+      "EMPTY_ISSUE_DETAIL_MESSAGE_NO_ISSUE": "Nie wybrano żadnego incydentu.",
+      "EMPTY_ISSUE_DETAIL_MESSAGE_SELECT_ISSUE": "Wybierz incydent, aby zobaczyć raport.",
       "CHAT": {
         "ASK_MODEL": "Zapytaj model"
       }
