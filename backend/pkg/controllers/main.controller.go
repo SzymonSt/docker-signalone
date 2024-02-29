@@ -144,16 +144,18 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 // @Failure 400 {object} map[string]any
 // @Router /issues [get]
 func (c *MainController) IssuesSearch(ctx *gin.Context) {
-	issues := make([]models.IssueSearchResult, 0)
 	var max int64
-	offsetQuery := ctx.Query("offset")
-	limitQuery := ctx.Query("limit")
-	_ = ctx.Query("searchString")
+	issues := make([]models.IssueSearchResult, 0)
+
 	container := ctx.Query("container")
+	endTimestampQuery := ctx.Query("endTimestamp")
 	issueSeverity := ctx.Query("issueSeverity")
 	issueType := ctx.Query("issueType")
+	limitQuery := ctx.Query("limit")
+	offsetQuery := ctx.Query("offset")
 	startTimestampQuery := ctx.Query("startTimestamp")
-	endTimestampQuery := ctx.Query("endTimestamp")
+	_ = ctx.Query("searchString")
+
 	isResolved, err := strconv.ParseBool(ctx.Query("isResolved"))
 	if err != nil {
 		isResolved = false
@@ -163,15 +165,18 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	if err != nil || offsetQuery == "" {
 		offset = 0
 	}
+
 	limit, err := strconv.Atoi(limitQuery)
 	if err != nil || limit > 100 || limitQuery == "" {
 		limit = 30
 	}
+
 	startTimestamp, err := time.Parse(time.RFC3339, startTimestampQuery)
 	if err != nil {
 		fmt.Print("Error: ", err)
 		startTimestamp = time.Time{}.UTC()
 	}
+
 	endTimestamp, err := time.Parse(time.RFC3339, endTimestampQuery)
 	if err != nil || endTimestampQuery == "" {
 		fmt.Print("Error: ", err)
@@ -190,8 +195,10 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 		"isResolved":    1,
 		"timestamp":     1,
 	})
+
 	fmt.Print("startTimestamp: ", startTimestamp.UTC())
 	fmt.Print("endTimestamp: ", endTimestamp.UTC())
+
 	filter := bson.M{
 		"isResolved": isResolved,
 		"timestamp": bson.M{
@@ -199,32 +206,40 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 			"$lte": endTimestamp.UTC(),
 		},
 	}
+
 	if container != "" {
 		filter["containerName"] = container
 	}
+
 	if issueSeverity != "" {
 		filter["severity"] = issueSeverity
 	}
+
 	if issueType != "" {
 		filter["type"] = issueType
 	}
 
 	cursor, err := c.issuesCollection.Find(ctx, filter, qOpts)
 	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	defer cursor.Close(ctx)
+
 	for cursor.Next(ctx) {
 		var issue models.IssueSearchResult
+
 		if err := cursor.Decode(&issue); err != nil {
 			continue
 		}
+
 		issues = append(issues, issue)
 	}
+
 	max, _ = c.issuesCollection.CountDocuments(ctx, filter)
 
-	ctx.JSON(200, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"issues": issues,
 		"max":    max,
 	})
@@ -241,35 +256,32 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 // @Failure 404 {object} map[string]any
 // @Router /issues/{id} [get]
 func (c *MainController) GetIssue(ctx *gin.Context) {
-	id := ctx.Param("id")
 	var issue models.Issue
+	id := ctx.Param("id")
+
 	if err := c.issuesCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&issue); err != nil {
-		ctx.JSON(404, gin.H{"error": "Not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
 		return
 	}
-	ctx.JSON(200, issue)
+
+	ctx.JSON(http.StatusOK, issue)
 }
 
 func (c *MainController) RateIssue(ctx *gin.Context) {
 	var issue models.Issue
 	var issueRateReq models.IssueRateRequest
 	var user models.User
-	// TODO: Implement user authentication with tokens
-	// bearerToken := ctx.GetHeader("Authorization")
 
-	// if bearerToken == "" {
-	// 	ctx.JSON(401, gin.H{
-	// 		"message": "Unauthorized",
-	// 	})
-	// 	return
-	// }
+	userId, err := getUserIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
 
-	// bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
+	//TODO: Remove hardcoded userId
+	userId = "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
 
-	userId := "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
-
-	err := ctx.ShouldBindJSON(&issueRateReq)
-
+	err = ctx.ShouldBindJSON(&issueRateReq)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
@@ -279,18 +291,14 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		return
 	}
 
-	// Fetch user doc
 	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
 
 	err = userResult.Decode(&user)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Fetch user doc END
 
-	// Fetch issue doc
 	id := ctx.Param("id")
 
 	issueConditions := bson.M{
@@ -299,20 +307,15 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 	}
 
 	filter := utils.GenerateFilter(issueConditions, "$and")
-
 	issueResult := c.issuesCollection.FindOne(ctx, filter)
 
 	err = issueResult.Decode(&issue)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Fetch issue doc END
 
-	//Update issue score
 	var currentIssueScore = issue.Score
-	fmt.Println("Current Issue Score: ", currentIssueScore, *issueRateReq.Score)
 
 	if currentIssueScore == *issueRateReq.Score {
 		ctx.JSON(http.StatusOK, gin.H{"message": "Issue already rated with the same score"})
@@ -326,7 +329,6 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 				"score": issueRateReq.Score,
 			},
 		})
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -336,11 +338,8 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue cannot be found"})
 		return
 	}
-	// Update issue score END
 
-	// Updating user counter
 	counter := user.Counter
-
 	counter = utils.CalculateNewCounter(currentIssueScore, *issueRateReq.Score, counter)
 
 	updatedUserResult, err := c.usersCollection.UpdateOne(ctx,
@@ -350,7 +349,6 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 				"counter": counter,
 			},
 		})
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -360,7 +358,6 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "User cannot be found"})
 		return
 	}
-	// Updating user counter END
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
@@ -381,6 +378,7 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 // @RequestBody application/json ResolveIssueRequest true "Issue resolution request"
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
 	id := ctx.Param("id")
+
 	res, err := c.issuesCollection.UpdateOne(ctx,
 		bson.M{"_id": id},
 		bson.M{
@@ -388,15 +386,18 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 				"isResolved": true,
 			},
 		})
+
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	if res.MatchedCount == 0 {
-		ctx.JSON(404, gin.H{"error": "Not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
 		return
 	}
-	ctx.JSON(200, gin.H{
+
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
 	})
 }
@@ -437,18 +438,24 @@ func (c *MainController) DeleteIssues(ctx *gin.Context) {
 // @Router /containers [get]
 func (c *MainController) GetContainers(ctx *gin.Context) {
 	containers := make([]string, 0)
-	userId := ctx.Query("userId")
-	results, err := c.issuesCollection.Distinct(ctx, "containerName", bson.M{"userId": userId})
+
+	userId, err := getUserIdFromToken(ctx)
 	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	for _, r := range results {
-		if container, ok := r.(string); ok {
+
+	results, err := c.issuesCollection.Distinct(ctx, "containerName", bson.M{"userId": userId})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	for _, result := range results {
+		if container, ok := result.(string); ok {
 			containers = append(containers, container)
 		}
 	}
-	ctx.JSON(200, containers)
+	ctx.JSON(http.StatusOK, containers)
 }
 
 // Auth Handlers
@@ -617,6 +624,18 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
 		"refreshToken": refreshTokenString,
 	})
+}
+
+func getUserIdFromToken(ctx *gin.Context) (string, error) {
+	bearerToken := ctx.GetHeader("Authorization")
+
+	jwtToken := strings.TrimPrefix(bearerToken, "Bearer ")
+
+	userId, err := VerifyToken(jwtToken)
+	if err != nil {
+		return "", err
+	}
+	return userId, nil
 }
 
 func createToken(id string, userName string, isRefreshToken bool) (string, error) {
@@ -789,7 +808,7 @@ func validateGoogleJWT(tokenString string) (models.GoogleClaims, error) {
 	return *claims, nil
 }
 
-func verifyToken(tokenString string) error {
+func VerifyToken(tokenString string) (string, error) {
 	var cfg = config.GetInstance()
 	var claims = &models.JWTClaimsWithUserData{}
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
@@ -799,12 +818,12 @@ func verifyToken(tokenString string) error {
 	})
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return "", fmt.Errorf("invalid token")
 	}
 
-	return nil
+	return claims.Id, nil
 }
