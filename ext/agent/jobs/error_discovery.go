@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 	"signal/helpers"
 	"signal/models"
@@ -43,7 +42,6 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			}
 			isErrorState = isContainerInErrorState(container.State)
 			if isErrorState && logs != "" {
-				fmt.Printf("Container %s is in error state\n", c.Names[0])
 				err := helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 				if err != nil {
 					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
@@ -52,7 +50,6 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			}
 			isErrorState = areLogsIndicatingErrorOrWarning(logs)
 			if isErrorState {
-				fmt.Printf("Container %s has logs indicating error or warning\n", c.Names[0])
 				err := helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
 				if err != nil {
 					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
@@ -75,6 +72,5 @@ func areLogsIndicatingErrorOrWarning(logs string) bool {
 		panic|rejected|refused|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
 		unimplemented|unsupported|warn|warning)`
 	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
-	fmt.Printf("### %s Matched: %v\n", logs, matched)
 	return matched
 }
