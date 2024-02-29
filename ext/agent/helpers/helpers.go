@@ -20,7 +20,7 @@ type ConfigServer struct {
 }
 
 func ListContainers(cli *client.Client) ([]types.Container, error) {
-
+	filteredContainers := make([]types.Container, 0)
 	containers, err := cli.ContainerList(context.Background(),
 		types.ContainerListOptions{
 			All: true,
@@ -30,7 +30,13 @@ func ListContainers(cli *client.Client) ([]types.Container, error) {
 		return nil, err
 	}
 
-	return containers, nil
+	for _, c := range containers {
+		if _, exists := c.Labels["com.docker.desktop.extension"]; !exists {
+			filteredContainers = append(filteredContainers, c)
+		}
+	}
+
+	return filteredContainers, nil
 }
 
 func CollectLogsForAnalysis(containerID string, cli *client.Client, logTimeTail string) (string, error) {
@@ -73,8 +79,11 @@ func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskP
 		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}
-	jsonData, _ := json.Marshal(data)
-	issueAnalysisReq, err := http.NewRequest("POST", taskPayload.BackendUrl+"/api/agent/issues/analysis", bytes.NewBuffer(jsonData))
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
+	issueAnalysisReq, err := http.NewRequest("PUT", taskPayload.BackendUrl+"/api/agent/issues/analysis", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return
 	}
