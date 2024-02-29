@@ -1,5 +1,6 @@
 <app-issue-cell
   (click)="selectIssue(issue)"
+  (keydown)="selectIssueKeydown(issue, $event)"
   *ngFor="let issue of issues"
   [issue]="issue"
   [isSelected]="issue.id === selectedIssueId"
