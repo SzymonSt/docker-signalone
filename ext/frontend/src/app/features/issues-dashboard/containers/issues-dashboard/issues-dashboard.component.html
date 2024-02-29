@@ -6,5 +6,5 @@
                            [isSidebarHidden]="isSidebarHidden"
                            (toggleSidebarVisibility)="isSidebarHidden = !isSidebarHidden"
                            [issues]="issues"></app-issues-left-panel>
-    <app-issues-right-panel [activeIssue]="activeIssue" class="w-100"></app-issues-right-panel>
+    <app-issues-right-panel [activeIssue]="activeIssue" (scoreSelected)="scoreSelected($event)" class="w-100"></app-issues-right-panel>
 </div>

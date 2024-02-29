@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AuthStateService } from 'app/auth/services/auth-state.service';
 import { IssuesService } from 'app/features/issues-dashboard/services/issues.service';
-import { IssueSearchCriteriaDTO } from 'app/shared/interfaces/IssueSearchCriteriaDTO';
+import { DetailedIssueDTO, DetailedIssueScore } from 'app/shared/interfaces/DetailedIssueDTO';
 import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
-import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
+import { IssueSearchCriteriaDTO } from 'app/shared/interfaces/IssueSearchCriteriaDTO';
+import { RateIssueDTO } from 'app/shared/interfaces/RateIssueDTO';
 
 @Component({
   selector: 'app-issues-dashboard',
@@ -17,13 +20,20 @@ export class IssuesDashboardComponent implements OnInit {
   public activePage: number = 1;
   public isSidebarHidden: boolean = false;
   private lastSearchCriteria: IssueSearchCriteriaDTO = new IssueSearchCriteriaDTO();
-  constructor(private issuesService: IssuesService) {
+  private issuesContainersRefreshInterval: any;
+  constructor(private issuesService: IssuesService, private authStateService: AuthStateService) {
+    this.authStateService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        this.subscribeIssuesContainers();
+      } else {
+        this.clearIssuesContainersSubscription();
+      }
+    })
   }
 
   public ngOnInit(): void {
     this.getIssuesContainers();
     this.searchIssues(this.lastSearchCriteria);
-    this.subscribeIssuesContainers();
   }
 
   public searchIssues(searchCriteria?: IssueSearchCriteriaDTO, revokeLoader: boolean = false): void {
@@ -47,6 +57,10 @@ export class IssuesDashboardComponent implements OnInit {
 
   }
 
+  public scoreSelected(score: DetailedIssueScore): void {
+    this.issuesService.rateIssue(this.activeIssue.id, new RateIssueDTO(score)).subscribe()
+  }
+
   private getIssuesContainers(): void {
     this.issuesService.getIssuesContainers().subscribe((containers: string[]) => {
       this.containers = containers;
@@ -54,8 +68,16 @@ export class IssuesDashboardComponent implements OnInit {
   }
 
   private subscribeIssuesContainers(): void {
-    setInterval(() => {
+    this.clearIssuesContainersSubscription();
+    this.issuesContainersRefreshInterval = setInterval(() => {
       this.searchIssues(this.lastSearchCriteria, true);
     }, 15000)
+  }
+
+  private clearIssuesContainersSubscription():void {
+    if (this.issuesContainersRefreshInterval) {
+      clearInterval(this.issuesContainersRefreshInterval)
+      this.issuesContainersRefreshInterval = null
+    }
   }
 }

@@ -43,8 +43,8 @@ export class IssuesService {
     return this.httpClient.get<DetailedIssueDTO>(`${environment.apiUrl}/user/issues/${issueId}`);
   }
 
-  public rateIssue(issueId: number, rateIssueData: RateIssueDTO): Observable<void> {
-    return this.httpClient.post<void>(`${environment.apiUrl}/user/issues/${issueId}/score`, rateIssueData);
+  public rateIssue(issueId: string, rateIssueData: RateIssueDTO): Observable<void> {
+    return this.httpClient.put<void>(`${environment.apiUrl}/user/issues/${issueId}/score`, rateIssueData);
   }
 
 }

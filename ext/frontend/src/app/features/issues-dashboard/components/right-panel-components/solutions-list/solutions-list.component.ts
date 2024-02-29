@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IssueDTO } from 'app/shared/interfaces/IssueDTO';
-import { DetailedIssueDTO } from 'app/shared/interfaces/DetailedIssueDTO';
+import { DetailedIssueDTO, DetailedIssueScore } from 'app/shared/interfaces/DetailedIssueDTO';
 
 @Component({
   selector: 'app-solutions-list',
@@ -11,7 +10,7 @@ export class SolutionsListComponent {
   @Input()
   public activeIssue: DetailedIssueDTO;
   @Output()
-  public scoreSelected: EventEmitter<number> = new EventEmitter<number>();
+  public scoreSelected: EventEmitter<DetailedIssueScore> = new EventEmitter<DetailedIssueScore>();
   constructor() {
   }
 

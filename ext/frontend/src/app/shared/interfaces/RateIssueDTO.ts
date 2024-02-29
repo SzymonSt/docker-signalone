@@ -1,3 +1,6 @@
+import { DetailedIssueScore } from 'app/shared/interfaces/DetailedIssueDTO';
+
 export class RateIssueDTO {
-  public score: -1 | 0 | 1;
+  constructor(public score: DetailedIssueScore) {
+  }
 }
