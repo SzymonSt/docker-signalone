@@ -22,6 +22,7 @@ export class IssuesDashboardComponent implements OnInit {
   private lastSearchCriteria: IssueSearchCriteriaDTO = new IssueSearchCriteriaDTO();
   private issuesContainersRefreshInterval: any;
   constructor(private issuesService: IssuesService, private authStateService: AuthStateService) {
+    this.getIssuesContainers();
     this.authStateService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe(isLoggedIn => {
       if (isLoggedIn) {
         this.subscribeIssuesContainers();
@@ -32,7 +33,6 @@ export class IssuesDashboardComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.getIssuesContainers();
     this.searchIssues(this.lastSearchCriteria);
   }
 
