@@ -25,14 +25,14 @@ var taskPayload = models.TaskPayload{
 }
 var jobId = uuid.Nil
 var dockerClient *client.Client
-var containersState = make(map[string]chan time.Time)
+var containersState = make(map[string]*time.Time)
 
 type AgentStatePayload struct {
 	State bool `json:"state"`
 }
 
 type AgentAuthDataPayload struct {
-	UserId string `json:"user_id"`
+	UserId string `json:"userId"`
 	Token  string `json:"token"`
 }
 

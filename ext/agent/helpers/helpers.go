@@ -65,7 +65,11 @@ func CollectLogsForAnalysis(containerID string, cli *client.Client) ([]models.Lo
 			continue
 		}
 		logStringSlice := string(log[8:])
-		ts, _ := time.Parse("2024-03-01T01:41:31.702159400Z", strings.Fields(logStringSlice)[0])
+		ts, err := time.Parse("2006-01-02T15:04:05.000000000Z", strings.Fields(logStringSlice)[0])
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Timestamp: %v\n", strings.Fields(logStringSlice)[0])
 		l := strings.Fields(logStringSlice)[1:]
 		logStringSlice = strings.Join(l, " ")
 		entry := models.LogEntry{
@@ -98,6 +102,8 @@ func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskP
 		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}
+
+	fmt.Printf("Data: %v\n", data)
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return

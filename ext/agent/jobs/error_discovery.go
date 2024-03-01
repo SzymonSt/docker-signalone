@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload, containersState map[string]chan time.Time) {
+func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload, containersState map[string]*time.Time) {
 	var currentsIDs = make([]string, 0)
 	containers, err := helpers.ListContainers(dockerClient)
 	if err != nil {
@@ -25,13 +25,13 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		currentsIDs = append(currentsIDs, c.ID)
-		fmt.Print(currentsIDs)
+		logger.Infof("Scanning container %s", c.ID)
 		_, exists := containersState[c.ID]
 		if !exists {
-			containersState[c.ID] <- time.Now()
+			containerCreationTime := time.Unix(c.Created, 0)
+			containersState[c.ID] = &containerCreationTime
 		}
 
-		fmt.Println(containersState)
 		wg.Add(1)
 		go func(dockerClient *client.Client,
 			c types.Container, l *logrus.Logger,
@@ -52,30 +52,31 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			}
 
 			for _, log := range logs {
-				if log.Timestamp.After(<-containersState[c.ID]) {
+				if log.Timestamp.After(*containersState[c.ID]) {
 					logString += (log.Log + "\n")
 					timestampCheckpoint = log.Timestamp
 				}
 			}
-			fmt.Println(logString)
 			isErrorState = isContainerInErrorState(container.State)
 			if isErrorState && logString != "" {
-				// err := helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
-				l.Infof("Logs for container %s: %s", c.ID, logs)
+				err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
 				if err != nil {
 					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
 				}
-				containersState[c.ID] <- timestampCheckpoint
+				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
+				containersState[c.ID] = &timestampCheckpoint
+				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
 				return
 			}
 			isErrorState = areLogsIndicatingErrorOrWarning(logString)
 			if isErrorState {
-				// err := helpers.CallLogAnalysis(logs, c.Names[0], taskPayload)
-				l.Infof("Logs for container %s: %s", c.ID, logs)
+				err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
 				if err != nil {
 					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
 				}
-				containersState[c.ID] <- timestampCheckpoint
+				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
+				containersState[c.ID] = &timestampCheckpoint
+				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
 			}
 		}(dockerClient, c, logger, &wg, taskPayload)
 	}
@@ -87,6 +88,7 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			delete(containersState, k)
 		}
 	}
+	logger.Infof("EOS %v", containersState)
 }
 
 func isContainerInErrorState(state *types.ContainerState) bool {
