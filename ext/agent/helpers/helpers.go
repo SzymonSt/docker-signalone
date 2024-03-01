@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"signal/models"
+	"strings"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -39,23 +41,40 @@ func ListContainers(cli *client.Client) ([]types.Container, error) {
 	return filteredContainers, nil
 }
 
-func CollectLogsForAnalysis(containerID string, cli *client.Client, logTimeTail string) (string, error) {
+func CollectLogsForAnalysis(containerID string, cli *client.Client) ([]models.LogEntry, error) {
+	var logEntries []models.LogEntry
 	logs, err := cli.ContainerLogs(context.Background(),
 		containerID,
 		types.ContainerLogsOptions{
-			Since:      logTimeTail,
+			Timestamps: true,
+			Tail:       "15",
 			ShowStdout: true,
 			ShowStderr: true,
 		})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer logs.Close()
 	logBytes, err := ioutil.ReadAll(logs)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(logBytes), nil
+	logSlice := bytes.Split(logBytes, []byte("\n"))
+	for _, log := range logSlice {
+		if len(log) < 8 {
+			continue
+		}
+		logStringSlice := string(log[8:])
+		ts, _ := time.Parse("2024-03-01T01:41:31.702159400Z", strings.Fields(logStringSlice)[0])
+		l := strings.Fields(logStringSlice)[1:]
+		logStringSlice = strings.Join(l, " ")
+		entry := models.LogEntry{
+			Timestamp: ts,
+			Log:       logStringSlice,
+		}
+		logEntries = append(logEntries, entry)
+	}
+	return logEntries, nil
 }
 
 func GetEnvVariables() (cfs ConfigServer) {
