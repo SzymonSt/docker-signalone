@@ -26,12 +26,13 @@ import (
 type LogAnalysisPayload struct {
 	UserId        string `json:"userId"`
 	ContainerName string `json:"containerName"`
+	ContainerId   string `json:"containerId"`
 	Severity      string `json:"severity"`
 	Logs          string `json:"logs"`
 }
 
-type GetIssuesPayload struct {
-	UserId string `json:"userId"`
+type Log struct {
+	Logs []string `bson:"logs"`
 }
 
 type MainController struct {
@@ -91,9 +92,48 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		return
 	}
 	issueId := uuid.New().String()
-	data := map[string]string{"logs": logAnalysisPayload.Logs}
-	jsonData, _ := json.Marshal(data)
 	go func() {
+		var issueLogs = make([][]string, 0)
+		var issueLog Log
+		var isNewIssue = true
+
+		formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
+		formattedAnalysisRelevantLogs := utils.FilterForRelevantLogs(formattedAnalysisLogs)
+
+		qOpts := options.Find()
+		qOpts.Projection = bson.M{"logs": 1}
+
+		cursor, err := c.issuesCollection.Find(ctx, bson.M{
+			"userId":      logAnalysisPayload.UserId,
+			"containerId": logAnalysisPayload.ContainerId,
+			"isResolved":  false,
+		}, qOpts)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return
+		}
+
+		defer cursor.Close(ctx)
+
+		for cursor.Next(ctx) {
+			if err := cursor.Decode(&issueLog); err != nil {
+				continue
+			}
+			issueLogs = append(issueLogs, issueLog.Logs)
+		}
+
+		//Compare logs with previous logs and if they are similar enough, don't call the prediction agent
+		if len(issueLogs) > 0 {
+			for _, issueLog := range issueLogs {
+				isNewIssue = utils.CompareLogs(formattedAnalysisRelevantLogs, issueLog)
+				if !isNewIssue {
+					return
+				}
+			}
+		}
+
+		data := map[string]string{"logs": strings.Join(formattedAnalysisRelevantLogs, "\n")}
+		jsonData, _ := json.Marshal(data)
 		analysisResponse, err = utils.CallPredictionAgentService(jsonData)
 		if err != nil {
 			fmt.Printf("Error: %v", err)
@@ -107,12 +147,11 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 			})
 		}
 
-		formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
-
 		c.issuesCollection.InsertOne(ctx, models.Issue{
 			Id:                        issueId,
 			UserId:                    logAnalysisPayload.UserId,
 			ContainerName:             logAnalysisPayload.ContainerName,
+			ContainerId:               logAnalysisPayload.ContainerId,
 			Score:                     0,
 			Severity:                  logAnalysisPayload.Severity,
 			Title:                     analysisResponse.Title,
@@ -206,9 +245,6 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 		"isResolved":    1,
 		"timestamp":     1,
 	})
-
-	fmt.Print("startTimestamp: ", startTimestamp.UTC())
-	fmt.Print("endTimestamp: ", endTimestamp.UTC())
 
 	filter := bson.M{
 		"userId":     userId,

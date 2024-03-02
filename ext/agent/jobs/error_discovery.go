@@ -98,7 +98,7 @@ func checkContainerErrorState(state *types.ContainerState) bool {
 }
 
 func checkLogsForIssue(logs string) (matched bool, severity string) {
-	regexWarning := `(?i)(unsupported|warn|warning)`
+	regexWarning := `(?i)(unsupported|warn|warning|deprecated|deprecating)`
 	matched, _ = regexp.MatchString(regexWarning, strings.ToLower(logs))
 	if matched {
 		severity = "WARNING"
