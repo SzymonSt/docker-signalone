@@ -25,7 +25,6 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 	wg := sync.WaitGroup{}
 	for _, c := range containers {
 		currentsIDs = append(currentsIDs, c.ID)
-		logger.Infof("Scanning container %s", c.ID)
 		_, exists := containersState[c.ID]
 		if !exists {
 			containerCreationTime := time.Unix(c.Created, 0)
@@ -57,26 +56,25 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 					timestampCheckpoint = log.Timestamp
 				}
 			}
+			logger.Infof("Scanning container %s, LOGS FOR SCANNING: \n %s", c.ID, logString)
+			if logString != "" {
+				containersState[c.ID] = &timestampCheckpoint
+			}
 			isErrorState = isContainerInErrorState(container.State)
 			if isErrorState && logString != "" {
-				err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
-				if err != nil {
-					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
-				}
-				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
-				containersState[c.ID] = &timestampCheckpoint
-				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
+				// err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
+				// if err != nil {
+				// 	l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+				// }
 				return
 			}
 			isErrorState = areLogsIndicatingErrorOrWarning(logString)
 			if isErrorState {
-				err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
-				if err != nil {
-					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
-				}
-				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
-				containersState[c.ID] = &timestampCheckpoint
-				logger.Infof("Before: %s for %s", containersState[c.ID].String(), c.ID)
+				// err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
+				// if err != nil {
+				// 	l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+				// }
+				return
 			}
 		}(dockerClient, c, logger, &wg, taskPayload)
 	}
@@ -88,7 +86,6 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			delete(containersState, k)
 		}
 	}
-	logger.Infof("EOS %v", containersState)
 }
 
 func isContainerInErrorState(state *types.ContainerState) bool {
