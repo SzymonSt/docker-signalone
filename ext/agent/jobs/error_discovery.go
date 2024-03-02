@@ -38,6 +38,7 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			var timestampCheckpoint time.Time
 			isErrorState := false
 			logString := ""
+			severity := "INFO"
 			defer wg.Done()
 			container, err := dockerClient.ContainerInspect(context.Background(), c.ID)
 			if err != nil {
@@ -51,29 +52,32 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 			}
 
 			for _, log := range logs {
-				if log.Timestamp.After(*containersState[c.ID]) {
+				if log.Timestamp.Add(-1 * time.Second).After(*containersState[c.ID]) {
 					logString += (log.Log + "\n")
 					timestampCheckpoint = log.Timestamp
 				}
 			}
-			logger.Infof("Scanning container %s, LOGS FOR SCANNING: \n %s", c.ID, logString)
+
 			if logString != "" {
 				containersState[c.ID] = &timestampCheckpoint
 			}
-			isErrorState = isContainerInErrorState(container.State)
+
+			isErrorState = checkContainerErrorState(container.State)
 			if isErrorState && logString != "" {
-				// err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
-				// if err != nil {
-				// 	l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
-				// }
+				severity = "CRITICAL"
+				err := helpers.CallLogAnalysis(logString, c.Names[0], severity, taskPayload)
+				if err != nil {
+					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+				}
 				return
 			}
-			isErrorState = areLogsIndicatingErrorOrWarning(logString)
+
+			isErrorState, severity = checkLogsForIssue(logString)
 			if isErrorState {
-				// err := helpers.CallLogAnalysis(logString, c.Names[0], taskPayload)
-				// if err != nil {
-				// 	l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
-				// }
+				err := helpers.CallLogAnalysis(logString, c.Names[0], severity, taskPayload)
+				if err != nil {
+					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+				}
 				return
 			}
 		}(dockerClient, c, logger, &wg, taskPayload)
@@ -82,27 +86,37 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 	wg.Wait()
 	for k, _ := range containersState {
 		fmt.Print(k)
-		if wasContainerDeleted(k, currentsIDs) {
+		if verifyIfContainerDeleted(k, currentsIDs) {
 			delete(containersState, k)
 		}
 	}
 }
 
-func isContainerInErrorState(state *types.ContainerState) bool {
+func checkContainerErrorState(state *types.ContainerState) bool {
 	return (state.Error != "" ||
 		(!state.Running && state.ExitCode != 0))
 }
 
-func areLogsIndicatingErrorOrWarning(logs string) bool {
-	regexWarningError := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|denied|
-		err|error|exception|fatal|forbidden|freeze|hang|illegal|invalid|issue|missing|
+func checkLogsForIssue(logs string) (matched bool, severity string) {
+	regexWarning := `(?i)(unsupported|warn|warning)`
+	matched, _ = regexp.MatchString(regexWarning, strings.ToLower(logs))
+	if matched {
+		severity = "WARNING"
+	}
+
+	regexError := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|denied|
+		err|error|exception|fatal|forbidden|freeze|hang|illegal|invalid|missing|
 		panic|rejected|refused|stacktrace|timeout|traceback|unauthorized|uncaught|unexpected|unhandled|
-		unimplemented|unsupported|warn|warning)`
-	matched, _ := regexp.MatchString(regexWarningError, strings.ToLower(logs))
-	return matched
+		unimplemented)`
+	matched, _ = regexp.MatchString(regexError, strings.ToLower(logs))
+	if matched {
+		severity = "CRITICAL"
+	}
+
+	return
 }
 
-func wasContainerDeleted(k string, currentsIDs []string) bool {
+func verifyIfContainerDeleted(k string, currentsIDs []string) bool {
 	for _, c := range currentsIDs {
 		if c == k {
 			return false

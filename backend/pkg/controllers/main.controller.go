@@ -26,6 +26,7 @@ import (
 type LogAnalysisPayload struct {
 	UserId        string `json:"userId"`
 	ContainerName string `json:"containerName"`
+	Severity      string `json:"severity"`
 	Logs          string `json:"logs"`
 }
 
@@ -92,38 +93,39 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	issueId := uuid.New().String()
 	data := map[string]string{"logs": logAnalysisPayload.Logs}
 	jsonData, _ := json.Marshal(data)
-	analysisResponse, err = utils.CallPredictionAgentService(jsonData)
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	go func() {
+		analysisResponse, err = utils.CallPredictionAgentService(jsonData)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return
+		}
 
-	if !user.IsPro {
-		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
-			Logs:       logAnalysisPayload.Logs,
-			LogSummary: analysisResponse.LogSummary,
+		if !user.IsPro {
+			c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
+				Logs:       logAnalysisPayload.Logs,
+				LogSummary: analysisResponse.LogSummary,
+			})
+		}
+
+		formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
+
+		c.issuesCollection.InsertOne(ctx, models.Issue{
+			Id:                        issueId,
+			UserId:                    logAnalysisPayload.UserId,
+			ContainerName:             logAnalysisPayload.ContainerName,
+			Score:                     0,
+			Severity:                  logAnalysisPayload.Severity,
+			Title:                     analysisResponse.Title,
+			TimeStamp:                 time.Now(),
+			IsResolved:                false,
+			Logs:                      formattedAnalysisLogs,
+			LogSummary:                analysisResponse.LogSummary,
+			PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
+			PredictedSolutionsSources: analysisResponse.Sources,
 		})
-	}
-
-	formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
-
-	c.issuesCollection.InsertOne(ctx, models.Issue{
-		Id:                        issueId,
-		UserId:                    logAnalysisPayload.UserId,
-		ContainerName:             logAnalysisPayload.ContainerName,
-		Score:                     0,
-		Severity:                  strings.ToUpper("Critical"), // TODO: Implement severity detection
-		Title:                     analysisResponse.Title,
-		TimeStamp:                 time.Now(),
-		IsResolved:                false,
-		Logs:                      formattedAnalysisLogs,
-		LogSummary:                analysisResponse.LogSummary,
-		PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
-		PredictedSolutionsSources: analysisResponse.Sources,
-	})
+	}()
 	ctx.JSON(200, gin.H{
-		"message": "Success",
+		"message": "Acknowledged",
 		"issueId": issueId,
 	})
 }

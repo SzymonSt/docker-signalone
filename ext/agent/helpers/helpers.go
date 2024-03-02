@@ -47,7 +47,7 @@ func CollectLogsForAnalysis(containerID string, cli *client.Client) ([]models.Lo
 		containerID,
 		types.ContainerLogsOptions{
 			Timestamps: true,
-			Tail:       "15",
+			Tail:       "8",
 			ShowStdout: true,
 			ShowStderr: true,
 		})
@@ -95,9 +95,10 @@ func GetEnvVariables() (cfs ConfigServer) {
 	return
 }
 
-func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskPayload) (err error) {
+func CallLogAnalysis(logs string, containerName string, severity string, taskPayload models.TaskPayload) (err error) {
 	data := map[string]string{
 		"logs":          logs,
+		"severity":      severity,
 		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}
