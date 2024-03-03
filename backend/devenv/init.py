@@ -23,8 +23,8 @@ def main():
     
     with open('./devenv/users.json','r') as users_file:
         users = json.load(users_file)
-    with open('./devenv/solutions_sources.json','r') as solution_sources_file:
-        solution_sources = json.load(solution_sources_file)
+    # with open('./devenv/solutions_sources.json','r') as solution_sources_file:
+    #     solution_sources = json.load(solution_sources_file)
     
     init_users(users, mongo_client, db_name, coll_name)
     # init_solution_sources(solution_sources, qdrant_client, sources_coll_name)

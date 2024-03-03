@@ -8,6 +8,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"signal/models"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -30,32 +33,58 @@ func ListContainers(cli *client.Client) ([]types.Container, error) {
 		return nil, err
 	}
 
-	for _, c := range containers {
-		if _, exists := c.Labels["com.docker.desktop.extension"]; !exists {
-			filteredContainers = append(filteredContainers, c)
+	for _, container := range containers {
+		if _, exists := container.Labels["com.docker.desktop.extension"]; !exists {
+			filteredContainers = append(filteredContainers, container)
 		}
 	}
 
 	return filteredContainers, nil
 }
 
-func CollectLogsForAnalysis(containerID string, cli *client.Client, logTimeTail string) (string, error) {
-	logs, err := cli.ContainerLogs(context.Background(),
+func CollectLogsForAnalysis(containerID string, dockerClient *client.Client) ([]models.LogEntry, error) {
+	const MaxLogTail = 8
+	const LogStringBuffer = 8
+	const LogTimestampParsingTemplate = "2006-01-02T15:04:05.000000000Z"
+
+	var logEntries []models.LogEntry
+	logs, err := dockerClient.ContainerLogs(context.Background(),
 		containerID,
 		types.ContainerLogsOptions{
-			Since:      logTimeTail,
+			Timestamps: true,
+			Tail:       strconv.Itoa(MaxLogTail),
 			ShowStdout: true,
 			ShowStderr: true,
 		})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer logs.Close()
+
 	logBytes, err := ioutil.ReadAll(logs)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(logBytes), nil
+
+	logSlice := bytes.Split(logBytes, []byte("\n"))
+	for _, log := range logSlice {
+		if len(log) < MaxLogTail {
+			continue
+		}
+		logStringSlice := string(log[LogStringBuffer:])
+		logTimestamp, err := time.Parse(LogTimestampParsingTemplate, strings.Fields(logStringSlice)[0])
+		if err != nil {
+			return nil, err
+		}
+		logString := strings.Fields(logStringSlice)[1:]
+		logStringSlice = strings.Join(logString, " ")
+		entry := models.LogEntry{
+			Timestamp: logTimestamp,
+			Log:       logStringSlice,
+		}
+		logEntries = append(logEntries, entry)
+	}
+	return logEntries, nil
 }
 
 func GetEnvVariables() (cfs ConfigServer) {
@@ -73,9 +102,10 @@ func GetEnvVariables() (cfs ConfigServer) {
 	return
 }
 
-func CallLogAnalysis(logs string, containerName string, taskPayload models.TaskPayload) (err error) {
+func CallLogAnalysis(logs string, containerName string, severity string, taskPayload models.TaskPayload) (err error) {
 	data := map[string]string{
 		"logs":          logs,
+		"severity":      severity,
 		"containerName": containerName,
 		"userId":        taskPayload.UserId,
 	}

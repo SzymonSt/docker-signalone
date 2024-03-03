@@ -26,11 +26,13 @@ import (
 type LogAnalysisPayload struct {
 	UserId        string `json:"userId"`
 	ContainerName string `json:"containerName"`
+	ContainerId   string `json:"containerId"`
+	Severity      string `json:"severity"`
 	Logs          string `json:"logs"`
 }
 
-type GetIssuesPayload struct {
-	UserId string `json:"userId"`
+type Log struct {
+	Logs []string `bson:"logs"`
 }
 
 type MainController struct {
@@ -78,49 +80,92 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
 	var logAnalysisPayload LogAnalysisPayload
 	if err := ctx.ShouldBindJSON(&logAnalysisPayload); err != nil {
+		fmt.Printf("Error: %s", err)
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": logAnalysisPayload.UserId})
 	err := userResult.Decode(&user)
 	if err != nil {
+		fmt.Printf("Error: %s", err)
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	issueId := uuid.New().String()
-	data := map[string]string{"logs": logAnalysisPayload.Logs}
-	jsonData, _ := json.Marshal(data)
-	analysisResponse, err = utils.CallPredictionAgentService(jsonData)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+	go func() {
+		var issueLogs = make([][]string, 0)
+		var issueLog Log
+		var isNewIssue = true
 
-	if !user.IsPro {
-		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
-			Logs:       logAnalysisPayload.Logs,
-			LogSummary: analysisResponse.LogSummary,
+		formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
+		formattedAnalysisRelevantLogs := utils.FilterForRelevantLogs(formattedAnalysisLogs)
+
+		qOpts := options.Find()
+		qOpts.Projection = bson.M{"logs": 1}
+
+		cursor, err := c.issuesCollection.Find(ctx, bson.M{
+			"userId":      logAnalysisPayload.UserId,
+			"containerId": logAnalysisPayload.ContainerId,
+			"isResolved":  false,
+		}, qOpts)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return
+		}
+
+		defer cursor.Close(ctx)
+
+		for cursor.Next(ctx) {
+			if err := cursor.Decode(&issueLog); err != nil {
+				continue
+			}
+			issueLogs = append(issueLogs, issueLog.Logs)
+		}
+
+		//Compare logs with previous logs and if they are similar enough, don't call the prediction agent
+		if len(issueLogs) > 0 {
+			for _, issueLog := range issueLogs {
+				isNewIssue = utils.CompareLogs(formattedAnalysisRelevantLogs, issueLog)
+				if !isNewIssue {
+					return
+				}
+			}
+		}
+
+		data := map[string]string{"logs": strings.Join(formattedAnalysisRelevantLogs, "\n")}
+		jsonData, _ := json.Marshal(data)
+		analysisResponse, err = utils.CallPredictionAgentService(jsonData)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return
+		}
+
+		if !user.IsPro {
+			c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
+				Logs:       logAnalysisPayload.Logs,
+				LogSummary: analysisResponse.LogSummary,
+			})
+		}
+
+		c.issuesCollection.InsertOne(ctx, models.Issue{
+			Id:                        issueId,
+			UserId:                    logAnalysisPayload.UserId,
+			ContainerName:             logAnalysisPayload.ContainerName,
+			ContainerId:               logAnalysisPayload.ContainerId,
+			Score:                     0,
+			Severity:                  logAnalysisPayload.Severity,
+			Title:                     analysisResponse.Title,
+			TimeStamp:                 time.Now(),
+			IsResolved:                false,
+			Logs:                      formattedAnalysisLogs,
+			LogSummary:                analysisResponse.LogSummary,
+			PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
+			PredictedSolutionsSources: analysisResponse.Sources,
 		})
-	}
+	}()
 
-	formattedAnalysisLogs := strings.Split(logAnalysisPayload.Logs, "\n")
-
-	c.issuesCollection.InsertOne(ctx, models.Issue{
-		Id:                        issueId,
-		UserId:                    logAnalysisPayload.UserId,
-		ContainerName:             logAnalysisPayload.ContainerName,
-		Score:                     0,
-		Severity:                  strings.ToUpper("Critical"), // TODO: Implement severity detection
-		Title:                     analysisResponse.Title,
-		TimeStamp:                 time.Now(),
-		IsResolved:                false,
-		Logs:                      formattedAnalysisLogs,
-		LogSummary:                analysisResponse.LogSummary,
-		PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
-		PredictedSolutionsSources: analysisResponse.Sources,
-	})
 	ctx.JSON(200, gin.H{
-		"message": "Success",
+		"message": "Acknowledged",
 		"issueId": issueId,
 	})
 }
@@ -146,6 +191,12 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	var max int64
 	issues := make([]models.IssueSearchResult, 0)
+
+	userId, err := getUserIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
 
 	container := ctx.Query("container")
 	endTimestampQuery := ctx.Query("endTimestamp")
@@ -196,10 +247,8 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 		"timestamp":     1,
 	})
 
-	fmt.Print("startTimestamp: ", startTimestamp.UTC())
-	fmt.Print("endTimestamp: ", endTimestamp.UTC())
-
 	filter := bson.M{
+		"userId":     userId,
 		"isResolved": isResolved,
 		"timestamp": bson.M{
 			"$gte": startTimestamp.UTC(),
@@ -279,7 +328,7 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 	}
 
 	//TODO: Remove hardcoded userId
-	userId = "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
+	// userId = "4c78e05c-2f83-4e6e-b4c1-8721618a1c89"
 
 	err = ctx.ShouldBindJSON(&issueRateReq)
 	if err != nil {

@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"regexp"
 	"signalone/cmd/config"
 	"signalone/pkg/models"
 
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -47,5 +50,60 @@ func CallPredictionAgentService(jsonData []byte) (analysisResponse models.IssueA
 	if err != nil {
 		return
 	}
+	return
+}
+
+func CompareLogs(incomingLogTails []string, currentIssuesLogTails []string) (isNewIssue bool) {
+	const LogSimilarityThreshold = 0.8
+
+	isNewIssue = true
+	sdm := metrics.NewSorensenDice()
+	sdm.CaseSensitive = false
+	sdm.NgramSize = 3
+	for _, incomingLogTail := range incomingLogTails {
+		for _, currentIssueLogTail := range currentIssuesLogTails {
+			similarity := strutil.Similarity(incomingLogTail, currentIssueLogTail, sdm)
+			if similarity >= LogSimilarityThreshold {
+				isNewIssue = false
+				return
+			}
+		}
+	}
+	return
+}
+
+func FilterForRelevantLogs(logs []string) (relevantLogs []string) {
+	//Classes are absractions of different types of logs as different types of issues
+	//have different log structures
+	// Class 0 = Error or Warning message
+	// Class 1 = Exception with stack trace
+	issueClassZeroRegex := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|
+		denied|deprecated|deprecating|err|error|fatal|forbidden|
+		freeze|hang|illegal|invalid|missing|panic|refused|rejected|
+		timeout|unauthorized|unsupported|warn|warning)`
+	issueClassOneRegex := `(?i)(exception|stacktrace|traceback|uncaught|unhandled)`
+
+	compiledClassZeroRegex := regexp.MustCompile(issueClassZeroRegex)
+	compiledClassOneRegex := regexp.MustCompile(issueClassOneRegex)
+
+	for logIndex, log := range logs {
+		if matched := compiledClassOneRegex.MatchString(log); matched {
+			relevantLogs = append(relevantLogs, logs[logIndex])
+			//Add the next and previous log to the relevant logs if stack trace is found
+			//To be improved
+			if logIndex+1 < len(logs) {
+				relevantLogs = append(relevantLogs, logs[logIndex+1])
+			}
+			if logIndex-1 >= 0 {
+				relevantLogs = append(relevantLogs, logs[logIndex-1])
+			}
+			return
+		}
+
+		if matched := compiledClassZeroRegex.MatchString(log); matched {
+			relevantLogs = append(relevantLogs, logs[logIndex])
+		}
+	}
+
 	return
 }

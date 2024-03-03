@@ -25,13 +25,14 @@ var taskPayload = models.TaskPayload{
 }
 var jobId = uuid.Nil
 var dockerClient *client.Client
+var containersState = make(map[string]*time.Time)
 
 type AgentStatePayload struct {
 	State bool `json:"state"`
 }
 
 type AgentAuthDataPayload struct {
-	UserId string `json:"user_id"`
+	UserId string `json:"userId"`
 	Token  string `json:"token"`
 }
 
@@ -42,8 +43,8 @@ func main() {
 	dockerClient, _ = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	taskPayload.BackendUrl = cfs.BackendApiAddress
 	job, err := jobScheduler.NewJob(
-		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload),
+		gocron.DurationJob(time.Second*10),
+		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload, containersState),
 	)
 	if err != nil {
 		logger.Fatalf("Failed to create job: %v", err)
@@ -104,8 +105,8 @@ func ControlAuthData(c echo.Context) error {
 	taskPayload.UserId = agentAuthDataPayload.UserId
 	jobScheduler.Update(
 		jobId,
-		gocron.DurationJob(time.Second*15),
-		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload),
+		gocron.DurationJob(time.Second*10),
+		gocron.NewTask(jobs.ScanForErrors, dockerClient, logger, taskPayload, containersState),
 	)
 	c.JSON(200, "Success")
 	return nil

@@ -25,6 +25,7 @@ type Issue struct {
 	Id                        string    `json:"id" bson:"_id"`
 	UserId                    string    `json:"userId" bson:"userId"`
 	ContainerName             string    `json:"containerName" bson:"containerName"`
+	ContainerId               string    `json:"containerId" bson:"containerId"`
 	Score                     int32     `json:"score" bson:"score" binding:"odeof=-1 0 1"`
 	Severity                  string    `json:"severity" bson:"severity"`
 	Logs                      []string  `json:"logs" bson:"logs"`
