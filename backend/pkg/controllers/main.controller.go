@@ -163,6 +163,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 			PredictedSolutionsSources: analysisResponse.Sources,
 		})
 	}()
+
 	ctx.JSON(200, gin.H{
 		"message": "Acknowledged",
 		"issueId": issueId,

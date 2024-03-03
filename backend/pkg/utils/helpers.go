@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"regexp"
@@ -55,7 +54,7 @@ func CallPredictionAgentService(jsonData []byte) (analysisResponse models.IssueA
 }
 
 func CompareLogs(incomingLogTails []string, currentIssuesLogTails []string) (isNewIssue bool) {
-	logSimilarityThreshold := 0.8
+	var LogSimilarityThreshold = 0.8
 	isNewIssue = true
 	sdm := metrics.NewSorensenDice()
 	sdm.CaseSensitive = false
@@ -63,13 +62,7 @@ func CompareLogs(incomingLogTails []string, currentIssuesLogTails []string) (isN
 	for _, incomingLogTail := range incomingLogTails {
 		for _, currentIssueLogTail := range currentIssuesLogTails {
 			similarity := strutil.Similarity(incomingLogTail, currentIssueLogTail, sdm)
-			if similarity >= logSimilarityThreshold {
-				isNewIssue = false
-			}
-			fmt.Print("---------------------\n")
-			fmt.Printf("analyzedLog: %s \nissueLog: %s \n score: %.2f \nisNewIssue: %v", incomingLogTail, currentIssueLogTail, similarity, isNewIssue)
-			fmt.Print("---------------------\n")
-			if similarity >= logSimilarityThreshold {
+			if similarity >= LogSimilarityThreshold {
 				isNewIssue = false
 				return
 			}
@@ -83,10 +76,10 @@ func FilterForRelevantLogs(logs []string) (relevantLogs []string) {
 	//have different log structures
 	// Class 0 = Error or Warning message
 	// Class 1 = Exception with stack trace
-	issueClassZeroRegex := `(?i)(unsupported|warn|warning|deprecated|deprecating"
-		abort|blocked|corrupt|crash|critical|deadlock|denied|
-		err|error|fatal|forbidden|freeze|hang|illegal|invalid|missing|
-		panic|rejected|refused|timeout|unauthorized)`
+	issueClassZeroRegex := `(?i)(abort|blocked|corrupt|crash|critical|deadlock|
+		denied|deprecated|deprecating|err|error|fatal|forbidden|
+		freeze|hang|illegal|invalid|missing|panic|refused|rejected|
+		timeout|unauthorized|unsupported|warn|warning)`
 	issueClassOneRegex := `(?i)(exception|stacktrace|traceback|uncaught|unhandled)`
 
 	compiledClassZeroRegex := regexp.MustCompile(issueClassZeroRegex)

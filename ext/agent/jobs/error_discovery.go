@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 	"signal/helpers"
 	"signal/models"
@@ -23,12 +22,12 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 		return
 	}
 	wg := sync.WaitGroup{}
-	for _, c := range containers {
-		currentsIDs = append(currentsIDs, c.ID)
-		_, exists := containersState[c.ID]
+	for _, container := range containers {
+		currentsIDs = append(currentsIDs, container.ID)
+		_, exists := containersState[container.ID]
 		if !exists {
-			containerCreationTime := time.Unix(c.Created, 0)
-			containersState[c.ID] = &containerCreationTime
+			containerCreationTime := time.Unix(container.Created, 0)
+			containersState[container.ID] = &containerCreationTime
 		}
 
 		wg.Add(1)
@@ -80,14 +79,13 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 				}
 				return
 			}
-		}(dockerClient, c, logger, &wg, taskPayload)
+		}(dockerClient, container, logger, &wg, taskPayload)
 	}
 
 	wg.Wait()
-	for k, _ := range containersState {
-		fmt.Print(k)
-		if verifyIfContainerDeleted(k, currentsIDs) {
-			delete(containersState, k)
+	for key, _ := range containersState {
+		if verifyIfContainerDeleted(key, currentsIDs) {
+			delete(containersState, key)
 		}
 	}
 }
@@ -98,7 +96,7 @@ func checkContainerErrorState(state *types.ContainerState) bool {
 }
 
 func checkLogsForIssue(logs string) (matched bool, severity string) {
-	regexWarning := `(?i)(unsupported|warn|warning|deprecated|deprecating)`
+	regexWarning := `(?i)(deprecated|deprecating|unsupported|warn|warning)`
 	matched, _ = regexp.MatchString(regexWarning, strings.ToLower(logs))
 	if matched {
 		severity = "WARNING"
@@ -116,9 +114,9 @@ func checkLogsForIssue(logs string) (matched bool, severity string) {
 	return
 }
 
-func verifyIfContainerDeleted(k string, currentsIDs []string) bool {
-	for _, c := range currentsIDs {
-		if c == k {
+func verifyIfContainerDeleted(key string, currentsIDs []string) bool {
+	for _, containerId := range currentsIDs {
+		if containerId == key {
 			return false
 		}
 	}

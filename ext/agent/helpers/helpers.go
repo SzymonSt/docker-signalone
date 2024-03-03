@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"signal/models"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,13 +42,17 @@ func ListContainers(cli *client.Client) ([]types.Container, error) {
 	return filteredContainers, nil
 }
 
-func CollectLogsForAnalysis(containerID string, cli *client.Client) ([]models.LogEntry, error) {
+func CollectLogsForAnalysis(containerID string, dockerClient *client.Client) ([]models.LogEntry, error) {
+	var MaxLogTail = 8
+	var LogStringBuffer = 8
+	var LogTimestampParsingTemplate = "2006-01-02T15:04:05.000000000Z"
+
 	var logEntries []models.LogEntry
-	logs, err := cli.ContainerLogs(context.Background(),
+	logs, err := dockerClient.ContainerLogs(context.Background(),
 		containerID,
 		types.ContainerLogsOptions{
 			Timestamps: true,
-			Tail:       "8",
+			Tail:       strconv.Itoa(MaxLogTail),
 			ShowStdout: true,
 			ShowStderr: true,
 		})
@@ -55,24 +60,26 @@ func CollectLogsForAnalysis(containerID string, cli *client.Client) ([]models.Lo
 		return nil, err
 	}
 	defer logs.Close()
+
 	logBytes, err := ioutil.ReadAll(logs)
 	if err != nil {
 		return nil, err
 	}
+
 	logSlice := bytes.Split(logBytes, []byte("\n"))
 	for _, log := range logSlice {
-		if len(log) < 8 {
+		if len(log) < MaxLogTail {
 			continue
 		}
-		logStringSlice := string(log[8:])
-		ts, err := time.Parse("2006-01-02T15:04:05.000000000Z", strings.Fields(logStringSlice)[0])
+		logStringSlice := string(log[LogStringBuffer:])
+		logTimestamp, err := time.Parse(LogTimestampParsingTemplate, strings.Fields(logStringSlice)[0])
 		if err != nil {
 			return nil, err
 		}
-		l := strings.Fields(logStringSlice)[1:]
-		logStringSlice = strings.Join(l, " ")
+		logString := strings.Fields(logStringSlice)[1:]
+		logStringSlice = strings.Join(logString, " ")
 		entry := models.LogEntry{
-			Timestamp: ts,
+			Timestamp: logTimestamp,
 			Log:       logStringSlice,
 		}
 		logEntries = append(logEntries, entry)
