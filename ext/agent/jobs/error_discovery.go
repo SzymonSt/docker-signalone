@@ -32,50 +32,50 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 
 		wg.Add(1)
 		go func(dockerClient *client.Client,
-			c types.Container, l *logrus.Logger,
+			containerDefinition types.Container, logger *logrus.Logger,
 			wg *sync.WaitGroup, taskPayload models.TaskPayload) {
 			var timestampCheckpoint time.Time
 			isErrorState := false
 			logString := ""
 			severity := "INFO"
 			defer wg.Done()
-			container, err := dockerClient.ContainerInspect(context.Background(), c.ID)
+			container, err := dockerClient.ContainerInspect(context.Background(), containerDefinition.ID)
 			if err != nil {
-				l.Errorf("Failed to inspect container %s: %v", c.ID, err)
+				logger.Errorf("Failed to inspect container %s: %v", containerDefinition.ID, err)
 				return
 			}
 
-			logs, err := helpers.CollectLogsForAnalysis(c.ID, dockerClient)
+			logs, err := helpers.CollectLogsForAnalysis(containerDefinition.ID, dockerClient)
 			if err != nil {
-				l.Errorf("Failed to collect logs for container %s: %v", c.ID, err)
+				logger.Errorf("Failed to collect logs for container %s: %v", containerDefinition.ID, err)
 			}
 
 			for _, log := range logs {
-				if log.Timestamp.Add(-1 * time.Second).After(*containersState[c.ID]) {
+				if log.Timestamp.Add(-1 * time.Second).After(*containersState[containerDefinition.ID]) {
 					logString += (log.Log + "\n")
 					timestampCheckpoint = log.Timestamp
 				}
 			}
 
 			if logString != "" {
-				containersState[c.ID] = &timestampCheckpoint
+				containersState[containerDefinition.ID] = &timestampCheckpoint
 			}
 
 			isErrorState = checkContainerErrorState(container.State)
 			if isErrorState && logString != "" {
 				severity = "CRITICAL"
-				err := helpers.CallLogAnalysis(logString, c.Names[0], severity, taskPayload)
+				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], severity, taskPayload)
 				if err != nil {
-					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+					logger.Errorf("Failed to call log analysis for container %s: %v", containerDefinition.Names[0], err)
 				}
 				return
 			}
 
 			isErrorState, severity = checkLogsForIssue(logString)
 			if isErrorState {
-				err := helpers.CallLogAnalysis(logString, c.Names[0], severity, taskPayload)
+				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], severity, taskPayload)
 				if err != nil {
-					l.Errorf("Failed to call log analysis for container %s: %v", c.Names[0], err)
+					logger.Errorf("Failed to call log analysis for container %s: %v", containerDefinition.Names[0], err)
 				}
 				return
 			}
