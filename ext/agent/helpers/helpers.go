@@ -33,9 +33,9 @@ func ListContainers(cli *client.Client) ([]types.Container, error) {
 		return nil, err
 	}
 
-	for _, c := range containers {
-		if _, exists := c.Labels["com.docker.desktop.extension"]; !exists {
-			filteredContainers = append(filteredContainers, c)
+	for _, container := range containers {
+		if _, exists := container.Labels["com.docker.desktop.extension"]; !exists {
+			filteredContainers = append(filteredContainers, container)
 		}
 	}
 
