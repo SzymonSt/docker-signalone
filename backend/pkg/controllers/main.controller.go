@@ -414,8 +414,8 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 }
 
 // ResolveIssue godoc
-// @Summary Resolve an issue by setting its status to resolved.
-// @Description Resolve an issue by providing its ID and updating its status to resolved.
+// @Summary Mark issue as resolved/unresolved.
+// @Description Resolve an issue by providing its ID and resolve state of the issue.
 // @Tags issues
 // @Accept json
 // @Produce json
@@ -423,26 +423,32 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 // @Success 200 {object} map[string]any
 // @Failure 404 {object} map[string]any
 // @Failure 500 {object} map[string]any
-// @Router /issues/resolve/{id} [post]
-// @RequestBody application/json ResolveIssueRequest true "Issue resolution request"
+// @Router /issues/{id}/resolve [put]
+// @RequestBody application/json isResolved boolean
 func (c *MainController) ResolveIssue(ctx *gin.Context) {
-	id := ctx.Param("id")
+	var requestData models.IssueResolveRequest
 
-	res, err := c.issuesCollection.UpdateOne(ctx,
-		bson.M{"_id": id},
-		bson.M{
-			"$set": bson.M{
-				"isResolved": true,
-			},
-		})
-
+	userId, err := getUserIdFromToken(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	if res.MatchedCount == 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+	if err := ctx.ShouldBindJSON(&requestData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := ctx.Param("id")
+
+	issueResult, err := c.issuesCollection.UpdateOne(ctx, bson.M{"_id": id, "userId": userId}, bson.M{"$set": bson.M{"isResolved": *requestData.IsResolved}})
+	if issueResult.MatchedCount == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
