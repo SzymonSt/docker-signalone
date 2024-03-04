@@ -7,6 +7,11 @@ import (
 type IssueRateRequest struct {
 	Score *int32 `json:"score" binding:"required"` // it must be a pointer because if we get 0 then the required error arises
 }
+
+type IssueResolveRequest struct {
+	IsResolved *bool `json:"isResolved" binding:"required"` // it must be a pointer because if we get 'false' then the required error arises
+}
+
 type IssueSolutionPredictionSolutionSource struct {
 	Title string `json:"title" bson:"title"`
 	Url   string `json:"url" bson:"url"`
