@@ -1,10 +1,14 @@
 """Module for crawling the web."""
-from langchain_community.tools.tavily_search import TavilySearchResults
+import os
+from dotenv import load_dotenv
+from tavily import TavilyClient
+load_dotenv()
 
 class WebCrawler:
     """Class for crawling the web."""
     def __init__(self):
-        self.tool = TavilySearchResults()
+        api_key = os.getenv('TAVILY_API_KEY')
+        self.tool = TavilyClient(api_key=api_key)
 
     def search(self, query):
         """
@@ -17,9 +21,8 @@ class WebCrawler:
             str: The first result returned by the search engine.
         """
         try:
-            return(self.tool.invoke({"query": query},search_depth="advanced"))
+            return(self.tool.search(query = query,include_domains = ['https://stackoverflow.com','https://github.com'],search_depth="advanced"))
             
         except Exception as e:
             print(e)
             return None
-        
