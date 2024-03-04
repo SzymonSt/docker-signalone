@@ -26,10 +26,3 @@ class WebCrawler:
         except Exception as e:
             print(e)
             return None
-
-if __name__ == '__main__':
-    crawl = WebCrawler()
-    print(crawl.search("""AttributeError: module 'numpy' has no attribute 'object'.
-`np.object` was a deprecated alias for the builtin `object`. To avoid this error in existing code, use `object` by itself. Doing this will not modify any behavior and is safe. 
-The aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:
-    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations"""))
