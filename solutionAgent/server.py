@@ -22,6 +22,7 @@ async def run_chat_agent(data: LogData):
             return result
         except Exception as e:
             if retries > 4:
+                print(f"Unable to process the logs, error: {e}")
                 return {"error": f"Unable to process the logs, error: {e}"}
             time.sleep(5)
         
