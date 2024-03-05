@@ -5,6 +5,7 @@ import { environment } from 'environment/environment';
 import { AgentStateDTO } from '../interfaces/AgentStateDTO';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import { agentAuthDataDTO } from '../interfaces/AgentAuthDataDTO';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
@@ -38,6 +39,12 @@ export class ConfigurationService {
         this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_DEACTIVATED'));
       }
 
+    });
+  }
+
+  public setAgentAuthData(agentAuthData: agentAuthDataDTO): void {
+    this.httpClient.post<void>(`${environment.agentApiUrl}/control/auth_data`, agentAuthData).subscribe(() => {
+      this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_AUTH_DATA_UPDATED'));
     });
   }
 }

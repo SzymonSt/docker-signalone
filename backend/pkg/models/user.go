@@ -72,6 +72,11 @@ type JWTClaimsWithUserData struct {
 	jwt.RegisteredClaims
 }
 
+type AgentTokenClaimsWithUserData struct {
+	Id       string `json:"id"`
+	UserName string `json:"userName"`
+}
+
 type RefreshTokenRequest struct {
 	RefreshToken string `json:"refreshToken"`
 }

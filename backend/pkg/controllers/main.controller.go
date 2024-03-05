@@ -77,7 +77,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		})
 		return
 	}
-	bearerToken = strings.TrimPrefix(bearerToken, "Bearer ")
+
 	var logAnalysisPayload LogAnalysisPayload
 	if err := ctx.ShouldBindJSON(&logAnalysisPayload); err != nil {
 		fmt.Printf("Error: %s", err)
@@ -555,13 +555,13 @@ func (c *MainController) LoginWithGithubHandler(ctx *gin.Context) {
 		}
 	}
 
-	accessTokenString, err := createToken(user.UserId, user.UserName, false)
+	accessTokenString, err := createToken(user.UserId, user.UserName, "access")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(user.UserId, user.UserName, true)
+	refreshTokenString, err := createToken(user.UserId, user.UserName, "refresh")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -616,13 +616,13 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 		}
 	}
 
-	accessTokenString, err := createToken(user.UserId, user.UserName, false)
+	accessTokenString, err := createToken(user.UserId, user.UserName, "access")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(user.UserId, user.UserName, true)
+	refreshTokenString, err := createToken(user.UserId, user.UserName, "refresh")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -661,13 +661,13 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 		return
 	}
 
-	accessTokenString, err := createToken(claims.Id, claims.UserName, false)
+	accessTokenString, err := createToken(claims.Id, claims.UserName, "access")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
 	}
 
-	refreshTokenString, err := createToken(claims.Id, claims.UserName, true)
+	refreshTokenString, err := createToken(claims.Id, claims.UserName, "refresh")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "couldn't make authentication token"})
 		return
@@ -679,6 +679,70 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
 		"refreshToken": refreshTokenString,
 	})
+}
+
+func (c *MainController) AuthenticateAgent(ctx *gin.Context) {
+	var user models.User
+	userId, err := getUserIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	result := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
+	err = result.Decode(&user)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	if user.AgentBearerToken != "" {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "Success",
+			"token":   user.AgentBearerToken,
+		})
+		return
+	}
+
+	token, err := createToken(userId, user.UserName, "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = c.usersCollection.UpdateOne(ctx,
+		bson.M{"userId": userId},
+		bson.M{"$set": bson.M{
+			"agentBearerToken": token,
+		},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Success",
+		"token":   token,
+	})
+}
+
+func (c *MainController) CheckAgentAuthorization(ctx *gin.Context) {
+	authHeader := ctx.GetHeader("Authorization")
+
+	var token = strings.TrimPrefix(authHeader, "Bearer ")
+	fmt.Printf("Token: %s", token)
+
+	err := c.VerifyAgentToken(ctx, token)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.Abort()
+		return
+	}
+
+	ctx.Next()
 }
 
 func getUserIdFromToken(ctx *gin.Context) (string, error) {
@@ -693,15 +757,17 @@ func getUserIdFromToken(ctx *gin.Context) (string, error) {
 	return userId, nil
 }
 
-func createToken(id string, userName string, isRefreshToken bool) (string, error) {
+func createToken(id string, userName string, tokenType string) (string, error) {
 	var cfg = config.GetInstance()
 	var expTime time.Duration
 	var SECRET_KEY = []byte(cfg.SignalOneSecret)
 
-	if isRefreshToken {
+	if tokenType == "refresh" {
 		expTime = REFRESH_TOKEN_EXPIRATION_TIME
-	} else {
+	} else if tokenType == "access" {
 		expTime = ACCESS_TOKEN_EXPIRATION_TIME
+	} else {
+		expTime = time.Second * 0
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
@@ -881,4 +947,36 @@ func VerifyToken(tokenString string) (string, error) {
 	}
 
 	return claims.Id, nil
+}
+
+func (c *MainController) VerifyAgentToken(ctx *gin.Context, token string) (err error) {
+	var user models.User
+	var cfg = config.GetInstance()
+	var claims = &models.JWTClaimsWithUserData{}
+	var SECRET_KEY = []byte(cfg.SignalOneSecret)
+
+	parser := jwt.NewParser(
+		jwt.WithoutClaimsValidation(),
+	)
+
+	_, err = parser.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return SECRET_KEY, nil
+	})
+	if err != nil {
+		return
+	}
+
+	err = c.usersCollection.FindOne(ctx, bson.M{"userId": claims.Id}).Decode(&user)
+	if err != nil {
+		return
+	}
+	fmt.Print(user)
+	fmt.Print(user.AgentBearerToken)
+
+	if user.AgentBearerToken == "" || user.AgentBearerToken != token {
+		err = errors.New("unauthorized")
+		return
+	}
+
+	return
 }

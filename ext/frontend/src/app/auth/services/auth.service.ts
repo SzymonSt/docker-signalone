@@ -67,6 +67,21 @@ export class AuthService {
       );
   }
 
+  public authAgent(token: Token): Observable<{ agentToken: string }> {
+    const headers: HttpHeaders = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token.accessToken}`
+    });
+
+    return this.httpClient.post(`${environment.apiUrl}/user/agent/authenticate`, null, { headers })
+      .pipe(
+        map((response: any) => {
+          return { agentToken: response['token']};
+        })
+      );
+  }
+
   public startPasswordReset(email: string): Observable<void> {
     return this.httpClient.post(`${environment.apiUrl}/accounts/${encodeURIComponent(email)}/password/init-reset`, {})
       .pipe(
