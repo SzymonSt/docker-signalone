@@ -413,6 +413,78 @@ func (c *MainController) RateIssue(ctx *gin.Context) {
 	})
 }
 
+func (c *MainController) RegenerateSolution(ctx *gin.Context) {
+	var analysisResponse models.IssueAnalysis
+	var issue models.Issue
+	var user models.User
+
+	userId, err := getUserIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := ctx.Param("id")
+	issueResult := c.issuesCollection.FindOne(ctx, bson.M{"_id": id, "userId": userId})
+
+	err = issueResult.Decode(&issue)
+	if err != nil && err.Error() == mongo.ErrNoDocuments.Error() {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userId": userId})
+
+	err = userResult.Decode(&user)
+	if err != nil && err.Error() == mongo.ErrNoDocuments.Error() {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var formattedAnalysisRelevantLogs = utils.FilterForRelevantLogs(issue.Logs)
+	data := map[string]string{"logs": strings.Join(formattedAnalysisRelevantLogs, "\n")}
+	jsonData, _ := json.Marshal(data)
+
+	analysisResponse, err = utils.CallPredictionAgentService(jsonData)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return
+	}
+
+	if !user.IsPro {
+		c.analysisStoreCollection.InsertOne(ctx, models.SavedAnalysis{
+			Logs:       strings.Join(issue.Logs, "\n"),
+			LogSummary: analysisResponse.LogSummary,
+		})
+	}
+	_, err = c.issuesCollection.UpdateOne(ctx, bson.M{"_id": id, "userId": userId}, bson.M{"$set": bson.M{
+		"title":                     analysisResponse.Title,
+		"timestamp":                 time.Now(),
+		"predictedSolutionsSummary": analysisResponse.PredictedSolutions,
+		"predictedSolutionsSources": analysisResponse.Sources,
+		"logSummary":                analysisResponse.LogSummary,
+	}})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Acknowledged",
+		"issueId": issue.Id,
+	})
+}
+
 // ResolveIssue godoc
 // @Summary Mark issue as resolved/unresolved.
 // @Description Resolve an issue by providing its ID and resolve state of the issue.
