@@ -31,6 +31,7 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 		userRouterGroup.GET("/containers", mr.mainController.GetContainers)
 		userRouterGroup.GET("/issues", mr.mainController.IssuesSearch)
 		userRouterGroup.GET("/issues/:id", mr.mainController.GetIssue)
+		userRouterGroup.PUT("/issues/:id/regenerate", mr.mainController.RegenerateSolution)
 		userRouterGroup.PUT("/issues/:id/resolve", mr.mainController.ResolveIssue)
 		userRouterGroup.PUT("/issues/:id/score", mr.mainController.RateIssue)
 		userRouterGroup.GET("/settings", func(c *gin.Context) {})
