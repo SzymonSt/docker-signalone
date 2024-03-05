@@ -469,7 +469,6 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 // @Router /issues [delete]
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
 	container := ctx.Query("container")
-	fmt.Print("Container: ", container)
 	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerName": container})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -732,7 +731,6 @@ func (c *MainController) CheckAgentAuthorization(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 
 	var token = strings.TrimPrefix(authHeader, "Bearer ")
-	fmt.Printf("Token: %s", token)
 
 	err := c.VerifyAgentToken(ctx, token)
 	if err != nil {
@@ -970,8 +968,6 @@ func (c *MainController) VerifyAgentToken(ctx *gin.Context, token string) (err e
 	if err != nil {
 		return
 	}
-	fmt.Print(user)
-	fmt.Print(user.AgentBearerToken)
 
 	if user.AgentBearerToken == "" || user.AgentBearerToken != token {
 		err = errors.New("unauthorized")
