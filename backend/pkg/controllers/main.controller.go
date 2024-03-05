@@ -682,6 +682,7 @@ func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 
 func (c *MainController) AuthenticateAgent(ctx *gin.Context) {
 	var user models.User
+
 	userId, err := getUserIdFromToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -692,9 +693,10 @@ func (c *MainController) AuthenticateAgent(ctx *gin.Context) {
 	err = result.Decode(&user)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
-		ctx.JSON(400, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	if user.AgentBearerToken != "" {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": "Success",

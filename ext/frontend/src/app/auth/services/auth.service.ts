@@ -71,7 +71,6 @@ export class AuthService {
     const headers: HttpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Bearer ${token.accessToken}`
     });
 
     return this.httpClient.post(`${environment.apiUrl}/user/agent/authenticate`, null, { headers })

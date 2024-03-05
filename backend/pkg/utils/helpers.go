@@ -2,8 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -108,14 +106,4 @@ func FilterForRelevantLogs(logs []string) (relevantLogs []string) {
 	}
 
 	return
-}
-
-func GenerateBearerToken() (string, error) {
-	b := make([]byte, 32)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
-	token := base64.StdEncoding.EncodeToString(b)
-	return token, nil
 }
