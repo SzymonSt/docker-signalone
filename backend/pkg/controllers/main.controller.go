@@ -479,10 +479,15 @@ func (c *MainController) RegenerateSolution(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Acknowledged",
-		"issueId": issue.Id,
-	})
+	issueResult = c.issuesCollection.FindOne(ctx, bson.M{"_id": id, "userId": userId})
+
+	err = issueResult.Decode(&issue)
+	if err != nil && err.Error() == mongo.ErrNoDocuments.Error() {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Issue not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, issue)
 }
 
 // ResolveIssue godoc
