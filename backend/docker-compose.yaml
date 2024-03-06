@@ -8,6 +8,8 @@ services:
     depends_on:
       - solutions-agent
       - mongo-db
+    volumes:
+      - .:/app
 
   solutions-agent:
       image: '322456/solutions-agent:dev'
