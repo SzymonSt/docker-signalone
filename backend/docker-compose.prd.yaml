@@ -1,0 +1,17 @@
+version: '3'
+services:
+
+  backend:
+    image: '322456/signalonebackend:dev'
+    ports:
+      - 443:443
+      - 80:80
+    depends_on:
+      - solutions-agent
+    volumes:
+      - /certs:/certs
+
+  solutions-agent:
+      image: '322456/solutions-agent:dev'
+      ports:
+        - 8081:8081

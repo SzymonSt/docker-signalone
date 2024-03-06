@@ -7,8 +7,10 @@ import (
 )
 
 type Config struct {
-	ServerPort string `mapstructure:"SERVER_PORT"`
-	Mode       string `mapstructure:"MODE"`
+	ServerPort   string `mapstructure:"SERVER_PORT"`
+	Mode         string `mapstructure:"MODE"`
+	CertFilePath string `mapstructure:"CERT_FILE_PATH"`
+	KeyFilePath  string `mapstructure:"KEY_FILE_PATH"`
 
 	//GitHub Data
 	GithubClientId     string `mapstructure:"GITHUB_CLIENT_ID"`
