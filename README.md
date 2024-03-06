@@ -11,7 +11,7 @@ Signal0ne docker extension is a tool for debugging and monitoring containerized 
 ## How to install release
 
 ```
-docker extension install 322456/signalone-extension:latest
+docker extension install signaloneai/signalone-extension:latest 
 ```
 
 ## How to use locally
