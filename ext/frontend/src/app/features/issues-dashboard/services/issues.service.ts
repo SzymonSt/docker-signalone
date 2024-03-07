@@ -27,6 +27,10 @@ export class IssuesService {
         searchCriteria.endTimestamp = new Date(searchCriteria.endTimestamp).toISOString();
       }
 
+      if (searchCriteria.isResolved) {
+        searchCriteria.isResolved = false;
+      }
+
       const params: HttpParams = new HttpParams({
         encoder: new HttpEncoder(),
         fromObject: { ...(NormalizeObjectValue(searchCriteria, [ 'startTimestamp', 'endTimestamp' ]) as any) }
@@ -45,6 +49,16 @@ export class IssuesService {
 
   public rateIssue(issueId: string, rateIssueData: RateIssueDTO): Observable<void> {
     return this.httpClient.put<void>(`${environment.apiUrl}/user/issues/${issueId}/score`, rateIssueData);
+  }
+
+  public regenerateIssue(issueId: string): Observable<DetailedIssueDTO> {
+    return this.httpClient.put<DetailedIssueDTO>(`${environment.apiUrl}/user/issues/${issueId}/regenerate`, {});
+
+  }
+
+  public markIssueAsResolved(issueId: string): Observable<void> {
+    return this.httpClient.put<void>(`${environment.apiUrl}/user/issues/${issueId}/resolve`, {isResolved: true});
+
   }
 
 }

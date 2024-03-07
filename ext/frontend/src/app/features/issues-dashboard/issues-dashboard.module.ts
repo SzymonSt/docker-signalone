@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'app/shared/SharedModule';
@@ -50,6 +51,7 @@ import { MarkdownComponent, MarkdownModule } from 'ngx-markdown';
     PaginationModule,
     AngularSvgIconModule.forRoot(),
     MarkdownModule.forRoot(),
+    MatTooltipModule
   ],
   exports: []
 })

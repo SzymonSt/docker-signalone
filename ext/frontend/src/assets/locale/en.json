@@ -64,6 +64,8 @@
       "EMPTY_ISSUE_DETAIL_MESSAGE_NO_ISSUE": "There is no issue selected.",
       "EMPTY_ISSUE_DETAIL_MESSAGE_SELECT_ISSUE": "Select the issue to see issue report.",
       "EMPTY_ISSUES_LIST": "No issues found",
+      "REGENERATE_ISSUE": "Regenerate issue",
+      "MARK_ISSUE_RESOLVED": "Mark issue as resolved",
       "CHAT": {
         "ASK_MODEL": "Ask model"
       }

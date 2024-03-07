@@ -61,6 +61,14 @@ export class IssuesDashboardComponent implements OnInit {
     this.issuesService.rateIssue(this.activeIssue.id, new RateIssueDTO(score)).subscribe()
   }
 
+  public markIssueAsResolved(): void {
+    this.issuesService.markIssueAsResolved(this.activeIssue.id).subscribe()
+  }
+
+  public regenerateIssue(): void {
+    this.issuesService.regenerateIssue(this.activeIssue.id).subscribe(regeneratedIssue => this.activeIssue = regeneratedIssue)
+  }
+
   private getIssuesContainers(): void {
     this.issuesService.getIssuesContainers().subscribe((containers: string[]) => {
       this.containers = containers;
