@@ -13,10 +13,11 @@ from datetime import datetime
 
 class ChatAgent:
     """Class for the chat agent."""
-    def __init__(self):
+    def __init__(self, endpoint):
         load_dotenv()
+        print(endpoint)
         self.llm = HuggingFaceEndpoint(
-                endpoint_url=os.environ.get("ENDPOINT_URL"),
+                endpoint_url=endpoint,
                 task="text-generation",
                 model_kwargs={
                     "max_new_tokens": 512,
@@ -26,7 +27,7 @@ class ChatAgent:
                 },
             )
         self.summarizer = HuggingFaceEndpoint(
-                endpoint_url=os.environ.get("ENDPOINT_URL"),
+                endpoint_url=endpoint,
                 task="text-generation",
                 model_kwargs={
                     "max_new_tokens": 100,
@@ -36,7 +37,7 @@ class ChatAgent:
                 },
             )
         self.title_gen = HuggingFaceEndpoint(
-                endpoint_url=os.environ.get("ENDPOINT_URL"),
+                endpoint_url=endpoint,
                 task="text-generation",
                 model_kwargs={
                     "max_new_tokens": 60,
@@ -56,7 +57,7 @@ class ChatAgent:
         
         prompt = hub.pull("hwchase17/react")
         agent = create_react_agent(self.llm, self.tools, prompt)
-        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=False, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=3)
+        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=True, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=3)
      
     def understand_logs(self,logs):
         """Function to understand logs and return a summary
@@ -82,7 +83,7 @@ class ChatAgent:
         Returns: solution to the logs"""
 
         answer =  self.agent_executor.invoke({"input":f"""You are a software developer who has to provide short summary of available solutions to issues of a software.
-                                     Use websearch tool available to make your answer. You can ask multiple questions from the webagent. Use "websearch" agent to search about information use Action: websearch. You can use the summary provided. Also provide the sources of your solutions.
+                                     Use websearch tool available to make your answer. You can ask multiple questions from the webagent . Use "websearch" agent to search about information use "Action: websearch" . You can use the summary provided. Also provide the sources of your solutions.
                                      Here is the summary of issue for which you need to find solution and provide code or commands if it would help to resolve issue: \n {summary}"""})
         
         return answer['intermediate_steps']
