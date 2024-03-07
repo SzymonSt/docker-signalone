@@ -50,20 +50,27 @@
       <h4>{{ solutionSource }}</h4>
     </div>
   </div>
-
-  <div class="likes-container">
-    <i
-      class="bi bi-hand-thumbs-up"
-      [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
-      (click)="positiveScoreSelected()"
-      [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
-    ></i>
-    <div class="divider"></div>
-    <i
-      class="bi bi-hand-thumbs-down"
-      [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
-      (click)="negativeScoreSelected()"
-      [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
-    ></i>
+  <div class="d-flex align-items-center mt-3">
+    <div class="likes-container">
+      <i
+              class="bi bi-hand-thumbs-up"
+              [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
+              (click)="positiveScoreSelected()"
+              [ngClass]="activeIssue.score === 1 ? 'score-selected' : ''"
+      ></i>
+      <div class="divider"></div>
+      <i
+              class="bi bi-hand-thumbs-down"
+              [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
+              (click)="negativeScoreSelected()"
+              [ngClass]="activeIssue.score === -1 ? 'score-selected' : ''"
+      ></i>
+    </div>
+    <button class="btn btn-secondary reload-button" (click)="markIssueAsResolved.emit()" [matTooltip]="'FEATURES.ISSUES.MARK_ISSUE_RESOLVED' | translate">
+      <i class="bi bi-check-lg"></i>
+    </button>
+    <button class="btn btn-secondary reload-button" (click)="regenerateIssue.emit()" [matTooltip]="'FEATURES.ISSUES.REGENERATE_ISSUE' | translate">
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
   </div>
 </div>

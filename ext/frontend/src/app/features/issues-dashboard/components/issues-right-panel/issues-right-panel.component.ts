@@ -11,6 +11,10 @@ export class IssuesRightPanelComponent {
   public activeIssue: DetailedIssueDTO;
   @Output()
   public scoreSelected: EventEmitter<DetailedIssueScore> = new EventEmitter<DetailedIssueScore>();
+  @Output()
+  public markIssueAsResolved: EventEmitter<void> = new EventEmitter<void>();
+  @Output()
+  public regenerateIssue: EventEmitter<void> = new EventEmitter<void>();
   constructor() {
   }
 }

@@ -1,6 +1,8 @@
 <div id="issues-right-panel">
   <app-solutions-list
     (scoreSelected)="scoreSelected.emit($event)"
+    (markIssueAsResolved)="markIssueAsResolved.emit($event)"
+    (regenerateIssue)="regenerateIssue.emit($event)"
     *ngIf="activeIssue"
     [activeIssue]="activeIssue"
   ></app-solutions-list>
