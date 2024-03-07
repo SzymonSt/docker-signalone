@@ -19,7 +19,7 @@ export class SolutionsListComponent {
   }
 
   public goToSolutionSource(url : string): void {
-    window.open(url, "_blank")
+    window.open(url, '_blank');
   }
 
   public positiveScoreSelected(): void {

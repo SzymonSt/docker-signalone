@@ -189,6 +189,7 @@ export class AuthStateService implements OnDestroy {
 
               resolve(token);
             }
+            this.authenthicateAgent();
           }
         })
         .catch((error) => {
@@ -257,12 +258,11 @@ export class AuthStateService implements OnDestroy {
     this.router.navigateByUrl('/login')
     this.wasNavigatedFromLogin = false;
   }
-  private async authenthicateAndRunAgent():Promise<void> {
+  private async authenthicateAgent():Promise<void> {
     const agentToken = await this.authService.authAgent(this.token).toPromise().then((result: { agentToken: string }) => {
       return result.agentToken;
     })
     this.configurationService.setAgentAuthData({token: agentToken, userId: this.userData.id})
-    this.configurationService.setAgentState({state: true})
 
   }
 
@@ -272,8 +272,9 @@ export class AuthStateService implements OnDestroy {
     if (!_.isNil(this.token)) {
       this.scheduleTokenRefresh(this.token);
     }
-    this.authenthicateAndRunAgent();
+    this.authenthicateAgent();
     this.configurationService.getCurrentAgentState();
+    this.configurationService.setAgentState({state: true})
     this.goToDashboard();
   }
 
