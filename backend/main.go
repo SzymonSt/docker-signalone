@@ -89,5 +89,10 @@ func main() {
 	routeController := routers.NewMainRouter(mainController)
 	routeController.RegisterRoutes(router)
 
-	server.Run(":" + cfg.ServerPort)
+	if cfg.Mode == "local" {
+		server.Run(":" + cfg.ServerPort)
+	}
+	if cfg.Mode == "prod" {
+		server.RunTLS(":"+cfg.ServerPort, cfg.CertFilePath, cfg.KeyFilePath)
+	}
 }

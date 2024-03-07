@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . /app
 RUN apt-get update && apt-get install -y bzip2 &&\
     npm install &&\ 
-    npm run build && \
+    npm run build-prod && \
     ls -la /app/dist
 EXPOSE 80
 
