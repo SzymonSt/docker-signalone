@@ -102,11 +102,12 @@ func GetEnvVariables() (cfs ConfigServer) {
 	return
 }
 
-func CallLogAnalysis(logs string, containerName string, severity string, taskPayload models.TaskPayload) (err error) {
+func CallLogAnalysis(logs string, containerName string, containerId string, severity string, taskPayload models.TaskPayload) (err error) {
 	data := map[string]string{
 		"logs":          logs,
 		"severity":      severity,
 		"containerName": containerName,
+		"containerId":   containerId,
 		"userId":        taskPayload.UserId,
 	}
 	jsonData, err := json.Marshal(data)
@@ -129,6 +130,27 @@ func CallLogAnalysis(logs string, containerName string, severity string, taskPay
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("failed to call log analysis: %v", resp.Status)
+	}
+	return
+}
+
+func DeleteContainerIssues(containerId string, taskPayload models.TaskPayload) (err error) {
+	issueDeletionReq, err := http.NewRequest("DELETE", taskPayload.BackendUrl+"/api/agent/issues/"+containerId, nil)
+	if err != nil {
+		return
+	}
+	issueDeletionReq.Header.Set("Content-Type", "application/json")
+	issueDeletionReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", taskPayload.BearerToken))
+	client := &http.Client{}
+	resp, err := client.Do(issueDeletionReq)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("failed to delete container issues: %v", resp.Status)
 	}
 	return
 }

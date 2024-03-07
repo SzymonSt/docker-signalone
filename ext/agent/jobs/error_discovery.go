@@ -16,6 +16,8 @@ import (
 
 func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPayload models.TaskPayload, containersState map[string]*time.Time) {
 	var currentsIDs = make([]string, 0)
+	var mutex = &sync.RWMutex{}
+
 	containers, err := helpers.ListContainers(dockerClient)
 	if err != nil {
 		logger.Errorf("Failed to list containers: %v", err)
@@ -24,10 +26,14 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 	wg := sync.WaitGroup{}
 	for _, container := range containers {
 		currentsIDs = append(currentsIDs, container.ID)
+		mutex.RLock()
 		_, exists := containersState[container.ID]
+		mutex.RUnlock()
 		if !exists {
 			containerCreationTime := time.Unix(container.Created, 0)
+			mutex.RLock()
 			containersState[container.ID] = &containerCreationTime
+			mutex.RUnlock()
 		}
 
 		wg.Add(1)
@@ -50,21 +56,22 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 				logger.Errorf("Failed to collect logs for container %s: %v", containerDefinition.ID, err)
 			}
 
+			mutex.RLock()
 			for _, log := range logs {
 				if log.Timestamp.Add(-1 * time.Second).After(*containersState[containerDefinition.ID]) {
 					logString += (log.Log + "\n")
 					timestampCheckpoint = log.Timestamp
 				}
 			}
-
 			if logString != "" {
 				containersState[containerDefinition.ID] = &timestampCheckpoint
 			}
+			mutex.RUnlock()
 
 			isErrorState = checkContainerErrorState(container.State)
 			if isErrorState && logString != "" {
 				severity = "CRITICAL"
-				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], severity, taskPayload)
+				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], containerDefinition.ID, severity, taskPayload)
 				if err != nil {
 					logger.Errorf("Failed to call log analysis for container %s: %v", containerDefinition.Names[0], err)
 				}
@@ -73,7 +80,7 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 
 			isErrorState, severity = checkLogsForIssue(logString)
 			if isErrorState {
-				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], severity, taskPayload)
+				err := helpers.CallLogAnalysis(logString, containerDefinition.Names[0], containerDefinition.ID, severity, taskPayload)
 				if err != nil {
 					logger.Errorf("Failed to call log analysis for container %s: %v", containerDefinition.Names[0], err)
 				}
@@ -83,11 +90,14 @@ func ScanForErrors(dockerClient *client.Client, logger *logrus.Logger, taskPaylo
 	}
 
 	wg.Wait()
+	mutex.RLock()
 	for key, _ := range containersState {
 		if verifyIfContainerDeleted(key, currentsIDs) {
 			delete(containersState, key)
+			helpers.DeleteContainerIssues(key, taskPayload)
 		}
 	}
+	mutex.RUnlock()
 }
 
 func checkContainerErrorState(state *types.ContainerState) bool {

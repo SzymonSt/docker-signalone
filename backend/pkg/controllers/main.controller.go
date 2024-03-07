@@ -93,7 +93,7 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 	}
 	issueId := uuid.New().String()
 	go func() {
-		var issueLogs = make([][]string, 0)
+		var issueLogs = make([]string, 0)
 		var issueLog Log
 		var isNewIssue = true
 
@@ -104,7 +104,6 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 		qOpts.Projection = bson.M{"logs": 1}
 
 		cursor, err := c.issuesCollection.Find(ctx, bson.M{
-			"userId":      logAnalysisPayload.UserId,
 			"containerId": logAnalysisPayload.ContainerId,
 			"isResolved":  false,
 		}, qOpts)
@@ -119,18 +118,32 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 			if err := cursor.Decode(&issueLog); err != nil {
 				continue
 			}
-			issueLogs = append(issueLogs, issueLog.Logs)
+			issueLogs = append(issueLogs, issueLog.Logs...)
 		}
 
 		//Compare logs with previous logs and if they are similar enough, don't call the prediction agent
 		if len(issueLogs) > 0 {
-			for _, issueLog := range issueLogs {
-				isNewIssue = utils.CompareLogs(formattedAnalysisRelevantLogs, issueLog)
-				if !isNewIssue {
-					return
-				}
+			isNewIssue = utils.CompareLogs(formattedAnalysisRelevantLogs, issueLogs)
+			if !isNewIssue {
+				return
 			}
 		}
+
+		initialInsertResult, _ := c.issuesCollection.InsertOne(ctx, models.Issue{
+			Id:                        issueId,
+			UserId:                    "",
+			ContainerName:             logAnalysisPayload.ContainerName,
+			ContainerId:               logAnalysisPayload.ContainerId,
+			Score:                     0,
+			Severity:                  logAnalysisPayload.Severity,
+			Title:                     analysisResponse.Title,
+			TimeStamp:                 time.Now(),
+			IsResolved:                false,
+			Logs:                      formattedAnalysisLogs,
+			LogSummary:                "",
+			PredictedSolutionsSummary: "",
+			PredictedSolutionsSources: []string{},
+		})
 
 		data := map[string]string{"logs": strings.Join(formattedAnalysisRelevantLogs, "\n")}
 		jsonData, _ := json.Marshal(data)
@@ -147,21 +160,24 @@ func (c *MainController) LogAnalysisTask(ctx *gin.Context) {
 			})
 		}
 
-		c.issuesCollection.InsertOne(ctx, models.Issue{
-			Id:                        issueId,
-			UserId:                    logAnalysisPayload.UserId,
-			ContainerName:             logAnalysisPayload.ContainerName,
-			ContainerId:               logAnalysisPayload.ContainerId,
-			Score:                     0,
-			Severity:                  logAnalysisPayload.Severity,
-			Title:                     analysisResponse.Title,
-			TimeStamp:                 time.Now(),
-			IsResolved:                false,
-			Logs:                      formattedAnalysisLogs,
-			LogSummary:                analysisResponse.LogSummary,
-			PredictedSolutionsSummary: analysisResponse.PredictedSolutions,
-			PredictedSolutionsSources: analysisResponse.Sources,
-		})
+		_, err = c.issuesCollection.UpdateOne(ctx,
+			bson.M{
+				"_id":         initialInsertResult.InsertedID,
+				"containerId": logAnalysisPayload.ContainerId,
+			},
+			bson.M{"$set": bson.M{
+				"userId":                         logAnalysisPayload.UserId,
+				"title":                          analysisResponse.Title,
+				"timestamp":                      time.Now(),
+				"predictedSolutionsSummary":      analysisResponse.PredictedSolutions,
+				"issuePredictedSolutionsSources": analysisResponse.Sources,
+				"logSummary":                     analysisResponse.LogSummary,
+			},
+			})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}()
 
 	ctx.JSON(200, gin.H{
@@ -468,11 +484,11 @@ func (c *MainController) RegenerateSolution(ctx *gin.Context) {
 		})
 	}
 	_, err = c.issuesCollection.UpdateOne(ctx, bson.M{"_id": id, "userId": userId}, bson.M{"$set": bson.M{
-		"title":                     analysisResponse.Title,
-		"timestamp":                 time.Now(),
-		"predictedSolutionsSummary": analysisResponse.PredictedSolutions,
-		"predictedSolutionsSources": analysisResponse.Sources,
-		"logSummary":                analysisResponse.LogSummary,
+		"title":                          analysisResponse.Title,
+		"timestamp":                      time.Now(),
+		"predictedSolutionsSummary":      analysisResponse.PredictedSolutions,
+		"issuePredictedSolutionsSources": analysisResponse.Sources,
+		"logSummary":                     analysisResponse.LogSummary,
 	}})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -545,8 +561,8 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 // @Failure 500 {object} map[string]any
 // @Router /issues [delete]
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
-	container := ctx.Query("container")
-	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerName": container})
+	containerId := ctx.Query("containerId")
+	res, err := c.issuesCollection.DeleteMany(ctx, bson.D{{"containerId", containerId}})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
