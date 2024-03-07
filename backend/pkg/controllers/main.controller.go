@@ -264,8 +264,7 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 	})
 
 	filter := bson.M{
-		"userId":     userId,
-		"isResolved": isResolved,
+		"userId": userId,
 		"timestamp": bson.M{
 			"$gte": startTimestamp.UTC(),
 			"$lte": endTimestamp.UTC(),
@@ -282,6 +281,10 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 
 	if issueType != "" {
 		filter["type"] = issueType
+	}
+
+	if isResolved {
+		filter["isResolved"] = isResolved
 	}
 
 	cursor, err := c.issuesCollection.Find(ctx, filter, qOpts)
