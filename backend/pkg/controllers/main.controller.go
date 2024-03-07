@@ -561,8 +561,8 @@ func (c *MainController) ResolveIssue(ctx *gin.Context) {
 // @Failure 500 {object} map[string]any
 // @Router /issues [delete]
 func (c *MainController) DeleteIssues(ctx *gin.Context) {
-	containerId := ctx.Query("containerId")
-	res, err := c.issuesCollection.DeleteMany(ctx, bson.D{{"containerId", containerId}})
+	containerId := ctx.Param("containerId")
+	res, err := c.issuesCollection.DeleteMany(ctx, bson.M{"containerId": containerId})
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
