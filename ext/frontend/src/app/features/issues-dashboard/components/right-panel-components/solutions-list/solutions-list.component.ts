@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { DetailedIssueDTO, DetailedIssueScore } from 'app/shared/interfaces/DetailedIssueDTO';
-
+import {Clipboard} from '@angular/cdk/clipboard';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-solutions-list',
   templateUrl: './solutions-list.component.html',
@@ -15,11 +17,7 @@ export class SolutionsListComponent {
   public markIssueAsResolved: EventEmitter<void> = new EventEmitter<void>();
   @Output()
   public regenerateIssue: EventEmitter<void> = new EventEmitter<void>();
-  constructor() {
-  }
-
-  public goToSolutionSource(url : string): void {
-    window.open(url, '_blank');
+  constructor(private clipboard: Clipboard, private toastrService: ToastrService, private translateService: TranslateService) {
   }
 
   public positiveScoreSelected(): void {
@@ -38,5 +36,11 @@ export class SolutionsListComponent {
       this.activeIssue.score = -1;
     }
     this.scoreSelected.emit(this.activeIssue.score);
+  }
+
+  public copyLink(link: string): void {
+    this.clipboard.copy(link);
+    this.toastrService.success(this.translateService.instant('FEATURES.ISSUES.LINK_COPIED_TO_CLIPBOARD'));
+
   }
 }

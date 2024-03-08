@@ -66,6 +66,8 @@
       "EMPTY_ISSUES_LIST": "No issues found",
       "REGENERATE_ISSUE": "Regenerate issue",
       "MARK_ISSUE_RESOLVED": "Mark issue as resolved",
+      "COPY_LINK": "Copy link",
+      "LINK_COPIED_TO_CLIPBOARD": "Link copied to clipboard",
       "CHAT": {
         "ASK_MODEL": "Ask model"
       }
