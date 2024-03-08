@@ -20,24 +20,26 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm ci
 # install
 COPY ui /ui
-RUN npm run build
+RUN npm cache clean --force && \
+npm run build
 
 FROM alpine
-LABEL org.opencontainers.image.title="Signal0ne extension" \
-    org.opencontainers.image.description="My awesome Docker extension" \
+LABEL org.opencontainers.image.title="Signal0ne" \
+    org.opencontainers.image.description="Painless AI powered debugging for containerized apps." \
     org.opencontainers.image.vendor="signalone" \
     com.docker.desktop.extension.api.version="0.3.4" \
-    com.docker.extension.screenshots="" \
-    com.docker.desktop.extension.icon="" \
-    com.docker.extension.detailed-description="" \
-    com.docker.extension.publisher-url="" \
-    com.docker.extension.additional-urls="" \
-    com.docker.extension.categories="" \
-    com.docker.extension.changelog=""
+    com.docker.extension.screenshots='[{"alt":"Main Screen","url":"https://signaloneai.com/online-assets/screen2.PNG"}]' \
+    com.docker.desktop.extension.icon="https://signaloneai.com/online-assets/Signal0ne_min.png" \
+    com.docker.extension.publisher-url="https://signaloneai.com/" \
+    com.docker.extension.detailed-description="The magic of the Signal0ne Docker Extension is its very short feedback loop for working with and developing containerized applications. Forget endless log diving – the extension offers a clear and concise summary of what's happening inside your containers, pinpointing potential issues and even suggesting solutions." \
+    com.docker.extension.additional-urls='[{"Title":"Repository","url":"https://github.com/SzymonSt/docker-signalone"}]' \
+    com.docker.extension.categories="utility-tools" \
+    com.docker.extension.changelog="Extension changelog"
 COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
-COPY docker.svg .
+COPY metadata.json /metadata.json
+COPY s0.svg .
 COPY agent/.default.env .
 COPY --from=client-builder /ui/build ui
 CMD /service
