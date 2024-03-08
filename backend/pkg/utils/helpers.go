@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"regexp"
@@ -54,7 +55,7 @@ func CallPredictionAgentService(jsonData []byte) (analysisResponse models.IssueA
 }
 
 func CompareLogs(incomingLogTails []string, currentIssuesLogTails []string) (isNewIssue bool) {
-	const LogSimilarityThreshold = 0.8
+	const LogSimilarityThreshold = 0.75
 
 	isNewIssue = true
 	sdm := metrics.NewSorensenDice()
@@ -63,6 +64,12 @@ func CompareLogs(incomingLogTails []string, currentIssuesLogTails []string) (isN
 	for _, incomingLogTail := range incomingLogTails {
 		for _, currentIssueLogTail := range currentIssuesLogTails {
 			similarity := strutil.Similarity(incomingLogTail, currentIssueLogTail, sdm)
+			fmt.Print("-----------------------\n")
+			fmt.Print("Incoming Log Tail: ", incomingLogTail, "\n")
+			fmt.Print("Current Issue Log Tail: ", currentIssueLogTail, "\n")
+			fmt.Print("Similarity: ", similarity, "\n")
+			fmt.Print("Is New Issue: ", (similarity <= LogSimilarityThreshold), "\n")
+			fmt.Print("-----------------------\n")
 			if similarity >= LogSimilarityThreshold {
 				isNewIssue = false
 				return

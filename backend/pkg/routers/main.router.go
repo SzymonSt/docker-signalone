@@ -40,7 +40,7 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 
 	agentRouterGroup := rg.Group("/agent", mr.mainController.CheckAgentAuthorization)
 	{
-		agentRouterGroup.DELETE("/issues", mr.mainController.DeleteIssues)
+		agentRouterGroup.DELETE("/issues/:containerId", mr.mainController.DeleteIssues)
 		agentRouterGroup.PUT("/issues/analysis", mr.mainController.LogAnalysisTask)
 	}
 }
