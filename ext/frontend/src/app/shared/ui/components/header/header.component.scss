@@ -37,16 +37,12 @@
       outline: 2px solid var(--primary);
     }
 
-    svg-icon {
-      display: block;
+    .img-logo {
+      width: 100px;
+    }
 
-      &.img-logo {
-        width: 100px;
-      }
-
-      &.text-logo {
-        width: 200px;
-      }
+    .text-logo {
+      width: 200px;
     }
   }
 
