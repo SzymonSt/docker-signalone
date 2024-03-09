@@ -34,7 +34,7 @@ build-extension-dependencies: ## Build dependencies for the extension
 	docker build --tag=$(FRONTEND_IMAGE):$(TAG) ./frontend
 
 build-extension-dependencies-production: ## Build dependencies for the extension
-	docker buildx build --push --tag=$(PROD_FRONTEND_IMAGE):$(PROD_TAG) ./frontend
+	docker buildx build --platform=linux/arm64,linux/amd64 --push --tag=$(PROD_FRONTEND_IMAGE):$(PROD_TAG) ./frontend
 
 start-devenv: ## Start development environment
 	docker compose -f ./devenv/docker-compose.yaml up -d
