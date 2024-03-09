@@ -33,8 +33,7 @@ import {
 import {
   SolutionsListComponent
 } from 'app/features/issues-dashboard/components/right-panel-components/solutions-list/solutions-list.component';
-import { AngularSvgIconModule } from 'angular-svg-icon';
-import { MarkdownComponent, MarkdownModule } from 'ngx-markdown';
+import { MarkdownModule } from 'ngx-markdown';
 
 @NgModule({
   declarations: [ IssuesDashboardComponent, IssuesSearchCriteriaComponent, IssuesRightPanelComponent, IssuesLeftPanelComponent, IssuesListComponent, IssueCellComponent, SolutionsChatComponent, SolutionsListComponent ],
@@ -49,7 +48,6 @@ import { MarkdownComponent, MarkdownModule } from 'ngx-markdown';
     NgbModule,
     BsDatepickerModule,
     PaginationModule,
-    AngularSvgIconModule.forRoot(),
     MarkdownModule.forRoot(),
     MatTooltipModule
   ],

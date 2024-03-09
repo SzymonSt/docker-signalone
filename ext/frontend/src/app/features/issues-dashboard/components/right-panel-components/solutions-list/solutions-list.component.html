@@ -42,11 +42,11 @@
   <h3>{{ "FEATURES.ISSUES.SOURCES" | translate }}</h3>
   <div class="solution-sources-container">
     <div
-      class="solution-source"
+      class="solution-source d-flex"
       *ngFor="let solutionSource of activeIssue.issuePredictedSolutionsSources"
-      (click)="goToSolutionSource(solutionSource)"
       tabindex="0"
     >
+      <i class="bi bi-copy me-3" (click)="copyLink(solutionSource)" [matTooltip]="'FEATURES.ISSUES.COPY_LINK' | translate"></i>
       <h4>{{ solutionSource }}</h4>
     </div>
   </div>

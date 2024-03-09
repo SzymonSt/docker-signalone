@@ -7,7 +7,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AuthRoutingModule } from 'app/auth/auth-routing.module';
 import { LoginComponent } from 'app/auth/components/login/login.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -25,8 +24,7 @@ import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-log
     ReactiveFormsModule,
     NgbModule,
     BsDatepickerModule,
-    AuthRoutingModule,
-    AngularSvgIconModule.forRoot()
+    AuthRoutingModule
   ],
   exports: [],
   providers: [

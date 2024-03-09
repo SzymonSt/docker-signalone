@@ -12,7 +12,6 @@ import {
   ConfigurationDropdownComponent
 } from 'app/shared/ui/components/configuration-dropdown/configuration-dropdown.component';
 import { FormsModule } from '@angular/forms';
-import { AngularSvgIconModule, provideAngularSvgIcon } from 'angular-svg-icon';
 
 @NgModule({
   declarations: [
@@ -26,8 +25,7 @@ import { AngularSvgIconModule, provideAngularSvgIcon } from 'angular-svg-icon';
     MatProgressSpinnerModule,
     FormsModule,
     MatSlideToggleModule,
-    HttpClientModule,
-    AngularSvgIconModule.forRoot()
+    HttpClientModule
   ],
   exports: [
     LoaderComponent,
