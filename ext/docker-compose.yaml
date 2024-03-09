@@ -9,7 +9,7 @@ services:
       - "37002:37002"
   signalonefrontend:
     container_name: signalonefrontend
-    image: '322456/signalone-extension:dev'
+    image: '322456/signalonefrontend:dev'
     ports:
       - "37001:37001"
     depends_on:
