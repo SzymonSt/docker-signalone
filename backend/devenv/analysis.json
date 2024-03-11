@@ -1,0 +1,79 @@
+[{
+    "_id": "ae7e20f5-8c42-4227-a170-e25c43519a48",
+    "userId": "162910679",
+    "containerName": "/devenv-faulty_roger-1",
+    "containerId": "92b55da88d7f70c6feb7686747b5063361a0787b5f46aeea0d15dab5c39fd60d",
+    "score": 0,
+    "severity": "CRITICAL",
+    "logs": [
+      "Unhandled exception. System.NullReferenceException: Object reference not set to an instance of an object.",
+      "at Program.Main(String[] args) in /app/Program.cs:line 10",
+      ""
+    ],
+    "title": " Unhandled Null Reference Exception at Program Startup.",
+    "isResolved": false,
+    "timestamp": "2024-03-11T17:20:11.277Z",
+    "logSummary": "\nThe application encounters an unhandled exception of type 'System.NullReferenceException' at the entry point of the program located in '/app/Program.cs' on line 10. This error occurs when an object reference is not assigned to an instance of an object before being referenced. The specific line causing the issue is not explicitly stated in the log, but it can be identified as the starting point of the program execution",
+    "predictedSolutionsSummary": "\n                        Check if all objects are properly initialized before referencing them. Make sure that all variables are assigned to an instance of an object before they are used. Inspect the code around the entry point for any potential issues such as unassigned variables, incorrect object references, or missing initialization statements. Additionally, ensure that collection types like lists or arrays are properly populated before accessing their elements. If the issue persists, consider using Visual Studio's debugging tools to identify the specific object causing the null reference exception.",
+    "issuePredictedSolutionsSources": [
+      "https://stackoverflow.com/questions/74825499/how-do-i-resolve-a-nullreferenceexception-in-csharp",
+      "https://stackoverflow.com/questions/61549156/c-sharp-null-reference-exception-how-to-spot-the-culprit-in-the-specified-line",
+      "https://stackoverflow.com/questions/56585385/c-sharp-system-nullreferenceexception-object-reference-not-set-to-an-instance",
+      "https://stackoverflow.com/questions/4660142/what-is-a-nullreferenceexception-and-how-do-i-fix-it]"
+    ]
+  },
+  {
+    "_id": "5a7c91ba-1435-4c46-84a7-291f870902e1",
+    "userId": "162910679",
+    "containerName": "/backend-backend-1",
+    "containerId": "d68f5d0672d3bafe4c3df8b6eedef5a8049dce7ab8496e8ef94dc2660d97bd4f",
+    "score": 0,
+    "severity": "CRITICAL",
+    "logs": [
+      "Error: parsing time \"\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"\" as \"2006\"Error: parsing time \"\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"\" as \"2006\"[GIN] 2024/03/11 - 17:16:15 | 200 | 2.56843ms | 172.18.0.1 | GET \"/api/user/issues?revokeLoader=false&limit=10\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 200 | 664.195852ms | 172.18.0.1 | POST \"/api/auth/login-with-github\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 204 | 11.5µs | 172.18.0.1 | OPTIONS \"/api/user/agent/authenticate\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 200 | 821.313µs | 172.18.0.1 | POST \"/api/user/agent/authenticate\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 204 | 14.5µs | 172.18.0.1 | OPTIONS \"/api/user/containers\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 200 | 768.712µs | 172.18.0.1 | GET \"/api/user/containers\"",
+      "[GIN] 2024/03/11 - 17:19:33 | 204 | 8.4µs | 172.18.0.1 | OPTIONS \"/api/user/issues?revokeLoader=false&limit=10\"",
+      "Error: parsing time \"\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"\" as \"2006\"Error: parsing time \"\" as \"2006-01-02T15:04:05Z07:00\": cannot parse \"\" as \"2006\"[GIN] 2024/03/11 - 17:19:33 | 200 | 1.685627ms | 172.18.0.1 | GET \"/api/user/issues?revokeLoader=false&limit=10\"",
+      ""
+    ],
+    "title": " Identical Timestamp Parsing Errors in Server Logs.",
+    "isResolved": false,
+    "timestamp": "2024-03-11T17:20:44.337Z",
+    "logSummary": "\nThe server logs indicate that there are errors occurring during the parsing of timestamps in the request queries. Specifically, the logs show two identical errors where the parser fails to parse the string \"\" as a valid date format using the \"2006-01-02T15:04:05Z07:00\" format",
+    "predictedSolutionsSummary": "\n                        The error message indicates that the parser is failing to parse the string \"\" as a valid date format using the \"2006-01-02T15:04:05Z07:00\" format. However, the string \"\" does not appear to contain a valid date format at all. It seems more likely that the error is being caused by an incorrect assumption about the format of the incoming request query.\n                        \n To resolve this issue, you should first ensure that the expected format of the incoming request query is being accurately assumed by the parser. You can do this by examining the documentation for the API or service that you are interacting with, or by contacting its support team for clarification. Once you have determined the correct format, update the parser accordingly.\n                        \n If you are unable to determine the correct format, or if the format varies between requests, you may need to implement more robust parsing logic in your code. For example, you could attempt to parse the string using multiple formats, or use a library such as Go's \"time.Parse\" function with a flexible layout string. Additionally, you should ensure that any errors produced during parsing are handled appropriately, rather than being ignored.\n                        \n As a general best practice, it is important to handle any unexpected input or errors gracefully, rather than allowing them to propagate and potentially cause system instability or security vulnerabilities. This can be achieved through the use of error handling mechanisms, such as try-catch blocks or Go's built-in error handling functions.",
+    "issuePredictedSolutionsSources": [
+      "https://stackoverflow.com/questions/75513333/time-parse-error-in-golang-parse-string-to-date-format",
+      "https://stackoverflow.com/questions/61073647/getting-error-while-parsing-timestamp-string",
+      "https://stackoverflow.com/questions/73502761/golang-time-parsing-providing-the-format-is-returning-wrong-results",
+      "https://stackoverflow.com/questions/75799611/golang-parsing-timestamp-format",
+      "https://stackoverflow.com/questions/69487860/time-format-issue-with-go-language"
+    ]
+  },
+  {
+    "_id": "eccece25-7b33-4a03-a5be-7cf035769733",
+    "userId": "162910679",
+    "containerName": "/devenv-broken_bulb-1",
+    "containerId": "5932d28e6728009ea3056f761127cdf8bab1934cf289c2a95b538a637874fc32",
+    "score": 0,
+    "severity": "CRITICAL",
+    "logs": [
+      "Trying to connect to the database...",
+      "2024/03/11 17:01:48 Recovered in main from exception: dial tcp 127.0.0.1:5432: connect: connection refused",
+      ""
+    ],
+    "title": " Connection Refused when Trying to Access PostgreSQL Database Server Locally.",
+    "isResolved": false,
+    "timestamp": "2024-03-11T17:21:28.890Z",
+    "logSummary": "\n                                The application is attempting to establish a connection to a PostgreSQL database server using the local IP address (127.0.0.1) and port number (5432). However, the connection attempt is failing due to the error \"connection refused\". This indicates that either the database server is not running on the specified IP address and port, or there's a network issue preventing the connection",
+    "predictedSolutionsSummary": "\n                        The error \"connection refused\" when connecting to a PostgreSQL database using the local IP address (127.0.0.1) and port number (5432) usually occurs because the database server is not running or not listening on the specified IP address and port. To solve this issue, follow the steps below:\n                        1. Ensure that the PostgreSQL server is running. You can check its status by opening a terminal or command prompt and typing the command \"pg_isready\" followed by the Enter key. If the server is running, you should see a message indicating that it is ready to accept connections.\n                        2. Verify that the PostgreSQL server is configured to listen on the correct IP address and port. Open the postgresql.conf file, usually located in the data directory of the PostgreSQL installation, and ensure that the listen_addresses setting includes the IP address and port number you are trying to connect to. For example, to listen on all interfaces, set listen_addresses to '*'.\n                        3. If necessary, update the pg_hba.conf file, also located in the data directory of the PostgreSQL installation, to allow access to the desired database and user. Make sure to use strong authentication methods such as MD5 or SHA256 to secure your database.\n                        4. Restart the PostgreSQL server after making any configuration changes.\n                        5. Test the connection again by attempting to connect to the database using a client such as psql or psycopg2.\n                        If the issue persists after following these steps, consider checking for network issues or firewalls that may be blocking the connection. Additionally, ensure that the PostgreSQL client and server versions are compatible.",
+    "issuePredictedSolutionsSources": [
+      "https://stackoverflow.com/questions/32439167/psql-could-not-connect-to-server-connection-refused-error-when-connecting-to",
+      "https://stackoverflow.com/questions/76857256/continuously-facing-could-not-connect-to-server-connection-refused-issue-with",
+      "https://stackoverflow.com/questions/67425149/postgresql-gives-me-connection-refused-even-if-listen-addresses",
+      "https://stackoverflow.com/questions/20825734/postgresql-connection-refused-check-that-the-hostname-and-port-are-correct-an"
+    ]
+  }]
