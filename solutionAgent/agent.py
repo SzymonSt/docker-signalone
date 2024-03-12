@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import string
 from langchain import hub
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.agents import initialize_agent, Tool, create_react_agent, AgentExecutor
@@ -143,7 +144,7 @@ class ChatAgent:
         urls = self.extract_urls(logs, urls)
         title = self.generate_title(summary)
         for ui, url in enumerate(urls):
-            urls[ui] = url.split("'")[0]
+            urls[ui] = url.rstrip(string.punctuation)
         final = {
             "title": title,
             "logsummary": summary,
