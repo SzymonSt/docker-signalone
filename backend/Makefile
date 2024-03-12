@@ -21,7 +21,7 @@ start-backend-with-init-windows: ## Start service locally with mock data initial
 start-backend-with-init-macos: ## Start service locally with mock data initialization
 	docker compose -f ./docker-compose.dev.yaml up -d
 	python3 -m venv ./devenv/initenv.venv
-	. ./devenv/initenv.venv/Scripts/activate
+	. ./devenv/initenv.venv/bin/activate
 	pip3 install -r ./devenv/requirements.txt
 	python3 ./devenv/init.py
 
