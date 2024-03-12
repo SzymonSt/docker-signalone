@@ -35,7 +35,8 @@
   },
   "CONFIGURATION": {
     "AGENT_STATE_ACTIVATED": "Agent activated",
-    "AGENT_STATE_DEACTIVATED": "Agent deactivated"
+    "AGENT_STATE_DEACTIVATED": "Agent deactivated",
+    "AGENT_AUTH_DATA_UPDATED": "Agent connected"
   },
   "AUTH": {
     "LOGIN_HEADER": "Login to your SignalOne account",

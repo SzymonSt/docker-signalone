@@ -16,7 +16,6 @@
 
   .issue-content-container {
     flex-wrap: unset;
-    gap: 0.75rem;
 
     .issue-content {
       display: flex;
@@ -24,12 +23,12 @@
       gap: 0.5rem;
 
       .issue-container-name {
-        word-break: break-all;
+        word-break: break-word;
       }
 
       .issue-title {
         margin-bottom: unset;
-        word-break: break-all;
+        word-break: break-word;
       }
     }
   }

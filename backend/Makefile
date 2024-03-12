@@ -14,14 +14,14 @@ start-backend: ## Start service locally (local development only)
 start-backend-with-init-windows: ## Start service locally with mock data initialization
 	docker compose -f ./docker-compose.dev.yaml up -d
 	python -m venv ./devenv/initenv.venv
-	powershell ./devenv/initenv.venv/bin/activate.ps1
+	powershell ./devenv/initenv.venv/Scripts/activate.ps1
 	pip install -r ./devenv/requirements.txt
 	python ./devenv/init.py
 
 start-backend-with-init-macos: ## Start service locally with mock data initialization
 	docker compose -f ./docker-compose.dev.yaml up -d
 	python3 -m venv ./devenv/initenv.venv
-	. ./devenv/initenv.venv/bin/activate
+	. ./devenv/initenv.venv/Scripts/activate
 	pip3 install -r ./devenv/requirements.txt
 	python3 ./devenv/init.py
 
