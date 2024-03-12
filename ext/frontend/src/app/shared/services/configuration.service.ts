@@ -11,7 +11,8 @@ import { agentAuthDataDTO } from '../interfaces/AgentAuthDataDTO';
 export class ConfigurationService {
   public currentAgentState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public isCurrentAgentStateInitialized: boolean = false;
-  
+  public isAgentInitialized: boolean = false;
+
   public get currentAgentState(): boolean {
     return  this.currentAgentState$.value;
   }
@@ -33,12 +34,14 @@ export class ConfigurationService {
   public setAgentState(agentStatePayload: AgentStateDTO): void {
     this.httpClient.post<void>(`${environment.agentApiUrl}/control/state`, agentStatePayload).subscribe(() => {
       this.currentAgentState = agentStatePayload.state;
-      if (this.currentAgentState) {
-        this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_ACTIVATED'));
-      } else {
-        this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_DEACTIVATED'));
+      if (this.isAgentInitialized) {
+        if (this.currentAgentState) {
+          this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_ACTIVATED'));
+        } else {
+          this.toastrService.success(this.translateService.instant('CONFIGURATION.AGENT_STATE_DEACTIVATED'));
+        }
       }
-
+      this.isAgentInitialized = true;
     });
   }
 
