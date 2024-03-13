@@ -6,7 +6,8 @@
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
-    "UNDEFINED": "Błąd nie został rozpoznany"
+    "UNDEFINED": "Błąd nie został rozpoznany",
+    "UNAUTHORIZED": "Błąd autoryzacyjny! Prosimy zaloguj się ponownie."
   },
   "ENUM": {
     "ISSUE_TYPE": {
@@ -19,8 +20,6 @@
       "INFO": "Informacyjne"
     }
   },
-  "ERRORS": {
-  },
   "UI": {
     "ERROR": "Błąd",
     "SUBMIT": "Wyślij",
@@ -28,11 +27,33 @@
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "Amerykańska flaga",
-      "PL_FLAG_ALT": "Polska flaga"
+      "PL_FLAG_ALT": "Polska flaga",
+      "CONTACT_US": "Skontaktuj się z nami"
+    },
+    "CONTACT_POPUP": {
+      "CONTACT": "Kontakt",
+      "SEND": "Wyślij",
+      "EMAIL": "Email",
+      "MESSAGE_TITLE": "Tytuł wiadomości",
+      "MESSAGE_CONTENT": "Treść wiadomości",
+      "EMAIL_PLACEHOLDER": "adresemail@gmail.com",
+      "MESSAGE_TITLE_PLACEHOLDER": "Przykładowy tytuł wiadomości",
+      "COPY_DISCORD_URL": "Skopiuj adres serwera discord",
+      "COPY_LINKEDIN_URL": "Skopiuj adres profilu linkedin",
+      "COPY_GITHUB_URL": "Skopiuj adres github",
+      "COPY_DISCORD_URL_SUCCESS": "Adres serwera discord skopiowany od schowka",
+      "COPY_LINKEDIN_URL_SUCCESS": "Adres profilu linkedin skopiowany do schowka",
+      "COPY_GITHUB_URL_SUCCESS": "Adres projektu na github skopiowany do schowka",
+      "MESSAGE_SEND_SUCCESS": "Wiadomość została wysłana"
     },
     "CONFIGURATION_DROPDOWN": {
       "AGENT_STATE": "Stan agenta"
     }
+  },
+  "CONFIGURATION": {
+    "AGENT_STATE_ACTIVATED": "Agent aktywowany",
+    "AGENT_STATE_DEACTIVATED": "Agent dezaktywowany",
+    "AGENT_AUTH_DATA_UPDATED": "Agent połączony"
   },
   "AUTH": {
     "LOGIN_HEADER": "Zaloguj się do konta SignalOne",
@@ -60,6 +81,11 @@
       "SOURCES_^RAW": "Źródła",
       "EMPTY_ISSUE_DETAIL_MESSAGE_NO_ISSUE": "Nie wybrano żadnego incydentu.",
       "EMPTY_ISSUE_DETAIL_MESSAGE_SELECT_ISSUE": "Wybierz incydent, aby zobaczyć raport.",
+      "EMPTY_ISSUES_LIST": "Nie znaleziono incydentu",
+      "REGENERATE_ISSUE": "Przegeneruj incydent",
+      "MARK_ISSUE_RESOLVED": "Oznacz incydent jako rozwiązany",
+      "COPY_LINK": "Skopiuj link",
+      "LINK_COPIED_TO_CLIPBOARD": "Link skopiowany do schowka",
       "CHAT": {
         "ASK_MODEL": "Zapytaj model"
       }

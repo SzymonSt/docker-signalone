@@ -1,0 +1,36 @@
+.contact-modal {
+  padding: 12px 16px;
+  border-radius: 8px;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    .modal-title {
+      font-size: 30px;
+      margin-left: calc(50% - 60px);
+    }
+  }
+
+  .modal-body {
+    textarea{
+      resize: none;
+    }
+  }
+
+  .close-button, .social-button {
+    border: 1px solid var(--primary);
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+  }
+
+  .social-button {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

@@ -27,7 +27,24 @@
     "HEADER": {
       "TITLE": "Signal One",
       "US_FLAG_ALT": "American flag",
-      "PL_FLAG_ALT": "Polish flag"
+      "PL_FLAG_ALT": "Polish flag",
+      "CONTACT_US": "Contact us"
+    },
+    "CONTACT_POPUP": {
+      "CONTACT": "Contact",
+      "SEND": "Send",
+      "EMAIL": "Email",
+      "MESSAGE_TITLE": "Message title",
+      "MESSAGE_CONTENT": "Message content",
+      "EMAIL_PLACEHOLDER": "example@gmail.com",
+      "MESSAGE_TITLE_PLACEHOLDER": "Example message title",
+      "COPY_DISCORD_URL": "Copy discord invitation url",
+      "COPY_LINKEDIN_URL": "Copy linkedin profile url",
+      "COPY_GITHUB_URL": "Copy github url",
+      "COPY_DISCORD_URL_SUCCESS": "Discord invitation url copied to clipboard",
+      "COPY_LINKEDIN_URL_SUCCESS": "Linkedin profile url copied to clipboard",
+      "COPY_GITHUB_URL_SUCCESS": "Github url copied to clipboard",
+      "MESSAGE_SEND_SUCCESS": "Message successfully sent"
     },
     "CONFIGURATION_DROPDOWN": {
       "AGENT_STATE": "Agent status"

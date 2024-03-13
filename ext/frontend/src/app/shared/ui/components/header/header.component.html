@@ -12,8 +12,10 @@
     ></svg-icon>
   </a>
   <div class="d-flex align-items-center controls-container">
+    <i class="bi bi-headset contact-icon" (click)="openContactModal()" [matTooltip]="'UI.HEADER.CONTACT_US' | translate"></i>
+
+<!--    *ngIf="configurationService.isCurrentAgentStateInitialized && (isLoggedIn$ | async)"-->
     <app-configuration-dropdown
-      *ngIf="configurationService.isCurrentAgentStateInitialized && (isLoggedIn$ | async)"
     ></app-configuration-dropdown>
     <button
       *ngIf="isLoggedIn$ | async"
