@@ -22,8 +22,10 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	authorizationRouterGroup.POST("/login-with-github", mr.mainController.LoginWithGithubHandler)
 	authorizationRouterGroup.POST("/login-with-google", mr.mainController.LoginWithGoogleHandler)
 	authorizationRouterGroup.POST("/token/refresh", mr.mainController.RefreshTokenHandler)
-	authorizationRouterGroup.POST("/user/login", func(c *gin.Context) {})
-	authorizationRouterGroup.PUT("/user/register", func(c *gin.Context) {})
+	authorizationRouterGroup.POST("/login", mr.mainController.Login)
+	authorizationRouterGroup.POST("/register", mr.mainController.Register)
+	authorizationRouterGroup.PUT("/email-confirmation", mr.mainController.VerifyEmail)
+	authorizationRouterGroup.PATCH("/email-confirmation-link-resend", func(c *gin.Context) {})
 
 	userRouterGroup := rg.Group("/user", middlewares.CheckAuthorization)
 	{

@@ -731,6 +731,210 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	})
 }
 
+func (c *MainController) Login(ctx *gin.Context) {
+	var loginData models.SignalAccountPayload
+	var user models.User
+
+	if err := ctx.ShouldBindJSON(&loginData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userName": loginData.Email, "type": "signalone"})
+
+	err := userResult.Decode(&user)
+	if err == mongo.ErrNoDocuments {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"descriptionKey": "INVALID_CREDENTIALS"})
+		return
+	} else if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	if !utils.ComparePasswordHashes(user.PasswordHash, loginData.Password) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"descriptionKey": "INVALID_CREDENTIALS"})
+		return
+	}
+
+	if !user.EmailConfirmed {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"descriptionKey": "ACCOUNT_NOT_ACTIVE"})
+		return
+	}
+
+	accessTokenString, err := createToken(user.UserId, user.UserName, "access")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	refreshTokenString, err := createToken(user.UserId, user.UserName, "refresh")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "Success",
+		"accessToken":  accessTokenString,
+		"expiresIn":    int64(ACCESS_TOKEN_EXPIRATION_TIME) / int64(time.Second),
+		"refreshToken": refreshTokenString,
+	})
+
+}
+
+func (c *MainController) Register(ctx *gin.Context) {
+	var loginData models.SignalAccountPayload
+	var user models.User
+
+	if err := ctx.ShouldBindJSON(&loginData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userName": loginData.Email, "type": "signalone"})
+
+	err := userResult.Decode(&user)
+	if err != nil && err != mongo.ErrNoDocuments {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	if err == nil {
+		if !user.EmailConfirmed {
+			ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "DUPLICATE_NOT_CONFIRMED_USER_EMAIL"})
+			return
+		} else {
+			ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "EMAIL_ALREADY_IN_USE"})
+			return
+		}
+	}
+
+	hashedPassword, err := utils.HashPassword(loginData.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	//Send email confirmation link
+	// If sending email confirmation link fails, return error
+	// ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
+
+	userId := uuid.New().String()
+	confirmationToken, err := createToken(userId, loginData.Email, "refresh")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	user = models.User{
+		UserId:                userId,
+		UserName:              loginData.Email,
+		PasswordHash:          hashedPassword,
+		IsPro:                 false,
+		AgentBearerToken:      "",
+		Counter:               0,
+		Type:                  "signalone",
+		EmailConfirmed:        false,
+		EmailConfirmationCode: confirmationToken,
+	}
+	_, err = c.usersCollection.InsertOne(ctx, user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+
+}
+
+func (c *MainController) VerifyEmail(ctx *gin.Context) {
+	var user models.User
+	var verificationData models.EmailConfirmationPayload
+
+	if err := ctx.ShouldBindJSON(&verificationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	_, err := VerifyToken(verificationData.ConfirmationToken)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "INVALID_VERIFICATION_TOKEN"})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"emailConfirmationCode": verificationData.ConfirmationToken})
+
+	err = userResult.Decode(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_VERIFICATION_CODE"})
+		return
+	}
+
+	_, err = c.usersCollection.UpdateOne(ctx,
+		bson.M{"userId": user.UserId},
+		bson.M{"$set": bson.M{
+			"emailConfirmed":        true,
+			"emailConfirmationCode": "",
+		},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func (c *MainController) ResendConfimrationEmail(ctx *gin.Context) {
+	var user models.User
+	var verificationData struct {
+		Email string `json:"email"`
+	}
+
+	if err := ctx.ShouldBindJSON(&verificationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"email": verificationData.Email})
+
+	err := userResult.Decode(&user)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "EMAIL_NOT_FOUND"})
+		return
+	}
+
+	if user.EmailConfirmed {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "EMAIL_ALREADY_IN_USE"})
+		return
+	}
+
+	confirmationToken, err := createToken(user.UserId, user.UserName, "refresh")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	_, err = c.usersCollection.UpdateOne(ctx,
+		bson.M{"userId": user.UserId},
+		bson.M{"$set": bson.M{
+			"emailConfirmationCode": confirmationToken,
+		},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	//Send email confirmation link
+	// If sending email confirmation link fails, return error
+	// ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
 func (c *MainController) RefreshTokenHandler(ctx *gin.Context) {
 	var cfg = config.GetInstance()
 	var claims = &models.JWTClaimsWithUserData{}
