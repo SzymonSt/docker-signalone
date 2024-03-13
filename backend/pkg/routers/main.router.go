@@ -18,6 +18,8 @@ func NewMainRouter(mainController *controllers.MainController) *MainRouter {
 }
 
 func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
+	rg.POST("/contact", mr.mainController.ContactHandler)
+
 	authorizationRouterGroup := rg.Group("/auth")
 	authorizationRouterGroup.POST("/login-with-github", mr.mainController.LoginWithGithubHandler)
 	authorizationRouterGroup.POST("/login-with-google", mr.mainController.LoginWithGoogleHandler)

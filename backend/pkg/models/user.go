@@ -80,3 +80,9 @@ type AgentTokenClaimsWithUserData struct {
 type RefreshTokenRequest struct {
 	RefreshToken string `json:"refreshToken"`
 }
+
+type Email struct {
+	Email          string `json:"email" binding:"required"`
+	MessageContent string `json:"messageContent" binding:"required"`
+	MessageTitle   string `json:"messageTitle" binding:"required"`
+}

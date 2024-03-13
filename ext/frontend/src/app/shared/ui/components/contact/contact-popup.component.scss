@@ -6,6 +6,17 @@
     display: flex;
     align-items: center;
     margin-bottom: 1.5rem;
+
+    .bi-x {
+      height: 24px;
+      width: 24px;
+
+      &:before {
+        height: 24px;
+        vertical-align: 0;
+        width: 24px;
+      }
+    }
     .modal-title {
       font-size: 30px;
       margin-left: calc(50% - 60px);
@@ -32,5 +43,11 @@
   .social-button {
     width: 2.5rem;
     height: 2.5rem;
+
+    .bi {
+      display: flex;
+      height: 20px;
+      width: 20px;
+    }
   }
 }
