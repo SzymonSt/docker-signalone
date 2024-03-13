@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { SvgIconComponent } from 'angular-svg-icon';
 import { SharedModule } from 'app/shared/SharedModule';
 import {
   IssuesDashboardComponent
@@ -49,7 +50,8 @@ import { MarkdownModule } from 'ngx-markdown';
     BsDatepickerModule,
     PaginationModule,
     MarkdownModule.forRoot(),
-    MatTooltipModule
+    MatTooltipModule,
+    SvgIconComponent
   ],
   exports: []
 })

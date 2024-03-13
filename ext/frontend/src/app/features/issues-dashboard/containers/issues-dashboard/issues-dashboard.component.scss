@@ -1,9 +1,21 @@
 #issues-dashboard {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 1fr;
+  display: flex;
 
   &.sidebar-hidden {
-    grid-template-columns: 1fr 12fr;
+    .left-panel {
+      width: 10%;
+    }
+
+    .right-panel {
+      width: 90%;
+    }
+  }
+
+  .left-panel {
+    width: 33%;
+  }
+
+  .right-panel {
+    width: 67%;
   }
 }

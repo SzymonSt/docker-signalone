@@ -8,3 +8,4 @@ mongo-data/
 output-test-results/
 tmp_*
 *.venv
+*.DS_Store

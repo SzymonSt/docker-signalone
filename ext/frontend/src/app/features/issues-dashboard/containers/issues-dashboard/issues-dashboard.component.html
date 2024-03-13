@@ -4,11 +4,12 @@
                            [max]="max"
                            [internalPage]="activePage"
                            [isSidebarHidden]="isSidebarHidden"
+                           class="left-panel"
                            (toggleSidebarVisibility)="isSidebarHidden = !isSidebarHidden"
                            [issues]="issues"></app-issues-left-panel>
     <app-issues-right-panel [activeIssue]="activeIssue"
+                            class="right-panel"
                             (scoreSelected)="scoreSelected($event)"
                             (markIssueAsResolved)="markIssueAsResolved()"
-                            (regenerateIssue)="regenerateIssue()"
-                            class="w-100"></app-issues-right-panel>
+                            (regenerateIssue)="regenerateIssue()"></app-issues-right-panel>
 </div>

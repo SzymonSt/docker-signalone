@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthStateService } from 'app/auth/services/auth-state.service';
 import { LanguageVersion } from 'app/shared/enum/LanguageVersion';
-import { LangugageService } from 'app/shared/services/language.service';
-import { Observable } from 'rxjs';
 import { ApplicationStateService } from 'app/shared/services/application-state.service';
 import { ConfigurationService } from 'app/shared/services/configuration.service';
-import { AuthStateService } from 'app/auth/services/auth-state.service';
+import { LangugageService } from 'app/shared/services/language.service';
+import { ContactPopupComponent } from 'app/shared/ui/components/contact/contact-popup.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -20,7 +22,8 @@ export class HeaderComponent {
     private languageService: LangugageService,
     private applicationStateService: ApplicationStateService,
     protected configurationService: ConfigurationService,
-    private authStateService: AuthStateService
+    private authStateService: AuthStateService,
+    private dialog: MatDialog
   ) {
     this.activeLanguage$ = this.applicationStateService.language$;
     this.isLoggedIn$ = this.authStateService.isLoggedIn$;
@@ -42,6 +45,12 @@ export class HeaderComponent {
 
       this.applicationStateService.setLanguage(language);
     }
+  }
+
+  public openContactModal(): void {
+    this.dialog.open(ContactPopupComponent, {
+      width: '500px',
+    });
   }
 
   public logOut(): void {

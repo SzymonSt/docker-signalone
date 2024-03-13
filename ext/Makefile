@@ -2,7 +2,7 @@ IMAGE?=322456/signalone-extension
 PROD_IMAGE?=signaloneai/signalone-extension
 FRONTEND_IMAGE?=322456/signalonefrontend
 PROD_FRONTEND_IMAGE?=signaloneai/signalonefrontend
-PROD_TAG?=0.0.1
+PROD_TAG?=0.0.2
 TAG?=dev
 
 BUILDER=buildx-multi-arch
@@ -13,6 +13,10 @@ BACKEND_NETWORK?=backend_default #for local development only
 
 build-extension: build-extension-dependencies ## Build service image to be deployed as a desktop extension
 	docker build --tag=$(IMAGE):$(TAG) .
+
+validate-extension-production: 
+	docker buildx build --load --tag=$(PROD_IMAGE):$(PROD_TAG) .
+	docker extension validate $(PROD_IMAGE):$(PROD_TAG)
 
 build-extension-production: build-extension-dependencies-production ## Build service image to be deployed as a desktop extension
 	docker buildx build --platform=linux/arm64,linux/amd64  --push --tag=$(PROD_IMAGE):$(PROD_TAG) .

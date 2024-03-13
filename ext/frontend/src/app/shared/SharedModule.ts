@@ -1,23 +1,28 @@
-import { NgModule } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
-import { LoaderComponent } from './ui/components/loader/loader.component';
-import { HeaderComponent } from './ui/components/header/header.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LoadingInterceptor } from 'app/shared/interceptors/loading.interceptor';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ErrorHandlerInterceptor } from 'app/shared/interceptors/error-handler.interceptor';
+import { LoadingInterceptor } from 'app/shared/interceptors/loading.interceptor';
 import {
   ConfigurationDropdownComponent
 } from 'app/shared/ui/components/configuration-dropdown/configuration-dropdown.component';
-import { FormsModule } from '@angular/forms';
+import { ContactPopupComponent } from 'app/shared/ui/components/contact/contact-popup.component';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { HeaderComponent } from './ui/components/header/header.component';
+import { LoaderComponent } from './ui/components/loader/loader.component';
 
 @NgModule({
   declarations: [
     LoaderComponent,
     HeaderComponent,
-    ConfigurationDropdownComponent
+    ConfigurationDropdownComponent,
+    ContactPopupComponent
   ],
   imports: [
     CommonModule,
@@ -25,12 +30,18 @@ import { FormsModule } from '@angular/forms';
     MatProgressSpinnerModule,
     FormsModule,
     MatSlideToggleModule,
-    HttpClientModule
+    HttpClientModule,
+    AngularSvgIconModule.forRoot(),
+    MatTooltipModule,
+    ReactiveFormsModule,
+    BsDatepickerModule
+
   ],
   exports: [
     LoaderComponent,
     HeaderComponent,
-    ConfigurationDropdownComponent
+    ConfigurationDropdownComponent,
+    ContactPopupComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },

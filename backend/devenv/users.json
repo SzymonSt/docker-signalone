@@ -1,14 +1,9 @@
-[
-    {
-        "userId": "4c78e05c-2f83-4e6e-b4c1-8721618a1c89",
-        "userName": "John",
-        "isPro": true,
-        "agentBearerToken": ""
-    },
-    {
-        "userId": "d8f591e8-39a4-4c12-9e74-67bdcf3d83c6",
-        "userName": "Jane",
-        "isPro": false,
-        "agentBearerToken": ""
-    }
-]
+[{
+    "_id": "65ef8115064d3a298f73aa0f",
+    "userId": "162910679",
+    "userName": "SignalTest",
+    "isPro": false,
+    "agentBearerToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAxOTQ5NjUsImlkIjoiMTYyOTEwNjc5IiwidXNlck5hbWUiOiJTaWduYWxUZXN0In0.h4go1qQOiuiGG1_9EJAg2cH2CZEk233sluWnwTaFPD8",
+    "counter": 0,
+    "type": "github"
+  }]
