@@ -38,12 +38,12 @@
       "MESSAGE_CONTENT": "Treść wiadomości",
       "EMAIL_PLACEHOLDER": "adresemail@gmail.com",
       "MESSAGE_TITLE_PLACEHOLDER": "Przykładowy tytuł wiadomości",
-      "COPY_DISCORD_URL": "Skopiuj adres serwera discord",
-      "COPY_LINKEDIN_URL": "Skopiuj adres profilu linkedin",
-      "COPY_GITHUB_URL": "Skopiuj adres github",
-      "COPY_DISCORD_URL_SUCCESS": "Adres serwera discord skopiowany od schowka",
-      "COPY_LINKEDIN_URL_SUCCESS": "Adres profilu linkedin skopiowany do schowka",
-      "COPY_GITHUB_URL_SUCCESS": "Adres projektu na github skopiowany do schowka",
+      "COPY_DISCORD_URL": "Skopiuj adres serwera Discord",
+      "COPY_LINKEDIN_URL": "Skopiuj adres profilu LinkedIn",
+      "COPY_GITHUB_URL": "Skopiuj adres Github",
+      "COPY_DISCORD_URL_SUCCESS": "Adres serwera Discord został skopiowany do schowka",
+      "COPY_LINKEDIN_URL_SUCCESS": "Adres profilu LinkedIn został skopiowany do schowka",
+      "COPY_GITHUB_URL_SUCCESS": "Adres projektu na Github został skopiowany do schowka",
       "MESSAGE_SEND_SUCCESS": "Wiadomość została wysłana"
     },
     "CONFIGURATION_DROPDOWN": {
