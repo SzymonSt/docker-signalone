@@ -1,0 +1,102 @@
+<div class="contact-modal">
+    <div class="modal-header">
+        <h2 class="modal-title mb-0">{{'UI.CONTACT_POPUP.CONTACT' | translate}}</h2>
+        <button type="button" class="close-button btn btn-secondary ms-auto" (click)="close()">
+            <i class="bi bi-x"></i>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="contactForm">
+            <div class="form-group mb-3">
+                <label class="form-label" for="email">{{
+                  "UI.CONTACT_POPUP.EMAIL" | translate
+                    }}</label>
+                <input
+                        [placeholder]="'UI.CONTACT_POPUP.EMAIL_PLACEHOLDER' | translate"
+                        class="form-control"
+                        formControlName="email"
+                        [ngClass]="{
+                          invalid:
+                            emailControl.invalid && isSubmitted
+                        }"
+                        id="email"
+                        type="text"
+                />
+                <div
+                        *ngIf="emailControl.invalid && isSubmitted"
+                        class="col-12 invalid-feedback my-2"
+                >
+                    <div *ngIf="emailControl.hasError('required')">
+                        {{ "VALIDATION.REQUIRED" | translate }}
+                    </div>
+                    <div *ngIf="emailControl.hasError('email')">
+                        {{ "VALIDATION.INVALID_EMAIL" | translate }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label" for="messageTitle">{{
+                  "UI.CONTACT_POPUP.MESSAGE_TITLE" | translate
+                    }}</label>
+                <input
+                        [placeholder]="'UI.CONTACT_POPUP.MESSAGE_TITLE_PLACEHOLDER' | translate"
+                        class="form-control"
+                        formControlName="messageTitle"
+                        [ngClass]="{
+                          invalid:
+                            messageTitleControl.invalid && isSubmitted
+                        }"
+                        id="messageTitle"
+                        type="text"
+                />
+                <div
+                        *ngIf="messageTitleControl.invalid && isSubmitted"
+                        class="col-12 invalid-feedback my-2"
+                >
+                    <div *ngIf="messageTitleControl.hasError('required')">
+                        {{ "VALIDATION.REQUIRED" | translate }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label" for="messageContent">{{
+                  "UI.CONTACT_POPUP.MESSAGE_CONTENT" | translate
+                    }}</label>
+                <textarea
+                        rows="4"
+                        class="form-control"
+                        formControlName="messageContent"
+                        [ngClass]="{
+                          invalid:
+                            messageContentControl.invalid && isSubmitted
+                        }"
+                        id="messageContent"
+                        type="text"
+                ></textarea>
+                <div
+                        *ngIf="messageContentControl.invalid && isSubmitted"
+                        class="col-12 invalid-feedback my-2"
+                >
+                    <div *ngIf="messageContentControl.hasError('required')">
+                        {{ "VALIDATION.REQUIRED" | translate }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer flex-column mt-4">
+        <button type="button" class="btn btn-primary mx-auto w-50" (click)="submitContact()">{{'UI.CONTACT_POPUP.SEND' | translate}}</button>
+        <div class="social-buttons mt-4 d-flex w-50 mx-auto align-items-center justify-content-between">
+            <button class="btn btn-secondary social-button" (click)="copyDiscordUrl()" [matTooltip]="'UI.CONTACT_POPUP.COPY_DISCORD_URL' | translate">
+                <i class="bi bi-discord"></i>
+            </button>
+            <button class="btn btn-secondary social-button" (click)="copyGithubUrl()" [matTooltip]="'UI.CONTACT_POPUP.COPY_GITHUB_URL' | translate">
+                <i class="bi bi-github"></i>
+            </button>
+            <button class="btn btn-secondary social-button" (click)="copyLinkedinUrl()" [matTooltip]="'UI.CONTACT_POPUP.COPY_LINKEDIN_URL' | translate">
+                <i class="bi bi-linkedin"></i>
+            </button>
+        </div>
+    </div>
+
+</div>
