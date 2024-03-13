@@ -91,8 +91,8 @@ func (c *MainController) ContactHandler(ctx *gin.Context) {
 	resEmailObj.From = "Signal0ne <contact@signaloneai.com>"
 	resEmailObj.To = []string{emailReqBody.Email}
 	resEmailObj.Subject = "Thank you for contacting us"
-	resEmailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
-	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`))
+	resEmailObj.HTML = []byte(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
+	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`)
 	err = resEmailObj.SendWithStartTLS(fmt.Sprintf("%s:%s", hostAddress, hostPort), smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"), tlsConfig)
 
 	if err != nil {
