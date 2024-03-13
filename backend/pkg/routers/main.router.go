@@ -25,7 +25,7 @@ func (mr *MainRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	authorizationRouterGroup.POST("/login", mr.mainController.Login)
 	authorizationRouterGroup.POST("/register", mr.mainController.Register)
 	authorizationRouterGroup.PUT("/email-confirmation", mr.mainController.VerifyEmail)
-	authorizationRouterGroup.PATCH("/email-confirmation-link-resend", func(c *gin.Context) {})
+	authorizationRouterGroup.PATCH("/email-confirmation-link-resend", mr.mainController.ResendConfimrationEmail)
 
 	userRouterGroup := rg.Group("/user", middlewares.CheckAuthorization)
 	{
