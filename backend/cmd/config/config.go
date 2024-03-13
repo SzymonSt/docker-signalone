@@ -12,6 +12,9 @@ type Config struct {
 	CertFilePath string `mapstructure:"CERT_FILE_PATH"`
 	KeyFilePath  string `mapstructure:"KEY_FILE_PATH"`
 
+	// Email Data
+	EmailPassword string `mapstructure:"EMAIL_PASSWORD"`
+
 	//GitHub Data
 	GithubClientId     string `mapstructure:"GITHUB_CLIENT_ID"`
 	GithubClientSecret string `mapstructure:"GITHUB_CLIENT_SECRET"`

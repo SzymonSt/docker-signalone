@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/smtp"
 	"signalone/cmd/config"
 	_ "signalone/docs"
 	"signalone/pkg/models"
@@ -18,6 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	e "github.com/jordan-wright/email"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -52,6 +55,54 @@ func NewMainController(issuesCollection *mongo.Collection,
 		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
 	}
+}
+
+func (c *MainController) ContactHandler(ctx *gin.Context) {
+	var emailReqBody models.Email
+	var cfg = config.GetInstance()
+
+	err := ctx.ShouldBindJSON(&emailReqBody)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	hostAddress := "smtp.hostinger.com"
+	hostPort := "587"
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+		ServerName:         hostAddress,
+	}
+
+	emailObj := e.NewEmail()
+	emailObj.From = "contact@signaloneai.com"
+	emailObj.To = []string{"contact@signaloneai.com"}
+	emailObj.Subject = fmt.Sprintf("[CONTACT] %s", emailReqBody.MessageTitle)
+	emailObj.Text = []byte(fmt.Sprintf("From: %s \nMessage: %s", emailReqBody.Email, emailReqBody.MessageContent))
+	err = emailObj.SendWithStartTLS(fmt.Sprintf("%s:%s", hostAddress, hostPort), smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"), tlsConfig)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
+		return
+	}
+
+	resEmailObj := e.NewEmail()
+	resEmailObj.From = "Signal0ne <contact@signaloneai.com>"
+	resEmailObj.To = []string{emailReqBody.Email}
+	resEmailObj.Subject = "Thank you for contacting us"
+	resEmailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
+	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`))
+	err = resEmailObj.SendWithStartTLS(fmt.Sprintf("%s:%s", hostAddress, hostPort), smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"), tlsConfig)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Email has been sent successfully",
+	})
 }
 
 // LogAnalysisTask godoc
