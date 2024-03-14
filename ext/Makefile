@@ -2,7 +2,7 @@ IMAGE?=322456/signalone-extension
 PROD_IMAGE?=signaloneai/signalone-extension
 FRONTEND_IMAGE?=322456/signalonefrontend
 PROD_FRONTEND_IMAGE?=signaloneai/signalonefrontend
-PROD_TAG?=0.0.2
+PROD_TAG?=0.0.3
 TAG?=dev
 
 BUILDER=buildx-multi-arch
