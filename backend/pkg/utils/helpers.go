@@ -13,6 +13,7 @@ import (
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
 	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CalculateNewCounter(currentScore int32, newScore int32, counter int32) int32 {
@@ -113,4 +114,14 @@ func FilterForRelevantLogs(logs []string) (relevantLogs []string) {
 	}
 
 	return
+}
+
+func ComparePasswordHashes(hashedPassword string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
+}
+
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hashedPassword), err
 }

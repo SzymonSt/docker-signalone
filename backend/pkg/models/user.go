@@ -9,6 +9,21 @@ type User struct {
 	AgentBearerToken string `json:"agentBearerToken" bson:"agentBearerToken"`
 	Counter          int32  `json:"counter" bson:"counter"`
 	Type             string `json:"type" bson:"type"`
+
+	//If user type is signalone
+	PasswordHash          string `json:"passwordHash" bson:"passwordHash"`
+	EmailConfirmed        bool   `json:"emailConfirmed" bson:"emailConfirmed"`
+	EmailConfirmationCode string `json:"emailConfirmationCode" bson:"emailConfirmationCode"`
+}
+
+type SignalAccountPayload struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type EmailConfirmationPayload struct {
+	Email             string `json:"email"`
+	ConfirmationToken string `json:"confirmationToken"`
 }
 
 type GithubUserData struct {
