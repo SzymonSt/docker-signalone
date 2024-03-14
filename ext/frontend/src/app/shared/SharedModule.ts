@@ -7,6 +7,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { InputPasswordToggleDirective } from 'app/shared/directives/input-password-toggle.directive';
 import { ErrorHandlerInterceptor } from 'app/shared/interceptors/error-handler.interceptor';
 import { LoadingInterceptor } from 'app/shared/interceptors/loading.interceptor';
 import {
@@ -22,7 +23,8 @@ import { LoaderComponent } from './ui/components/loader/loader.component';
     LoaderComponent,
     HeaderComponent,
     ConfigurationDropdownComponent,
-    ContactPopupComponent
+    ContactPopupComponent,
+    InputPasswordToggleDirective
   ],
   imports: [
     CommonModule,
@@ -41,7 +43,8 @@ import { LoaderComponent } from './ui/components/loader/loader.component';
     LoaderComponent,
     HeaderComponent,
     ConfigurationDropdownComponent,
-    ContactPopupComponent
+    ContactPopupComponent,
+    InputPasswordToggleDirective
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },

@@ -1,0 +1,9 @@
+.link-primary {
+  color: var(--primary) !important;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

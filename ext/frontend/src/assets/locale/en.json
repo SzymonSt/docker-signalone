@@ -2,12 +2,23 @@
   "VALIDATION": {
     "DATE_RANGE_INVALID": "The withdrawal date from cannot be later than the withdrawal date to",
     "REQUIRED": "This field is required",
-    "INVALID_EMAIL": "This email address is invalid"
+    "INVALID_EMAIL": "This email address is invalid",
+    "PASSWORD_MIN_LENGTH": "Password minimal length is: 8",
+    "PASSWORDS_MUST_MATCH": "Passwords are not equal"
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",
     "UNDEFINED": "The error was not recognized",
-    "UNAUTHORIZED": "Authorization error! Please log in again."
+    "UNAUTHORIZED": "Authorization error! Please log in again.",
+    "BAD_CREDENTIALS": "Invalid email or password.",
+    "ACCOUNT_NOT_ACTIVE": "Account not active. Confirm your email address.",
+    "ERROR_OCCURED": "Undefined error occured",
+    "DUPLICATE_NOT_CONFIRMED_USER_EMAIL": "Email address is already registered but not confirmed. Please confirm your email address",
+    "INVALID_EMAIL": "Invalid email address",
+    "EMAIL_ALREADY_IN_USE": "Email address is already in use",
+    "INVALID_VERIFICATION_TOKEN": "Invalid verification token",
+    "VERIFICATION_TOKEN_EXPIRED": "Verification token expired",
+    "EMAIL_NOT_FOUND": "Email address not found"
   },
   "ENUM": {
     "ISSUE_TYPE": {
@@ -56,12 +67,23 @@
     "AGENT_AUTH_DATA_UPDATED": "Agent connected"
   },
   "AUTH": {
-    "LOGIN_HEADER": "Login to your SignalOne account",
+    "LOGIN_HEADER": "Login to your Signal0ne account",
+    "REGISTRATION_HEADER": "Create your Signal0ne account",
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "LOGIN": "Sign in",
     "GITHUB_SIGN_IN": "Sign in with Github",
-    "GOOGLE_SIGN_IN": "Sign in with Google"
+    "GOOGLE_SIGN_IN": "Sign in with Google",
+    "RESEND_VERIFICATION_LINK": "Resend account verification link",
+    "DONT_HAVE_ACCOUNT": "Dont't have an account?",
+    "SIGN_UP": "Sign up",
+    "OR": "Or",
+    "PASSWORD_CONFIRMATION": "Confirm password",
+    "ALREADY_HAVE_ACCOUNT": "Already have an account ?",
+    "EMAIL_VERIFICATION_LINK_SENT": "Email verification link sent. Please confirm your email and sign in.",
+    "VERIFICATION_LINK_RESEND_SUCCESS": "Verification link resend successfully sent",
+    "EMAIL_PLACEHOLDER": "example@gmail.com",
+    "SEND": "Send"
   },
   "FEATURES": {
     "ISSUES": {
