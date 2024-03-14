@@ -49,6 +49,7 @@ type MainController struct {
 	issuesCollection        *mongo.Collection
 	usersCollection         *mongo.Collection
 	analysisStoreCollection *mongo.Collection
+	waitlistCollection      *mongo.Collection
 	emailClientData         EmailClientConfig
 }
 
@@ -58,11 +59,13 @@ const REFRESH_TOKEN_EXPIRATION_TIME = time.Hour * 24
 func NewMainController(issuesCollection *mongo.Collection,
 	usersCollection *mongo.Collection,
 	analysisStoreCollection *mongo.Collection,
+	waitlistCollection *mongo.Collection,
 	emailClientData EmailClientConfig) *MainController {
 	return &MainController{
 		issuesCollection:        issuesCollection,
 		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
+		waitlistCollection:      waitlistCollection,
 		emailClientData:         emailClientData,
 	}
 }
@@ -105,6 +108,40 @@ func (c *MainController) ContactHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Email has been sent successfully",
 	})
+}
+
+func (c *MainController) WaitlistHandler(ctx *gin.Context) {
+	var waitlistEntry models.WaitlistEntry
+
+	err := ctx.ShouldBindJSON(&waitlistEntry)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	waitlistQueryResult := c.waitlistCollection.FindOne(ctx, bson.M{"email": waitlistEntry.Email})
+	if waitlistQueryResult.Err() != mongo.ErrNoDocuments {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists in the waitlist"})
+		return
+	}
+
+	emailObj := e.NewEmail()
+	emailObj.From = c.emailClientData.From
+	emailObj.To = []string{waitlistEntry.Email}
+	emailObj.Subject = "Thank you for joining the waitlist!"
+	emailObj.HTML = []byte(utils.WaitlistEntryConfirmationEmail)
+	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
+		return
+	}
+
+	_, err = c.waitlistCollection.InsertOne(ctx, waitlistEntry)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 }
 
 // LogAnalysisTask godoc

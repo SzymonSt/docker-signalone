@@ -41,6 +41,7 @@ type Config struct {
 	ApplicationDbName               string `mapstructure:"APPLICATION_DB_NAME"`
 	ApplicationIssuesCollectionName string `mapstructure:"APPLICATION_ISSUES_COLLECTION_NAME"`
 	ApplicationUsersCollectionName  string `mapstructure:"APPLICATION_USERS_COLLECTION_NAME"`
+	WaitlistCollectionName          string `mapstructure:"WAITLIST_COLLECTION_NAME"`
 
 	//Saved Analysis Database Details
 	SavedAnalysisDbUrl          string `mapstructure:"SAVED_ANALYSIS_DB_URL"`
