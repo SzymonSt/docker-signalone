@@ -22,6 +22,14 @@ export class AuthService {
       );
   }
 
+  public register(email: string, password: string): Observable<void> {
+    return this.httpClient.post<void>(`${environment.authUrl}/register`, { email, password });
+  }
+
+  public resendVerificationLink(email: string): Observable<void> {
+    return this.httpClient.post<void>(`${environment.authUrl}/email-confirmation-link-resend`, { email });
+  }
+
   public loginWithGoogle(accessToken: string): Observable<{ token: Token }> {
     return this.httpClient.post<{ token: Token }>(`${environment.authUrl}/login-with-google`, { idToken: accessToken })
       .pipe(

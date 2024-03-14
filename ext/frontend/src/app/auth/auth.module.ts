@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { GoogleLoginComponent } from 'app/auth/components/googleLogin/google-login.component';
+import { RegisterComponent } from 'app/auth/components/register/register.component';
+import {
+  ResendVerificationLinkPopupComponent
+} from 'app/auth/components/resendVerificationLink/resend-verification-link-popup.component';
 import { SharedModule } from 'app/shared/SharedModule';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,7 +18,7 @@ import { AuthInterceptor } from 'app/shared/interceptors/auth.interceptor';
 import { GithubLoginComponent } from 'app/auth/components/githubLogin/github-login.component';
 
 @NgModule({
-  declarations: [ LoginComponent, GithubLoginComponent, GoogleLoginComponent ],
+  declarations: [ LoginComponent, GithubLoginComponent, GoogleLoginComponent, RegisterComponent, ResendVerificationLinkPopupComponent],
   imports: [
     CommonModule,
     TranslateModule,

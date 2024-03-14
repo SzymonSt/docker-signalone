@@ -57,6 +57,7 @@ export class AuthStateService implements OnDestroy {
   }
 
   public login(email: string, password: string, silent: boolean = false): Promise<Token> {
+    console.log('TEST', email, password)
     return new Promise((resolve, reject) => {
       this.authService.login(email, password).toPromise()
         .then((result: { token: Token }) => {

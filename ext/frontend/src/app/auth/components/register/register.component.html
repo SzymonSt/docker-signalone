@@ -1,5 +1,5 @@
-<div id="login-container">
-  <h2 class="login-title">{{ "AUTH.LOGIN_HEADER" | translate }}</h2>
+<div id="registration-container">
+  <h2 class="login-title">{{ "AUTH.REGISTRATION_HEADER" | translate }}</h2>
       <form [formGroup]="loginForm" class="w-100 mx-auto">
           <div class="form-group mb-3">
               <label class="form-label"
@@ -34,19 +34,33 @@
                   <div *ngIf="loginForm.controls['password'].hasError('minlength')">{{ 'VALIDATION.PASSWORD_MIN_LENGTH' | translate }}</div>
               </div>
           </div>
-          <a class="link-primary d-block w-100 text-center mt-4" (click)="openResendVerificationLinkModal()">
-              {{ 'AUTH.RESEND_VERIFICATION_LINK' | translate }}
-          </a>
+          <div class="form-group mb-3">
+              <label class="form-label"
+                     for="passwordConfirmation">{{'AUTH.PASSWORD_CONFIRMATION' | translate}}</label>
+              <input [placeholder]="'AUTH.PASSWORD_CONFIRMATION' | translate" class="form-control"
+                     formControlName="passwordConfirmation"
+                     [ngClass]="{
+                      invalid:
+                        (loginForm.controls['passwordConfirmation'].invalid || loginForm.hasError('passwordNoMatch')) && isSubmitted
+                    }"
+                     id="passwordConfirmation"
+                     appInputPasswordToggle
+                     type="password">
+              <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">
+                  <div *ngIf="loginForm.controls['passwordConfirmation'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>
+                  <div *ngIf="loginForm.hasError('passwordNoMatch') && !loginForm.controls['passwordConfirmation'].hasError('required')">{{ 'VALIDATION.PASSWORDS_MUST_MATCH' | translate }}</div>
+              </div>
+          </div>
           <div class="row mt-3">
               <div class="col-12">
                   <button (click)="submitForm()"
-                          class="btn btn-primary w-100 mx-auto d-block mt-3">{{ 'AUTH.LOGIN' | translate }}</button>
+                          class="btn btn-primary w-100 mx-auto d-block mt-3">{{ 'AUTH.SIGN_UP' | translate }}</button>
               </div>
           </div>
           <p class="text-center my-4">
-              {{ 'AUTH.DONT_HAVE_ACCOUNT' | translate }}
-              <a class="link-primary" routerLink="/register">
-                  {{ 'AUTH.SIGN_UP' | translate }}
+              {{ 'AUTH.ALREADY_HAVE_ACCOUNT' | translate }}
+              <a class="link-primary" routerLink="/login">
+                  {{ 'AUTH.LOGIN' | translate }}
               </a>
           </p>
           <div class="login-section-divider">

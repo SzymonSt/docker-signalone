@@ -2,12 +2,23 @@
   "VALIDATION": {
     "DATE_RANGE_INVALID": "Data wystąpienia od nie może być późniejsza niż data wystąpienia do",
     "REQUIRED": "To pole jest wymagane",
-    "INVALID_EMAIL": "Ten adres email jest nieprawidłowy"
+    "INVALID_EMAIL": "Ten adres email jest nieprawidłowy",
+    "PASSWORD_MIN_LENGTH": "Minimalna długość hasła to: 8",
+    "PASSWORDS_MUST_MATCH": "Hasła muszą być takie same"
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
     "UNDEFINED": "Błąd nie został rozpoznany",
-    "UNAUTHORIZED": "Błąd autoryzacyjny! Prosimy zaloguj się ponownie."
+    "UNAUTHORIZED": "Błąd autoryzacyjny! Prosimy zaloguj się ponownie.",
+    "BAD_CREDENTIALS": "Nieprawidłowy adres email lub hasło",
+    "ACCOUNT_NOT_ACTIVE": "Konto nie jest aktywne",
+    "ERROR_OCCURED": "Wystąpił niezidentyfikowany błąd",
+    "DUPLICATE_NOT_CONFIRMED_USER_EMAIL": "Adres email jest już zarejestrowany ale nie potwierdzony. Prosimy potwierdź swój adres email",
+    "INVALID_EMAIL": "Nieprawidłowy adres email",
+    "EMAIL_ALREADY_IN_USE": "Adres email jest już używany",
+    "INVALID_VERIFICATION_TOKEN": "Nieprawidłowy kod weryfikacyjny",
+    "VERIFICATION_TOKEN_EXPIRED": "Kod weryfikacyjny wygasł",
+    "EMAIL_NOT_FOUND": "Adres email nie został znaleziony"
   },
   "ENUM": {
     "ISSUE_TYPE": {
@@ -56,12 +67,23 @@
     "AGENT_AUTH_DATA_UPDATED": "Agent połączony"
   },
   "AUTH": {
-    "LOGIN_HEADER": "Zaloguj się do konta SignalOne",
+    "LOGIN_HEADER": "Zaloguj się do konta Signal0ne",
+    "REGISTRATION_HEADER": "Utwórz swoje konto Signal0ne",
     "EMAIL": "Email",
     "PASSWORD": "Hasło",
     "LOGIN": "Zaloguj się",
     "GITHUB_SIGN_IN": "Zaloguj sie przez Github",
-    "GOOGLE_SIGN_IN": "Zaloguj sie przez Google"
+    "GOOGLE_SIGN_IN": "Zaloguj sie przez Google",
+    "RESEND_VERIFICATION_LINK": "Wyślij ponownie link weryfikujący konto",
+    "DONT_HAVE_ACCOUNT": "Nie masz jeszcze konta ?",
+    "SIGN_UP": "Zarejestruj się",
+    "OR": "Albo",
+    "PASSWORD_CONFIRMATION": "Potwierdź hasło",
+    "ALREADY_HAVE_ACCOUNT": "Masz już konto ?",
+    "EMAIL_VERIFICATION_LINK_SENT": "Email z linkiem aktywującym konto został wysłany. Potwierdź konto i zaloguj się.",
+    "VERIFICATION_LINK_RESEND_SUCCESS": "Link aktywacyjny został ponownie wysłany",
+    "EMAIL_PLACEHOLDER": "email@gmail.com",
+    "SEND": "Wyślij"
   },
   "FEATURES": {
     "ISSUES": {
