@@ -38,10 +38,18 @@ type Log struct {
 	Logs []string `bson:"logs"`
 }
 
+type EmailClientConfig struct {
+	AuthData    smtp.Auth
+	HostAddress string
+	From        string
+	TlsConfig   *tls.Config
+}
+
 type MainController struct {
 	issuesCollection        *mongo.Collection
 	usersCollection         *mongo.Collection
 	analysisStoreCollection *mongo.Collection
+	emailClientData         EmailClientConfig
 }
 
 const ACCESS_TOKEN_EXPIRATION_TIME = time.Minute * 10
@@ -49,17 +57,18 @@ const REFRESH_TOKEN_EXPIRATION_TIME = time.Hour * 24
 
 func NewMainController(issuesCollection *mongo.Collection,
 	usersCollection *mongo.Collection,
-	analysisStoreCollection *mongo.Collection) *MainController {
+	analysisStoreCollection *mongo.Collection,
+	emailClientData EmailClientConfig) *MainController {
 	return &MainController{
 		issuesCollection:        issuesCollection,
 		usersCollection:         usersCollection,
 		analysisStoreCollection: analysisStoreCollection,
+		emailClientData:         emailClientData,
 	}
 }
 
 func (c *MainController) ContactHandler(ctx *gin.Context) {
 	var emailReqBody models.Email
-	var cfg = config.GetInstance()
 
 	err := ctx.ShouldBindJSON(&emailReqBody)
 
@@ -68,19 +77,12 @@ func (c *MainController) ContactHandler(ctx *gin.Context) {
 		return
 	}
 
-	hostAddress := "smtp.hostinger.com"
-	hostPort := "587"
-	tlsConfig := &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         hostAddress,
-	}
-
 	emailObj := e.NewEmail()
-	emailObj.From = "contact@signaloneai.com"
+	emailObj.From = c.emailClientData.From
 	emailObj.To = []string{"contact@signaloneai.com"}
 	emailObj.Subject = fmt.Sprintf("[CONTACT] %s", emailReqBody.MessageTitle)
 	emailObj.Text = []byte(fmt.Sprintf("From: %s \nMessage: %s", emailReqBody.Email, emailReqBody.MessageContent))
-	err = emailObj.SendWithStartTLS(fmt.Sprintf("%s:%s", hostAddress, hostPort), smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"), tlsConfig)
+	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
@@ -88,12 +90,12 @@ func (c *MainController) ContactHandler(ctx *gin.Context) {
 	}
 
 	resEmailObj := e.NewEmail()
-	resEmailObj.From = "Signal0ne <contact@signaloneai.com>"
+	resEmailObj.From = c.emailClientData.From
 	resEmailObj.To = []string{emailReqBody.Email}
 	resEmailObj.Subject = "Thank you for contacting us"
 	resEmailObj.HTML = []byte(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
 	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`)
-	err = resEmailObj.SendWithStartTLS(fmt.Sprintf("%s:%s", hostAddress, hostPort), smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"), tlsConfig)
+	err = resEmailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
@@ -782,7 +784,7 @@ func (c *MainController) LoginWithGoogleHandler(ctx *gin.Context) {
 	})
 }
 
-func (c *MainController) Login(ctx *gin.Context) {
+func (c *MainController) LoginHandler(ctx *gin.Context) {
 	var loginData models.SignalAccountPayload
 	var user models.User
 
@@ -833,7 +835,7 @@ func (c *MainController) Login(ctx *gin.Context) {
 
 }
 
-func (c *MainController) Register(ctx *gin.Context) {
+func (c *MainController) RegisterHandler(ctx *gin.Context) {
 	var loginData models.SignalAccountPayload
 	var user models.User
 
@@ -937,7 +939,7 @@ func (c *MainController) VerifyEmail(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func (c *MainController) ResendConfimrationEmail(ctx *gin.Context) {
+func (c *MainController) ResendConfirmationEmail(ctx *gin.Context) {
 	var user models.User
 	var verificationData struct {
 		Email string `json:"email"`
@@ -979,6 +981,17 @@ func (c *MainController) ResendConfimrationEmail(ctx *gin.Context) {
 		return
 	}
 
+	emailObj := e.NewEmail()
+	emailObj.From = c.emailClientData.From
+	emailObj.To = []string{verificationData.Email}
+	emailObj.Subject = "Confirm your email address"
+	emailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
+	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationToken))
+	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
+	}
 	//Send email confirmation link
 	// If sending email confirmation link fails, return error
 	// ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})

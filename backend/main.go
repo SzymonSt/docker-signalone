@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"net/http"
+	"net/smtp"
 	"signalone/cmd/config"
 	"signalone/pkg/controllers"
 	"signalone/pkg/routers"
@@ -66,10 +68,21 @@ func main() {
 	}
 	savedAnalysisCollectionClient := savedAnalysisDbClient.Database(cfg.SavedAnalysisDbName).Collection(cfg.SavedAnalysisCollectionName)
 
+	emailClientData := controllers.EmailClientConfig{
+		AuthData:    smtp.PlainAuth("", "contact@signaloneai.com", cfg.EmailPassword, "smtp.hostinger.com"),
+		From:        "Signal0ne <contact@signaloneai.com>",
+		HostAddress: "smtp.hostinger.com:587",
+		TlsConfig: &tls.Config{
+			InsecureSkipVerify: true,
+			ServerName:         "smtp.hostinger.com",
+		},
+	}
+
 	mainController := controllers.NewMainController(
 		issuesCollectionClient,
 		usersCollectionClient,
 		savedAnalysisCollectionClient,
+		emailClientData,
 	)
 
 	//authController TBD
