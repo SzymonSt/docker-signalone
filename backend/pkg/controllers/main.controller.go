@@ -129,7 +129,7 @@ func (c *MainController) WaitlistHandler(ctx *gin.Context) {
 	emailObj.From = c.emailClientData.From
 	emailObj.To = []string{waitlistEntry.Email}
 	emailObj.Subject = "Thank you for joining the waitlist!"
-	emailObj.HTML = []byte(utils.WaitlistEntryConfimrationEmail)
+	emailObj.HTML = []byte(utils.WaitlistEntryConfirmationEmail)
 	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error sending the mail"})
