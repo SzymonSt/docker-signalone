@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"signalone/cmd/config"
 	"signalone/pkg/models"
+	"unicode"
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
@@ -124,4 +125,25 @@ func ComparePasswordHashes(hashedPassword string, password string) bool {
 func HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashedPassword), err
+}
+
+func PasswordValidation(password string) bool {
+	if !(len(password) >= 8 && len(password) <= 50) {
+		return false
+	}
+	hasUpper := false
+	hasLower := false
+	hasDigit := false
+	for _, char := range password {
+		if unicode.IsUpper(char) {
+			hasUpper = true
+		}
+		if unicode.IsLower(char) {
+			hasLower = true
+		}
+		if unicode.IsDigit(char) {
+			hasDigit = true
+		}
+	}
+	return (hasUpper && hasLower && hasDigit)
 }

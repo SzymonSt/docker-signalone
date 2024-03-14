@@ -793,6 +793,8 @@ func (c *MainController) LoginHandler(ctx *gin.Context) {
 		return
 	}
 
+	loginData.Email = strings.ToLower(loginData.Email)
+
 	userResult := c.usersCollection.FindOne(ctx, bson.M{"userName": loginData.Email, "type": "signalone"})
 
 	err := userResult.Decode(&user)
@@ -841,6 +843,13 @@ func (c *MainController) RegisterHandler(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&loginData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "ERROR_OCCURED"})
+		return
+	}
+
+	loginData.Email = strings.ToLower(loginData.Email)
+
+	if !utils.PasswordValidation(loginData.Password) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_PASSWORD"})
 		return
 	}
 
@@ -959,7 +968,7 @@ func (c *MainController) ResendConfirmationEmail(ctx *gin.Context) {
 		return
 	}
 
-	userResult := c.usersCollection.FindOne(ctx, bson.M{"email": verificationData.Email})
+	userResult := c.usersCollection.FindOne(ctx, bson.M{"userName": verificationData.Email})
 
 	err := userResult.Decode(&user)
 	if err != nil {
