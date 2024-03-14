@@ -94,7 +94,7 @@ func (c *MainController) ContactHandler(ctx *gin.Context) {
 	resEmailObj.To = []string{emailReqBody.Email}
 	resEmailObj.Subject = "Thank you for contacting us"
 	resEmailObj.HTML = []byte(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
-	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`)
+	style="margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black">Thank you for contacting us.</p> <p style="color: black">We will get back to you as soon as possible.</p><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`)
 	err = resEmailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
@@ -885,12 +885,21 @@ func (c *MainController) RegisterHandler(ctx *gin.Context) {
 	}
 
 	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", loginData.Email, confirmationToken)
+
 	emailObj := e.NewEmail()
 	emailObj.From = c.emailClientData.From
 	emailObj.To = []string{loginData.Email}
 	emailObj.Subject = "Confirm your email address"
 	emailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
-	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink))
+	style="margin-top: 40px;">
+	<h1 style="color: black">Hello,</h1> 
+	<p style="color: black">Welcome to <span style="font-family: consolas;">Signal0ne!</span> We're excited you're joining us.</p>
+	<p style="color: black">Ready to get started? First, verify your email address by clicking the button below: </p>
+	<a href="%s" target="_blank"><button style="background-color: #3f51b5; border: none; border-radius: 6px; color: #ffffff; cursor: pointer; padding-bottom: 8px; padding-top: 8px; padding-left: 16px; padding-right: 16px;">Confirm</button></a><br>
+	<p>Or you can click the following link: <a href="%s" target="_blank" style="color: #3f51b5">%s</a></p>
+	<p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p>
+	<p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink, confirmationLink, confirmationLink))
+
 	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
@@ -1000,12 +1009,20 @@ func (c *MainController) ResendConfirmationEmail(ctx *gin.Context) {
 	}
 
 	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", verificationData.Email, confirmationToken)
+
 	emailObj := e.NewEmail()
 	emailObj.From = c.emailClientData.From
 	emailObj.To = []string{verificationData.Email}
 	emailObj.Subject = "Confirm your email address"
 	emailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
-	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink))
+	style="margin-top: 40px;">
+	<h1 style="color: black">Hello,</h1> 
+	<p style="color: black">Welcome to <span style="font-family: consolas;">Signal0ne!</span> We're excited you're joining us.</p>
+	<p style="color: black">Ready to get started? First, verify your email address by clicking the button below: </p>
+	<a href="%s" target="_blank"><button style="background-color: #3f51b5; border: none; border-radius: 6px; color: #ffffff; cursor: pointer; padding-bottom: 8px; padding-top: 8px; padding-left: 16px; padding-right: 16px;">Confirm</button></a><br>
+	<p>Or you can click the following link: <a href="%s" target="_blank" style="color: #3f51b5">%s</a></p>
+	<p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p>
+	<p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink, confirmationLink, confirmationLink))
 	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
