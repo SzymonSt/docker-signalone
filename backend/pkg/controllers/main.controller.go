@@ -868,15 +868,24 @@ func (c *MainController) RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	//Send email confirmation link
-	// If sending email confirmation link fails, return error
-	// ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
-
 	userId := uuid.New().String()
 	confirmationToken, err := createToken(userId, loginData.Email, "refresh")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"descriptionKey": "ERROR_OCCURED"})
 		return
+	}
+
+	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", loginData.Email, confirmationToken)
+	emailObj := e.NewEmail()
+	emailObj.From = c.emailClientData.From
+	emailObj.To = []string{loginData.Email}
+	emailObj.Subject = "Confirm your email address"
+	emailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
+	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink))
+	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
 	}
 
 	user = models.User{
@@ -981,20 +990,18 @@ func (c *MainController) ResendConfirmationEmail(ctx *gin.Context) {
 		return
 	}
 
+	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", verificationData.Email, confirmationToken)
 	emailObj := e.NewEmail()
 	emailObj.From = c.emailClientData.From
 	emailObj.To = []string{verificationData.Email}
 	emailObj.Subject = "Confirm your email address"
 	emailObj.HTML = []byte(fmt.Sprintf(`<img alt="Signal0ne" title="Signal0ne Logo" width="196px" height="57px" src="https://signaloneai.com/online-assets/Signal0ne.jpg"
-	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationToken))
+	style="margin-left: 15px; margin-top: 40px;"><h1 style="color: black">Hello,</h1> <p style="color: black"></p> <p style="color: black">Welcome to Signal0ne! We're excited you're joining us.</p><p style="color: black"></p> <p style="color: black">Ready to get started? First, verify your email address by clicking the following link: </p><a style="color: #3f51b5">%s</a><br><p style="color: black; margin-bottom: 0; margin-top: 4px;">Best regards,</p><p style="color: black; font-family: consolas; font-size: 15px; font-weight: bold; margin-top: 6px;";>Signal0ne Team</p>`, confirmationLink))
 	err = emailObj.SendWithStartTLS(c.emailClientData.HostAddress, c.emailClientData.AuthData, c.emailClientData.TlsConfig)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
 	}
-	//Send email confirmation link
-	// If sending email confirmation link fails, return error
-	// ctx.JSON(http.StatusBadRequest, gin.H{"descriptionKey": "INVALID_EMAIL"})
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
