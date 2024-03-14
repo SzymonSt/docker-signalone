@@ -143,7 +143,7 @@ var WaitlistEntryConfimrationEmail = `
 								<div style="font-family:Poppins, Arial;font-size:16px;font-weight:700;line-height:21px;text-align:left;color:#002A41;">
 									<h2>Hello</h2>
 									<p style="color:#667085; font-weight: 400">
-										We'd like to welcome you on our Signal0ne waitlist. We will notify you as soon as we are ready to onboard you to Signal0ne enterprise.
+										We'd like to welcome you on our Signal0ne waitlist. We will notify you as soon as we are ready to onboard you to Signal0ne Enterprise.
 									</p>
 									<p style="color:#667085; font-weight: 400; margin-top: 40px">Thank you,<br>
 										Signal0ne Team</p>
