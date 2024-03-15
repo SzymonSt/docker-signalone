@@ -4,7 +4,8 @@
     "REQUIRED": "This field is required",
     "INVALID_EMAIL": "This email address is invalid",
     "PASSWORD_MIN_LENGTH": "Password minimal length is: 8",
-    "PASSWORDS_MUST_MATCH": "Passwords are not equal"
+    "PASSWORDS_MUST_MATCH": "Passwords are not equal",
+    "PASSWORD_NOT_MATCH_PATTERN": "Password must include at least one small letter one big letter one number and one special chart and at least 8 chars over all"
   },
   "ERROR": {
     "NOT_FOUND": "No suitable resource found",

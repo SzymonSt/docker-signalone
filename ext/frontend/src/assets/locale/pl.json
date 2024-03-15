@@ -4,7 +4,8 @@
     "REQUIRED": "To pole jest wymagane",
     "INVALID_EMAIL": "Ten adres email jest nieprawidłowy",
     "PASSWORD_MIN_LENGTH": "Minimalna długość hasła to: 8",
-    "PASSWORDS_MUST_MATCH": "Hasła muszą być takie same"
+    "PASSWORDS_MUST_MATCH": "Hasła muszą być takie same",
+    "PASSWORD_NOT_MATCH_PATTERN": "Hasło musi zawierać conajmniej jedną małą literę, jedną dużą literę, jedną cyfre oraz jeden znak specjalny i przynajmniej 8 znaków całościowo"
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",

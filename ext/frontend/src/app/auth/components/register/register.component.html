@@ -1,6 +1,6 @@
 <div id="registration-container">
   <h2 class="login-title">{{ "AUTH.REGISTRATION_HEADER" | translate }}</h2>
-  <form [formGroup]="loginForm" class="w-100 mx-auto">
+  <form [formGroup]="registrationForm" class="w-100 mx-auto">
     <div class="form-group mb-3">
       <label class="form-label" for="email">{{
         "AUTH.EMAIL" | translate
@@ -11,18 +11,18 @@
         formControlName="email"
         id="email"
         [ngClass]="{
-          invalid: loginForm.controls['email'].invalid && isSubmitted
+          invalid: registrationForm.controls['email'].invalid && isSubmitted
         }"
         type="text"
       />
       <div
-        *ngIf="loginForm.invalid && isSubmitted"
+        *ngIf="registrationForm.invalid && isSubmitted"
         class="col-12 invalid-feedback mt-2 mb-3"
       >
-        <div *ngIf="loginForm.controls['email'].hasError('required')">
+        <div *ngIf="registrationForm.controls['email'].hasError('required')">
           {{ "VALIDATION.REQUIRED" | translate }}
         </div>
-        <div *ngIf="loginForm.controls['email'].hasError('email')">
+        <div *ngIf="registrationForm.controls['email'].hasError('email')">
           {{ "VALIDATION.INVALID_EMAIL" | translate }}
         </div>
       </div>
@@ -37,20 +37,24 @@
         formControlName="password"
         id="password"
         appInputPasswordToggle
+        [pattern]="Constants.PASSWORD_PATTERN"
         [ngClass]="{
-          invalid: loginForm.controls['password'].invalid && isSubmitted
+          invalid: registrationForm.controls['password'].invalid && isSubmitted
         }"
         type="password"
       />
       <div
-        *ngIf="loginForm.invalid && isSubmitted"
+        *ngIf="registrationForm.invalid && isSubmitted"
         class="col-12 invalid-feedback mt-2 mb-3"
       >
-        <div *ngIf="loginForm.controls['password'].hasError('required')">
+        <div *ngIf="registrationForm.controls['password'].hasError('required')">
           {{ "VALIDATION.REQUIRED" | translate }}
         </div>
-        <div *ngIf="loginForm.controls['password'].hasError('minlength')">
+        <div *ngIf="registrationForm.controls['password'].hasError('minlength')">
           {{ "VALIDATION.PASSWORD_MIN_LENGTH" | translate }}
+        </div>
+        <div *ngIf="registrationForm.controls['password'].hasError('pattern')">
+          {{ "VALIDATION.PASSWORD_NOT_MATCH_PATTERN" | translate }}
         </div>
       </div>
     </div>
@@ -64,29 +68,36 @@
         formControlName="passwordConfirmation"
         [ngClass]="{
           invalid:
-            (loginForm.controls['passwordConfirmation'].invalid ||
-              loginForm.hasError('passwordNoMatch')) &&
+            (registrationForm.controls['passwordConfirmation'].invalid ||
+              registrationForm.hasError('passwordNoMatch')) &&
             isSubmitted
         }"
         id="passwordConfirmation"
         appInputPasswordToggle
+        [pattern]="Constants.PASSWORD_PATTERN"
         type="password"
       />
       <div
-        *ngIf="loginForm.invalid && isSubmitted"
+        *ngIf="registrationForm.invalid && isSubmitted"
         class="col-12 invalid-feedback mt-2 mb-3"
       >
         <div
           *ngIf="
-            loginForm.controls['passwordConfirmation'].hasError('required')
+            registrationForm.controls['passwordConfirmation'].hasError('required')
           "
         >
           {{ "VALIDATION.REQUIRED" | translate }}
         </div>
+        <div *ngIf="registrationForm.controls['passwordConfirmation'].hasError('minlength')">
+          {{ "VALIDATION.PASSWORD_MIN_LENGTH" | translate }}
+        </div>
+        <div *ngIf="registrationForm.controls['passwordConfirmation'].hasError('pattern')">
+          {{ "VALIDATION.PASSWORD_NOT_MATCH_PATTERN" | translate }}
+        </div>
         <div
           *ngIf="
-            loginForm.hasError('passwordNoMatch') &&
-            !loginForm.controls['passwordConfirmation'].hasError('required')
+            registrationForm.hasError('passwordNoMatch') &&
+            !registrationForm.controls['passwordConfirmation'].hasError('required')
           "
         >
           {{ "VALIDATION.PASSWORDS_MUST_MATCH" | translate }}
