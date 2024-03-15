@@ -10,7 +10,7 @@ export function NormalizeObjectValue(valueToNormalize: Object, dateKeys?: string
   }
   Object.keys(valueToNormalize).forEach(key => {
     // @ts-ignore
-    if (!valueToNormalize[key]) {
+    if (!valueToNormalize[key] && !(valueToNormalize[key] === 0 || valueToNormalize[key] === false)) {
       // @ts-ignore
       delete valueToNormalize[key];
     }
