@@ -4,13 +4,14 @@
     "REQUIRED": "To pole jest wymagane",
     "INVALID_EMAIL": "Ten adres email jest nieprawidłowy",
     "PASSWORD_MIN_LENGTH": "Minimalna długość hasła to: 8",
-    "PASSWORDS_MUST_MATCH": "Hasła muszą być takie same"
+    "PASSWORDS_MUST_MATCH": "Hasła muszą być takie same",
+    "PASSWORD_NOT_MATCH_PATTERN": "Hasło musi zawierać conajmniej jedną małą literę, jedną dużą literę, jedną cyfre oraz jeden znak specjalny i przynajmniej 8 znaków całościowo"
   },
   "ERROR": {
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
     "UNDEFINED": "Błąd nie został rozpoznany",
     "UNAUTHORIZED": "Błąd autoryzacyjny! Prosimy zaloguj się ponownie.",
-    "BAD_CREDENTIALS": "Nieprawidłowy adres email lub hasło",
+    "INVALID_CREDENTIALS": "Nieprawidłowy adres email lub hasło",
     "ACCOUNT_NOT_ACTIVE": "Konto nie jest aktywne",
     "ERROR_OCCURED": "Wystąpił niezidentyfikowany błąd",
     "DUPLICATE_NOT_CONFIRMED_USER_EMAIL": "Adres email jest już zarejestrowany ale nie potwierdzony. Prosimy potwierdź swój adres email",

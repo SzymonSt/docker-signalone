@@ -15,19 +15,19 @@ export class ErrorHandlerInterceptor implements HttpInterceptor {
     if (!req.url.includes('token/refresh')) {
       return next.handle(req).pipe(
         catchError((err) => {
-          if (err.status === 401) {
+          if (err.status === 401 && this.authStateService.token) {
             if (this.authStateService.token) {
               this.authStateService.refresh(this.authStateService.token).then(() => {
               }).catch(err => {
                 this.authStateService.logout();
                 this.toastrService.error(this.translateService.instant('ERROR.UNAUTHORIZED'), this.translateService.instant('UI.ERROR'));
               })
-            } else {
-              this.authStateService.logout();
-              this.toastrService.error(this.translateService.instant('ERROR.UNAUTHORIZED'), this.translateService.instant('UI.ERROR'));
             }
           } else {
-            this.toastrService.error(this.translateService.instant(err.descriptionKey ? `ERROR.${err.descriptionKey}` : 'ERROR.UNDEFINED'), this.translateService.instant('UI.ERROR'));
+            if (err.status === 401) {
+              this.authStateService.logout();
+            }
+            this.toastrService.error(this.translateService.instant(err.error.descriptionKey ? `ERROR.${err.error.descriptionKey}` : 'ERROR.UNDEFINED'), this.translateService.instant('UI.ERROR'));
           }
           return throwError(err);
         })

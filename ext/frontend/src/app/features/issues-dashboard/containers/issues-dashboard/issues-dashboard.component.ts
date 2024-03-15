@@ -66,7 +66,13 @@ export class IssuesDashboardComponent implements OnInit {
   }
 
   public regenerateIssue(): void {
-    this.issuesService.regenerateIssue(this.activeIssue.id).subscribe(regeneratedIssue => this.activeIssue = regeneratedIssue)
+    this.clearIssuesContainersSubscription();
+    this.issuesService.regenerateIssue(this.activeIssue.id).subscribe(regeneratedIssue => {
+      this.activeIssue = regeneratedIssue;
+      this.subscribeIssuesContainers()
+    }, () => {
+      this.subscribeIssuesContainers()
+    })
   }
 
   private getIssuesContainers(): void {
