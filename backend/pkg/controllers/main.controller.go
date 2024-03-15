@@ -315,7 +315,7 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 
 	isResolved, err := strconv.ParseBool(ctx.Query("isResolved"))
 	if err != nil {
-		isResolved = false
+		isResolved = true
 	}
 
 	offset, err := strconv.Atoi(offsetQuery)
@@ -373,7 +373,7 @@ func (c *MainController) IssuesSearch(ctx *gin.Context) {
 		filter["type"] = issueType
 	}
 
-	if isResolved {
+	if !isResolved {
 		filter["isResolved"] = isResolved
 	}
 
