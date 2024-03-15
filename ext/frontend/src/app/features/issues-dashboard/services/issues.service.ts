@@ -29,6 +29,8 @@ export class IssuesService {
 
       if (searchCriteria.isResolved) {
         searchCriteria.isResolved = false;
+      } else {
+        searchCriteria.isResolved = null;
       }
 
       const params: HttpParams = new HttpParams({
