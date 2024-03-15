@@ -921,7 +921,7 @@ func (c *MainController) RegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", loginData.Email, confirmationToken)
+	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification?email=%s&verificationCode=%s", loginData.Email, confirmationToken)
 
 	emailObj := e.NewEmail()
 	emailObj.From = c.emailClientData.From
@@ -1045,7 +1045,7 @@ func (c *MainController) ResendConfirmationEmail(ctx *gin.Context) {
 		return
 	}
 
-	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification/%s/%s", verificationData.Email, confirmationToken)
+	confirmationLink := fmt.Sprintf("https://signaloneai.com/email-verification?email=%s&verificationCode=%s", verificationData.Email, confirmationToken)
 
 	emailObj := e.NewEmail()
 	emailObj.From = c.emailClientData.From
