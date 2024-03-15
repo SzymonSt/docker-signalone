@@ -10,7 +10,7 @@
     "NOT_FOUND": "No suitable resource found",
     "UNDEFINED": "The error was not recognized",
     "UNAUTHORIZED": "Authorization error! Please log in again.",
-    "BAD_CREDENTIALS": "Invalid email or password.",
+    "INVALID_CREDENTIALS": "Invalid email or password.",
     "ACCOUNT_NOT_ACTIVE": "Account not active. Confirm your email address.",
     "ERROR_OCCURED": "Undefined error occured",
     "DUPLICATE_NOT_CONFIRMED_USER_EMAIL": "Email address is already registered but not confirmed. Please confirm your email address",

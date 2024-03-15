@@ -10,7 +10,7 @@
     "NOT_FOUND": "Nie znaleziono odpowiedniego zasobu",
     "UNDEFINED": "Błąd nie został rozpoznany",
     "UNAUTHORIZED": "Błąd autoryzacyjny! Prosimy zaloguj się ponownie.",
-    "BAD_CREDENTIALS": "Nieprawidłowy adres email lub hasło",
+    "INVALID_CREDENTIALS": "Nieprawidłowy adres email lub hasło",
     "ACCOUNT_NOT_ACTIVE": "Konto nie jest aktywne",
     "ERROR_OCCURED": "Wystąpił niezidentyfikowany błąd",
     "DUPLICATE_NOT_CONFIRMED_USER_EMAIL": "Adres email jest już zarejestrowany ale nie potwierdzony. Prosimy potwierdź swój adres email",
