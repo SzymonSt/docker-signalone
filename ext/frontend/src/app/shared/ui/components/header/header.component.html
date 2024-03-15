@@ -1,20 +1,29 @@
 <div id="header">
   <a href="#" class="logos-container">
     <svg-icon
-            class="img-logo"
-            src="assets/image/signal_img_logo.svg"
-            alt="Signal0ne"
+      class="img-logo"
+      src="assets/image/signal_img_logo.svg"
+      alt="Signal0ne"
     ></svg-icon>
     <svg-icon
-            class="text-logo"
-            src="assets/image/signal_text_logo.svg"
-            alt="Signal0ne"
+      class="text-logo"
+      src="assets/image/signal_text_logo.svg"
+      alt="Signal0ne"
     ></svg-icon>
   </a>
   <div class="d-flex align-items-center controls-container">
-    <i class="bi bi-headset contact-icon" (click)="openContactModal()" [matTooltip]="'UI.HEADER.CONTACT_US' | translate"></i>
+    <i
+      class="bi bi-headset contact-icon"
+      (click)="openContactModal()"
+      (keydown)="openContactModalKeydown($event)"
+      tabindex="0"
+      [matTooltip]="'UI.HEADER.CONTACT_US' | translate"
+    ></i>
     <app-configuration-dropdown
-            *ngIf="configurationService.isCurrentAgentStateInitialized && (isLoggedIn$ | async)"
+      *ngIf="
+        configurationService.isCurrentAgentStateInitialized &&
+        (isLoggedIn$ | async)
+      "
     ></app-configuration-dropdown>
     <button
       *ngIf="isLoggedIn$ | async"

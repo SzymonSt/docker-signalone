@@ -79,7 +79,7 @@
     "SIGN_UP": "Sign up",
     "OR": "Or",
     "PASSWORD_CONFIRMATION": "Confirm password",
-    "ALREADY_HAVE_ACCOUNT": "Already have an account ?",
+    "ALREADY_HAVE_ACCOUNT": "Already have an account?",
     "EMAIL_VERIFICATION_LINK_SENT": "Email verification link sent. Please confirm your email and sign in.",
     "VERIFICATION_LINK_RESEND_SUCCESS": "Verification link resend successfully sent",
     "EMAIL_PLACEHOLDER": "example@gmail.com",
