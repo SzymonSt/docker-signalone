@@ -5,7 +5,7 @@
   box-shadow: 2px 4px 4px 0 rgba(0,0,0,0.15);
   margin-left: auto;
   margin-right: auto;
-  margin-top: 8rem;
+  margin-top: 4rem;
   padding: 2rem;
   width: 50%;
 
@@ -23,6 +23,14 @@
 
   @media (min-width: 1800px) {
     width: 30%;
+  }
+
+  .btn.signalone {
+    padding: 7px 14px;
+
+    &:hover {
+      box-shadow: 0 0 3px 3px rgba(#3f51b5, 0.3);
+    }
   }
 
   .login-content-container{
@@ -55,6 +63,14 @@
           color: white;
           &:hover {
             box-shadow: 0 0 3px 3px rgba(#4285f4, 0.3);
+          }
+        }
+
+        &.signalone {
+          padding: 7px 14px;
+          
+          &:hover {
+            box-shadow: 0 0 3px 3px rgba(#3f51b5, 0.3);
           }
         }
 

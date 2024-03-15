@@ -1,70 +1,99 @@
 <div id="login-container">
   <h2 class="login-title">{{ "AUTH.LOGIN_HEADER" | translate }}</h2>
-      <form [formGroup]="loginForm" class="w-100 mx-auto">
-          <div class="form-group mb-3">
-              <label class="form-label"
-                     for="email">{{'AUTH.EMAIL' | translate}}</label>
-              <input [placeholder]="'AUTH.EMAIL' | translate" class="form-control"
-                     formControlName="email"
-                     id="email"
-                     [ngClass]="{
-                      invalid:
-                        loginForm.controls['email'].invalid && isSubmitted
-                    }"
-                     type="text">
-              <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">
-                  <div *ngIf="loginForm.controls['email'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>
-                  <div *ngIf="loginForm.controls['email'].hasError('email')">{{ 'VALIDATION.INVALID_EMAIL' | translate }}</div>
-              </div>
-          </div>
-          <div class="form-group mb-3">
-              <label class="form-label"
-                     for="password">{{'AUTH.PASSWORD' | translate}}</label>
-              <input [placeholder]="'AUTH.PASSWORD' | translate" class="form-control"
-                     formControlName="password"
-                     id="password"
-                     appInputPasswordToggle
-                     [ngClass]="{
-                      invalid:
-                        loginForm.controls['password'].invalid && isSubmitted
-                    }"
-                     type="password">
-              <div *ngIf="loginForm.invalid && isSubmitted" class="col-12 invalid-feedback mt-2 mb-3">
-                  <div *ngIf="loginForm.controls['password'].hasError('required')">{{ 'VALIDATION.REQUIRED' | translate }}</div>
-                  <div *ngIf="loginForm.controls['password'].hasError('minlength')">{{ 'VALIDATION.PASSWORD_MIN_LENGTH' | translate }}</div>
-              </div>
-          </div>
-          <a class="link-primary d-block w-100 text-center mt-4" (click)="openResendVerificationLinkModal()">
-              {{ 'AUTH.RESEND_VERIFICATION_LINK' | translate }}
-          </a>
-          <div class="row mt-3">
-              <div class="col-12">
-                  <button (click)="submitForm()"
-                          class="btn btn-primary w-100 mx-auto d-block mt-3">{{ 'AUTH.LOGIN' | translate }}</button>
-              </div>
-          </div>
-          <p class="text-center my-4">
-              {{ 'AUTH.DONT_HAVE_ACCOUNT' | translate }}
-              <a class="link-primary" routerLink="/register">
-                  {{ 'AUTH.SIGN_UP' | translate }}
-              </a>
-          </p>
-          <div class="login-section-divider">
-              <div class="divide-bar"></div>
-              <p>{{ 'AUTH.OR' | translate }}</p>
-              <div class="divide-bar"></div>
-          </div>
-          <div class="login-content-container d-flex flex-column w-100 mx-auto">
-              <div class="btn-container w-100">
-                  <a class="btn google btn-primary w-100" [href]="googleLoginUrl">
-                      <i class="bi bi-google"></i> {{ "AUTH.GOOGLE_SIGN_IN" | translate }}
-                  </a>
-              </div>
-              <div class="btn-container w-100">
-                  <a class="btn github btn-primary w-100" [href]="githubLoginUrl">
-                      <i class="bi bi-github"></i> {{ "AUTH.GITHUB_SIGN_IN" | translate }}
-                  </a>
-              </div>
-          </div>
-      </form>
+  <form [formGroup]="loginForm" class="w-100 mx-auto">
+    <div class="form-group mb-3">
+      <label class="form-label" for="email">{{
+        "AUTH.EMAIL" | translate
+      }}</label>
+      <input
+        [placeholder]="'AUTH.EMAIL' | translate"
+        class="form-control"
+        formControlName="email"
+        id="email"
+        [ngClass]="{
+          invalid: loginForm.controls['email'].invalid && isSubmitted
+        }"
+        type="text"
+      />
+      <div
+        *ngIf="loginForm.invalid && isSubmitted"
+        class="col-12 invalid-feedback mt-2 mb-3"
+      >
+        <div *ngIf="loginForm.controls['email'].hasError('required')">
+          {{ "VALIDATION.REQUIRED" | translate }}
+        </div>
+        <div *ngIf="loginForm.controls['email'].hasError('email')">
+          {{ "VALIDATION.INVALID_EMAIL" | translate }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label class="form-label" for="password">{{
+        "AUTH.PASSWORD" | translate
+      }}</label>
+      <input
+        [placeholder]="'AUTH.PASSWORD' | translate"
+        class="form-control"
+        formControlName="password"
+        id="password"
+        appInputPasswordToggle
+        [ngClass]="{
+          invalid: loginForm.controls['password'].invalid && isSubmitted
+        }"
+        type="password"
+      />
+      <div
+        *ngIf="loginForm.invalid && isSubmitted"
+        class="col-12 invalid-feedback mt-2 mb-3"
+      >
+        <div *ngIf="loginForm.controls['password'].hasError('required')">
+          {{ "VALIDATION.REQUIRED" | translate }}
+        </div>
+        <div *ngIf="loginForm.controls['password'].hasError('minlength')">
+          {{ "VALIDATION.PASSWORD_MIN_LENGTH" | translate }}
+        </div>
+      </div>
+    </div>
+    <a
+      class="link-primary d-block w-100 text-center mt-4"
+      (click)="openResendVerificationLinkModal()"
+      (keydown)="openResendVerificationLinkModalKeydown($event)"
+      tabindex="0"
+    >
+      {{ "AUTH.RESEND_VERIFICATION_LINK" | translate }}
+    </a>
+    <div class="row mt-3">
+      <div class="col-12">
+        <button
+          (click)="submitForm()"
+          class="btn btn-primary signalone w-100 mx-auto d-block mt-3"
+        >
+          {{ "AUTH.LOGIN" | translate }}
+        </button>
+      </div>
+    </div>
+    <p class="text-center my-4">
+      {{ "AUTH.DONT_HAVE_ACCOUNT" | translate }}
+      <a class="link-primary" routerLink="/register">
+        {{ "AUTH.SIGN_UP" | translate }}
+      </a>
+    </p>
+    <div class="login-section-divider">
+      <div class="divide-bar"></div>
+      <p>{{ "AUTH.OR" | translate }}</p>
+      <div class="divide-bar"></div>
+    </div>
+    <div class="login-content-container d-flex flex-column w-100 mx-auto">
+      <div class="btn-container w-100">
+        <a class="btn btn-primary google w-100" [href]="googleLoginUrl">
+          <i class="bi bi-google"></i> {{ "AUTH.GOOGLE_SIGN_IN" | translate }}
+        </a>
+      </div>
+      <div class="btn-container w-100">
+        <a class="btn btn-primary github w-100" [href]="githubLoginUrl">
+          <i class="bi bi-github"></i> {{ "AUTH.GITHUB_SIGN_IN" | translate }}
+        </a>
+      </div>
+    </div>
+  </form>
 </div>

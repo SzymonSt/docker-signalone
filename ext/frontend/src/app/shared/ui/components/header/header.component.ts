@@ -53,6 +53,19 @@ export class HeaderComponent {
     });
   }
 
+  public openContactModalKeydown(event: KeyboardEvent): void {
+    if (
+      event instanceof KeyboardEvent &&
+      (event.key === 'Enter' || event.key === ' ')
+    ) {
+      if (event.key === ' ') event.preventDefault();
+
+      this.dialog.open(ContactPopupComponent, {
+        width: '500px',
+      });
+    }
+  }
+
   public logOut(): void {
     this.authStateService.logout();
   }
