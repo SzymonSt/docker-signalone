@@ -34,7 +34,7 @@ LABEL org.opencontainers.image.title="Signal0ne" \
     com.docker.extension.detailed-description="The magic of the Signal0ne Docker Extension is its very short feedback loop for working with and developing containerized applications. Register new account and forget endless log diving – the extension offers a clear and concise summary of what's happening inside your containers, pinpointing potential issues and even suggesting solutions." \
     com.docker.extension.additional-urls='[{"title":"Demo Video","url":"https://youtu.be/LWOUSr9s_Zw"},{"title":"Discord","url":"https://discord.gg/vAZrxKs5f6"},{"title":"Linkedin","url":"https://www.linkedin.com/company/signal0ne/"}]' \
     com.docker.extension.categories="utility-tools" \
-    com.docker.extension.changelog="Improved analysis outputs, UI bugfixes"
+    com.docker.extension.changelog="Added new signup type - signal0ne account" \
 COPY --from=builder /agent/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
