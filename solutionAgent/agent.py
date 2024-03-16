@@ -58,7 +58,7 @@ class ChatAgent:
         
         prompt = hub.pull("hwchase17/react")
         agent = create_react_agent(self.llm, self.tools, prompt)
-        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=True, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=3)
+        self.agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=False, handle_parsing_errors=True,return_intermediate_steps=True, max_iterations=3)
      
     def understand_logs(self,logs):
         """Function to understand logs and return a summary
