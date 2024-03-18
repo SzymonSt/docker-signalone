@@ -1,7 +1,7 @@
 # docker-signalone
 
 > [!WARNING]
-> Extension is still work in progress. It is not published as official SignalOne Docker extension yet.
+> This repo is retired please see: https://github.com/Signal0ne/signal0ne-docker-extension
 
 ## Overview
 Signal0ne docker extension is a tool for debugging and monitoring containerized apps, which enables automated insights about failed containers and containers affected by resource usage anomalies.
