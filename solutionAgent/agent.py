@@ -16,7 +16,6 @@ class ChatAgent:
     """Class for the chat agent."""
     def __init__(self, endpoint):
         load_dotenv()
-        print(endpoint)
         self.llm = HuggingFaceEndpoint(
                 endpoint_url=endpoint,
                 task="text-generation",
@@ -86,7 +85,6 @@ class ChatAgent:
         answer =  self.agent_executor.invoke({"input":f"""You are a software developer who has to provide short summary of available solutions to issues of a software.
                                      Use websearch tool available to make your answer. You can ask multiple questions from the webagent . Use "websearch" agent to search about information use "Action: websearch" . You can use the summary provided. Also provide the sources of your solutions.
                                      Here is the summary of issue for which you need to find solution and provide code or commands if it would help to resolve issue: \n {summary}"""})
-        
         return answer['intermediate_steps']
     
     def extract_urls(self,logs, urls):
