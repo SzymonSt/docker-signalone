@@ -21,7 +21,7 @@ class WebCrawler:
             str: The first result returned by the search engine.
         """
         try:
-            return(self.tool.search(query = query,include_domains = ['https://stackoverflow.com','https://github.com'],search_depth="advanced"))
+            return(self.tool.search(query = query,search_depth="advanced", max_results=3))
             
         except Exception as e:
             print(e)
